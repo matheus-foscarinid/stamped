@@ -1,9 +1,9 @@
 import { type CountryCode, isCountryCode } from '@/countries'
 
-// the link is the save file: #v=br,in,jp keeps a map without accounts or storage
+// the url is the only storage, e.g. #v=br,in,jp
 const VISITED_PARAM = 'v'
 
-// unknown or repeated codes are dropped, so a hand-edited or outdated link still opens
+// tolerate hand-edited or outdated links
 export const readVisitedFromHash = (hash: string): CountryCode[] => {
   const value = new URLSearchParams(hash.replace(/^#/, '')).get(VISITED_PARAM) ?? ''
   const codes = value
