@@ -9,6 +9,7 @@
         <WorldMap :projection="projection" :visited="visited" @toggle="toggleVisited" />
       </div>
       <ProjectionToggle v-model="projection" />
+      <ShareControls :projection="projection" :visited="visited" />
     </section>
   </main>
 </template>
@@ -17,6 +18,7 @@
 import { COUNTRY_CODES } from '@/countries'
 import CountrySearch from '@/ui/CountrySearch.vue'
 import ProjectionToggle from '@/ui/ProjectionToggle.vue'
+import ShareControls from '@/ui/ShareControls.vue'
 import WorldMap from '@/ui/WorldMap.vue'
 import { useTravelMap } from '@/useTravelMap'
 

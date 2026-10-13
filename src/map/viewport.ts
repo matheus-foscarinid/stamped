@@ -17,6 +17,8 @@ export interface ScreenPoint {
   y: number
 }
 
+export interface ScreenRect extends ScreenSize, ScreenPoint {}
+
 const PADDING_RATIO = 0.02
 const MAX_ZOOM = 6
 

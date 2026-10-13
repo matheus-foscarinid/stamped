@@ -1,6 +1,6 @@
 import type { MapGeometry } from './format.ts'
 import type { MapRenderer, MapScene } from './renderer.ts'
-import type { ScreenPoint } from './viewport.ts'
+import { fitViewport, type ScreenPoint, type ScreenRect } from './viewport.ts'
 
 const BORDER_WIDTH_PX = 0.6
 
@@ -16,7 +16,7 @@ interface CountryPath {
   bounds: Bounds
 }
 
-interface Palette {
+export interface MapPalette {
   land: string
   border: string
   visited: string
@@ -56,8 +56,8 @@ const isInsideBounds = ({ minX, minY, maxX, maxY }: Bounds, { x, y }: ScreenPoin
   x >= minX && x <= maxX && y >= minY && y <= maxY
 
 // colors live in css so the map follows the page theme
-const readPalette = (canvas: HTMLCanvasElement): Palette => {
-  const style = getComputedStyle(canvas)
+export const readMapPalette = (element: Element): MapPalette => {
+  const style = getComputedStyle(element)
   const read = (name: string) => style.getPropertyValue(name).trim()
   return {
     land: read('--map-land'),
@@ -67,14 +67,14 @@ const readPalette = (canvas: HTMLCanvasElement): Palette => {
   }
 }
 
-const pickFill = (scene: MapScene, index: number, palette: Palette): string => {
+const pickFill = (scene: MapScene, index: number, palette: MapPalette): string => {
   const code = scene.codes[index]
   if (code && scene.visited.has(code)) return palette.visited
   if (index === scene.hoveredIndex) return palette.hover
   return palette.land
 }
 
-const paintScene = (context: CanvasRenderingContext2D, scene: MapScene, palette: Palette) => {
+const paintScene = (context: CanvasRenderingContext2D, scene: MapScene, palette: MapPalette) => {
   const paths = getCountryPaths(scene.geometry)
   paths.forEach(({ path }, index) => {
     context.fillStyle = pickFill(scene, index, palette)
@@ -82,6 +82,20 @@ const paintScene = (context: CanvasRenderingContext2D, scene: MapScene, palette:
   })
   context.strokeStyle = palette.border
   for (const { path } of paths) context.stroke(path)
+}
+
+// viewport in output pixels: whatever the target, grid units become pixels the same way
+const paintWithViewport = (
+  context: CanvasRenderingContext2D,
+  scene: MapScene,
+  palette: MapPalette,
+  borderWidth: number
+) => {
+  const { scale, offsetX, offsetY } = scene.viewport
+  context.setTransform(scale, 0, 0, scale, offsetX, offsetY)
+  context.lineWidth = borderWidth / scale
+  context.lineJoin = 'round'
+  paintScene(context, scene, palette)
 }
 
 const drawScene = (
@@ -93,11 +107,46 @@ const drawScene = (
   const { scale, offsetX, offsetY } = scene.viewport
   context.setTransform(1, 0, 0, 1, 0, 0)
   context.clearRect(0, 0, canvas.width, canvas.height)
-  const deviceScale = pixelRatio * scale
-  context.setTransform(deviceScale, 0, 0, deviceScale, pixelRatio * offsetX, pixelRatio * offsetY)
-  context.lineWidth = BORDER_WIDTH_PX / scale
-  context.lineJoin = 'round'
-  paintScene(context, scene, readPalette(canvas))
+  const deviceViewport = {
+    scale: scale * pixelRatio,
+    offsetX: offsetX * pixelRatio,
+    offsetY: offsetY * pixelRatio,
+  }
+  paintWithViewport(
+    context,
+    { ...scene, viewport: deviceViewport },
+    readMapPalette(canvas),
+    BORDER_WIDTH_PX * pixelRatio
+  )
+}
+
+export interface MapSnapshot {
+  geometry: MapGeometry
+  codes: (string | null)[]
+  visited: ReadonlySet<string>
+  palette: MapPalette
+  // where the map goes on the target canvas, in its pixels
+  rect: ScreenRect
+  borderWidth: number
+}
+
+// draws the whole world fitted into a rect, for images that leave the app
+export const drawMapSnapshot = (context: CanvasRenderingContext2D, snapshot: MapSnapshot): void => {
+  const { geometry, rect } = snapshot
+  const fitted = fitViewport(geometry, rect)
+  const viewport = {
+    scale: fitted.scale,
+    offsetX: rect.x + fitted.offsetX,
+    offsetY: rect.y + fitted.offsetY,
+  }
+  context.save()
+  paintWithViewport(
+    context,
+    { geometry, codes: snapshot.codes, visited: snapshot.visited, hoveredIndex: null, viewport },
+    snapshot.palette,
+    snapshot.borderWidth
+  )
+  context.restore()
 }
 
 const pickCountry = (

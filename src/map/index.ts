@@ -1,4 +1,9 @@
-import { createCanvasRenderer } from './canvas-renderer.ts'
+import {
+  createCanvasRenderer,
+  drawMapSnapshot,
+  type MapPalette,
+  readMapPalette,
+} from './canvas-renderer.ts'
 import { attachInteraction } from './interaction.ts'
 import { loadCountryCodes, loadGeometry } from './load.ts'
 import type { ProjectionId } from './projections.ts'
@@ -7,6 +12,7 @@ import {
   fitViewport,
   panViewport,
   type ScreenPoint,
+  type ScreenRect,
   type ScreenSize,
   toGridPoint,
   zoomViewport,
@@ -18,6 +24,7 @@ export {
   PROJECTION_LABELS,
   type ProjectionId,
 } from './projections.ts'
+export type { ScreenRect } from './viewport.ts'
 
 export interface WorldMapOptions {
   projection: ProjectionId
@@ -171,4 +178,31 @@ export const createWorldMap = async (
       controller.renderer.destroy()
     },
   }
+}
+
+export interface WorldSnapshotOptions {
+  projection: ProjectionId
+  visited: Iterable<string>
+  rect: ScreenRect
+  borderWidth: number
+  // defaults to the page's current map colors
+  palette?: MapPalette
+}
+
+export const drawWorldSnapshot = async (
+  context: CanvasRenderingContext2D,
+  options: WorldSnapshotOptions
+): Promise<void> => {
+  const [geometry, codes] = await Promise.all([
+    loadGeometry(options.projection),
+    loadCountryCodes(),
+  ])
+  drawMapSnapshot(context, {
+    geometry,
+    codes,
+    visited: new Set(options.visited),
+    palette: options.palette ?? readMapPalette(document.documentElement),
+    rect: options.rect,
+    borderWidth: options.borderWidth,
+  })
 }
