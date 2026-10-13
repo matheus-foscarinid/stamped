@@ -1,0 +1,87 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true, "defaultBranch": "main" },
+  "files": { "includes": ["**", "!.claude", "!.vibe-wise"] },
+  "html": { "experimentalFullSupportEnabled": true },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100,
+    "lineEnding": "lf"
+  },
+  "javascript": {
+    "formatter": {
+      "semicolons": "asNeeded",
+      "quoteStyle": "single",
+      "trailingCommas": "es5",
+      "arrowParentheses": "asNeeded"
+    }
+  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "complexity": {
+        "noExcessiveCognitiveComplexity": {
+          "level": "error",
+          "options": { "maxAllowedComplexity": 10 }
+        },
+        "noExcessiveLinesPerFunction": {
+          "level": "error",
+          "options": { "maxLines": 40, "skipBlankLines": true }
+        },
+        "useMaxParams": { "level": "error", "options": { "max": 4 } },
+        "noImplicitCoercions": "error",
+        "noUselessRename": "error",
+        "noUselessReturn": "error",
+        "noUselessTernary": "error",
+        "useArrowFunction": "error"
+      },
+      "correctness": {
+        "noUnusedVariables": "error",
+        "noUnusedImports": "error"
+      },
+      "style": {
+        "noNestedTernary": "error",
+        "noParameterAssign": "error",
+        "noUselessElse": "error",
+        "noNonNullAssertion": "error",
+        "useCollapsedElseIf": "error",
+        "useConst": "error",
+        "useTemplate": "error",
+        "useObjectSpread": "error",
+        "useImportType": { "level": "error", "options": { "style": "inlineType" } },
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "patterns": [{ "group": ["../../*"], "message": "import through the @/ alias" }]
+          }
+        }
+      },
+      "suspicious": {
+        "noExplicitAny": "error",
+        "noDoubleEquals": { "level": "error", "options": { "ignoreNull": true } },
+        "noVar": "error",
+        "noConsole": "error",
+        "noDebugger": "error"
+      },
+      "performance": {
+        "useVueVapor": "error"
+      },
+      "nursery": {
+        "noFloatingPromises": "error",
+        "noMisusedPromises": "error",
+        "useExhaustiveSwitchCases": "error",
+        "noExcessiveNestedCallbacks": { "level": "error", "options": { "max": 3 } }
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["build/**", "scripts/**"],
+      "linter": { "rules": { "suspicious": { "noConsole": "off" } } }
+    }
+  ]
+}

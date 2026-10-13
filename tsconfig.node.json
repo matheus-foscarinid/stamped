@@ -3,12 +3,8 @@
     "target": "ES2023",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "lib": [
-      "ES2023"
-    ],
-    "types": [
-      "node"
-    ],
+    "lib": ["ES2023"],
+    "types": ["node"],
     "skipLibCheck": true,
     "noEmit": true,
     "verbatimModuleSyntax": true,
@@ -19,9 +15,8 @@
     "exactOptionalPropertyTypes": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "rewriteRelativeImportExtensions": true
   },
-  "include": [
-    "vite.config.ts"
-  ]
+  "include": ["vite.config.ts", "build/**/*.ts", "scripts/**/*.ts"]
 }
