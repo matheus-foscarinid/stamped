@@ -1,5 +1,5 @@
 <template>
-  <fieldset class="projection-toggle">
+  <fieldset class="projection-toggle control-surface">
     <legend class="visually-hidden">Map projection</legend>
     <button
       v-for="id in PROJECTION_IDS"
@@ -24,26 +24,26 @@ const projection = defineModel<ProjectionId>({ required: true })
 .projection-toggle {
   min-width: 0;
   margin: 0;
-  border: 0;
   display: inline-flex;
   flex-wrap: wrap;
   gap: 4px;
   padding: 4px;
-  border-radius: var(--radius-pill);
-  background: var(--surface-raised);
+  border-radius: var(--radius-control);
 }
 
 .projection-option {
   padding: 6px 14px;
   border: 0;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-control);
   background: transparent;
-  color: var(--text-muted);
+  color: inherit;
+  opacity: 0.7;
   cursor: pointer;
 }
 
 .projection-option[aria-pressed='true'] {
-  background: var(--text);
-  color: var(--surface);
+  background: var(--control-active-bg);
+  color: var(--control-active-text);
+  opacity: 1;
 }
 </style>

@@ -5,7 +5,9 @@
         <CountrySearch :is-visited="isVisited" @toggle="toggleVisited" />
         <p class="visited-count">{{ visited.length }} of {{ COUNTRY_CODES.length }} countries</p>
       </header>
-      <WorldMap :projection="projection" :visited="visited" @toggle="toggleVisited" />
+      <div class="map-frame">
+        <WorldMap :projection="projection" :visited="visited" @toggle="toggleVisited" />
+      </div>
       <ProjectionToggle v-model="projection" />
     </section>
   </main>
@@ -46,6 +48,13 @@ const { projection, visited, isVisited, toggleVisited } = useTravelMap()
   align-items: center;
   justify-content: space-between;
   width: 100%;
+}
+
+.map-frame {
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  overflow: hidden;
+  border-radius: 20px;
 }
 
 .visited-count {

@@ -4,7 +4,7 @@
     <input
       id="country-search-input"
       v-model="query"
-      class="country-search-input"
+      class="country-search-input control-surface"
       type="search"
       autocomplete="off"
       placeholder="Search countries"
@@ -14,7 +14,7 @@
     <p id="country-search-status" class="visually-hidden" aria-live="polite">
       {{ query ? `${matches.length} matching countries` : '' }}
     </p>
-    <ul v-show="matches.length > 0" class="country-search-results">
+    <ul v-show="matches.length > 0" class="country-search-results control-surface">
       <li v-for="match in matches" :key="match.code">
         <button
           type="button"
@@ -57,10 +57,7 @@ const { query, matches, pick, pickTopMatch } = useCountrySearch({
 .country-search-input {
   width: 100%;
   padding: 10px 16px;
-  border: 1px solid var(--surface-raised);
-  border-radius: var(--radius-pill);
-  background: var(--surface-raised);
-  color: var(--text);
+  border-radius: var(--radius-control);
   font: inherit;
 }
 
@@ -71,8 +68,7 @@ const { query, matches, pick, pickTopMatch } = useCountrySearch({
   margin: 0;
   padding: 6px;
   list-style: none;
-  border-radius: 18px;
-  background: var(--surface-raised);
+  border-radius: var(--radius-menu);
 }
 
 .country-option {
@@ -84,13 +80,13 @@ const { query, matches, pick, pickTopMatch } = useCountrySearch({
   gap: 10px;
   align-items: center;
   padding: 8px 10px;
-  border-radius: 12px;
+  border-radius: calc(var(--radius-menu) - 6px);
   cursor: pointer;
 }
 
 .country-option:hover,
 .country-option:focus-visible {
-  background: var(--surface);
+  background: var(--control-hover-bg);
 }
 
 .country-name {

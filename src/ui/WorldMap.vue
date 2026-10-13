@@ -6,13 +6,13 @@
       role="img"
       aria-label="World map of the countries you visited. Use the search to add countries with the keyboard"
     />
-    <p v-if="hoveredCode" class="world-map-hover" aria-hidden="true">
+    <p v-if="hoveredCode" class="world-map-hover control-surface" aria-hidden="true">
       {{ getFlagEmoji(hoveredCode) }} {{ getCountryName(hoveredCode) }}
     </p>
     <div class="world-map-zoom">
-      <button type="button" class="zoom-button" aria-label="Zoom in" @click="zoomIn">+</button>
-      <button type="button" class="zoom-button" aria-label="Zoom out" @click="zoomOut">−</button>
-      <button type="button" class="zoom-button" aria-label="Reset zoom" @click="resetZoom">⟲</button>
+      <button type="button" class="zoom-button control-surface" aria-label="Zoom in" @click="zoomIn">+</button>
+      <button type="button" class="zoom-button control-surface" aria-label="Zoom out" @click="zoomOut">−</button>
+      <button type="button" class="zoom-button control-surface" aria-label="Reset zoom" @click="resetZoom">⟲</button>
     </div>
     <p v-if="hasLoadError" class="world-map-error" role="alert">
       The map couldn't load. Refresh to try again.
@@ -48,9 +48,8 @@ const { hasLoadError, hoveredCode, zoomIn, zoomOut, resetZoom } = useWorldMap({
 .world-map {
   position: relative;
   width: 100%;
-  aspect-ratio: 2 / 1;
+  height: 100%;
   overflow: hidden;
-  border-radius: 20px;
 }
 
 .world-map-canvas {
@@ -66,8 +65,7 @@ const { hasLoadError, hoveredCode, zoomIn, zoomOut, resetZoom } = useWorldMap({
   left: 12px;
   margin: 0;
   padding: 6px 12px;
-  border-radius: var(--radius-pill);
-  background: var(--surface-raised);
+  border-radius: var(--radius-control);
   pointer-events: none;
 }
 
@@ -82,9 +80,7 @@ const { hasLoadError, hoveredCode, zoomIn, zoomOut, resetZoom } = useWorldMap({
 .zoom-button {
   width: 36px;
   height: 36px;
-  border: 0;
   border-radius: 50%;
-  background: var(--surface-raised);
   font-size: 18px;
   cursor: pointer;
 }
