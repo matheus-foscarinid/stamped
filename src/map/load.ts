@@ -32,8 +32,16 @@ export const loadGeometry = (projection: ProjectionId): Promise<MapGeometry> => 
   return request
 }
 
+const requestIndex = (): Promise<MapIndex> => {
+  const request = fetchOk(`${MAPS_URL}index.json`).then(response => response.json())
+  request.catch(() => {
+    indexRequest = null
+  })
+  return request
+}
+
 export const loadCountryCodes = async (): Promise<MapIndex['codes']> => {
-  indexRequest ??= fetchOk(`${MAPS_URL}index.json`).then(response => response.json())
+  indexRequest ??= requestIndex()
   const { codes } = await indexRequest
   return codes
 }
