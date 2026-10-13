@@ -1,7 +1,7 @@
 <template>
   <div class="share-controls">
     <button type="button" class="share-button control-surface" @click="copyLink">Copy link</button>
-    <fieldset class="share-formats control-surface" :disabled="isSaving">
+    <fieldset class="share-formats control-surface" :aria-busy="isSaving">
       <legend class="visually-hidden">Save as image</legend>
       <span class="share-formats-label" aria-hidden="true">Save image</span>
       <button
@@ -9,6 +9,7 @@
         :key="format"
         type="button"
         class="share-format"
+        :aria-disabled="isSaving"
         :aria-label="`Save ${EXPORT_FORMATS[format].label.toLowerCase()} image, ${EXPORT_FORMATS[format].width} by ${EXPORT_FORMATS[format].height}`"
         @click="saveImage(format)"
       >
@@ -62,8 +63,10 @@ const { status, isSaving, copyLink, saveImage } = useShareControls({
   border-radius: var(--radius-control);
 }
 
-.share-formats:disabled {
+/* aria-disabled, not disabled, so the pressed button keeps keyboard focus */
+.share-formats[aria-busy='true'] {
   opacity: 0.6;
+  cursor: progress;
 }
 
 .share-formats-label {
@@ -76,7 +79,7 @@ const { status, isSaving, copyLink, saveImage } = useShareControls({
   background: transparent;
 }
 
-.share-format:hover:not(:disabled) {
+.share-format:hover:not([aria-disabled='true']) {
   background: var(--control-hover-bg);
 }
 
