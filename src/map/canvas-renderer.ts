@@ -120,7 +120,7 @@ const drawScene = (
   )
 }
 
-export interface MapSnapshot {
+interface MapSnapshot {
   geometry: MapGeometry
   codes: (string | null)[]
   visited: ReadonlySet<string>

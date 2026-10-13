@@ -22,7 +22,7 @@ interface TextLine {
   baseline: number
 }
 
-export interface CardLayout {
+interface CardLayout {
   padding: number
   title: TextLine
   subtitle: TextLine

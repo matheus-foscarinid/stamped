@@ -1,8 +1,8 @@
 import { type MaybeRefOrGetter, onScopeDispose, type Ref, ref, toValue } from 'vue'
 import type { CountryCode } from '@/countries'
 import type { ProjectionId } from '@/map'
+import { renderCard } from '@/share/card-image'
 import type { ExportFormat } from '@/share/card-layout'
-import { renderCard } from '@/share/export-card'
 import { saveFile } from '@/share/save-file'
 
 const STATUS_DURATION_MS = 2500

@@ -1,9 +1,4 @@
-import {
-  createCanvasRenderer,
-  drawMapSnapshot,
-  type MapPalette,
-  readMapPalette,
-} from './canvas-renderer.ts'
+import { createCanvasRenderer, drawMapSnapshot, readMapPalette } from './canvas-renderer.ts'
 import { attachInteraction } from './interaction.ts'
 import { loadCountryCodes, loadGeometry } from './load.ts'
 import type { ProjectionId } from './projections.ts'
@@ -185,10 +180,9 @@ export interface WorldSnapshotOptions {
   visited: Iterable<string>
   rect: ScreenRect
   borderWidth: number
-  // defaults to the page's current map colors
-  palette?: MapPalette
 }
 
+// always drawn with canvas, whatever renderer the live map uses
 export const drawWorldSnapshot = async (
   context: CanvasRenderingContext2D,
   options: WorldSnapshotOptions
@@ -201,7 +195,7 @@ export const drawWorldSnapshot = async (
     geometry,
     codes,
     visited: new Set(options.visited),
-    palette: options.palette ?? readMapPalette(document.documentElement),
+    palette: readMapPalette(document.documentElement),
     rect: options.rect,
     borderWidth: options.borderWidth,
   })
