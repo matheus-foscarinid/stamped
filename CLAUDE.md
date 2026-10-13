@@ -1,0 +1,45 @@
+# Travel Tracker
+
+Open-source map of the countries you've visited, shareable as a link. All code, data and assets are original or used under a compatible license.
+
+The top priority is weight and speed. Every dependency, byte and runtime step has to earn its place.
+
+## Stack
+
+- **UI**: Vue 3.6 Vapor (pinned RC). Every SFC uses `<script setup vapor lang="ts">`, enforced by Biome's `useVueVapor`. The app mounts with `createVaporApp`
+- **Map**: drawn on a single `<canvas>`. Hover and clicks are resolved with `Path2D` + `isPointInPath`
+- **Geometry**: Natural Earth GeoJSON is the source. A build step projects it, rounds it to a 4096-wide grid and delta-encodes it to binary. No geo code ships to the browser
+- **Countries**: ISO 3166-1 alpha-2 codes are the identity everywhere. Names come from `Intl.DisplayNames`, flags are emoji built from the code
+- **Tooling**: Vite 8, TypeScript 6 (not 7, which dropped the JS API `vue-tsc` needs), Biome, Knip, husky + lint-staged
+- **Node**: 24, pinned in `mise.toml`
+
+## Commands
+
+- `npm run dev`: dev server
+- `npm run build`: typecheck, build, then `check:dist`
+- `npm run check`: Biome + typecheck + Knip
+- `npm run lint:fix`: Biome with fixes and formatting
+- `npm run build:map`: download the pinned source and regenerate `public/maps/*.bin`
+
+## Architecture
+
+```
+data/            country catalog (code + aliases). Add a country = add a row
+build/           source GeoJSON -> project -> round -> delta-encode -> public/maps/
+src/map/         facade over decoder, renderer, hit-testing and viewport
+src/countries/   catalog access, search, names, flags
+src/ui/          presentational Vapor components
+src/main.ts      mounts the app
+```
+
+- The map module is a facade. Callers use `createWorldMap(canvas, options)` and its methods, never the decoder or renderer directly. The renderer is swappable through an optional override, with canvas as the default
+- The encoder (`build/`) and decoder (`src/map/`) share one format contract. Change both together
+- Land without an ISO code (Kosovo, Northern Cyprus) is drawn but not selectable
+- Every country is searchable, including ones too small to draw or click
+
+## Rules
+
+- Never ship source maps. `vite.config.ts` disables them and `check:dist` fails the build if a `.map` file or an oversized file lands in `dist/`
+- Imports more than one level up go through the `@/` alias
+- Generated files (`public/maps/`) and downloaded sources (`data/source/`) are not committed
+- One atomic commit per small goal. Never push unless asked
