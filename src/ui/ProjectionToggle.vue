@@ -25,13 +25,17 @@ const projection = defineModel<ProjectionId>({ required: true })
   min-width: 0;
   margin: 0;
   display: inline-flex;
-  flex-wrap: wrap;
   gap: 4px;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
   padding: 4px;
   border-radius: var(--radius-control);
 }
 
 .projection-option {
+  flex-shrink: 0;
+  white-space: nowrap;
   padding: 6px 14px;
   border: 0;
   border-radius: var(--radius-control);
