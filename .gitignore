@@ -5,3 +5,4 @@ public/maps
 .vibe-wise
 .DS_Store
 *.log
+.playwright-mcp
