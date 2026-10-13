@@ -1,0 +1,7 @@
+node_modules
+dist
+data/source
+public/maps
+.vibe-wise
+.DS_Store
+*.log
