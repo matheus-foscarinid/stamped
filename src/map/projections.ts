@@ -6,3 +6,10 @@ const MAP_RESOLUTION = '110m'
 
 export const getMapFileName = (projection: ProjectionId): string =>
   `${projection}-${MAP_RESOLUTION}.bin`
+
+export const PROJECTION_LABELS: Record<ProjectionId, string> = {
+  'equal-earth': 'Equal Earth',
+  'natural-earth': 'Natural Earth',
+  robinson: 'Robinson',
+  mercator: 'Mercator',
+}

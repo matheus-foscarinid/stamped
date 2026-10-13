@@ -1,0 +1,50 @@
+:root {
+  --page-bg: #c4aad5;
+  --surface: #1b1b1b;
+  --surface-raised: #262626;
+  --text: #f5f5f5;
+  --text-muted: #9a9a9a;
+  --accent: #7ef0bf;
+  --map-land: #363636;
+  --map-border: #4a4a4a;
+  --map-visited: #7ef0bf;
+  --radius-card: 28px;
+  --radius-pill: 999px;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--page-bg);
+  color: var(--text);
+  font: 15px / 1.4 var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
