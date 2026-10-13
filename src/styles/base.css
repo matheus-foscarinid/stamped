@@ -10,10 +10,6 @@
   --map-visited: #000000;
   --map-hover: #c4c4cb;
 
-  --export-bg: var(--surface);
-  --export-text: var(--text);
-  --export-muted: var(--text-muted);
-
   --control-bg: #ffffff;
   --control-text: var(--text);
   --control-border: #000000;

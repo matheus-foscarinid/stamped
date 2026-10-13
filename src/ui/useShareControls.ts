@@ -1,4 +1,4 @@
-import { type MaybeRefOrGetter, onScopeDispose, type Ref, ref, toValue } from 'vue'
+import { onScopeDispose, type Ref, ref } from 'vue'
 import type { CountryCode } from '@/countries'
 import type { ProjectionId } from '@/map'
 import { renderCard } from '@/share/card-image'
@@ -8,8 +8,8 @@ import { saveFile } from '@/share/save-file'
 const STATUS_DURATION_MS = 2500
 
 interface UseShareControlsInput {
-  projection: MaybeRefOrGetter<ProjectionId>
-  visited: MaybeRefOrGetter<readonly CountryCode[]>
+  projection: () => ProjectionId
+  visited: () => readonly CountryCode[]
 }
 
 interface UseShareControlsResult {
@@ -19,10 +19,15 @@ interface UseShareControlsResult {
   saveImage: (format: ExportFormat) => Promise<void>
 }
 
-const useFlashMessage = () => {
+interface StatusMessage {
+  status: Ref<string>
+  show: (message: string) => void
+}
+
+const useStatusMessage = (): StatusMessage => {
   const status = ref('')
   let timer: ReturnType<typeof setTimeout> | undefined
-  const flash = (message: string) => {
+  const show = (message: string) => {
     status.value = message
     clearTimeout(timer)
     timer = setTimeout(() => {
@@ -30,22 +35,19 @@ const useFlashMessage = () => {
     }, STATUS_DURATION_MS)
   }
   onScopeDispose(() => clearTimeout(timer))
-  return { status, flash }
+  return { status, show }
 }
 
-export const useShareControls = ({
-  projection,
-  visited,
-}: UseShareControlsInput): UseShareControlsResult => {
-  const { status, flash } = useFlashMessage()
+export const useShareControls = (input: UseShareControlsInput): UseShareControlsResult => {
+  const { status, show } = useStatusMessage()
   const isSaving = ref(false)
 
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href)
-      flash('Link copied')
+      show('Link copied')
     } catch {
-      flash('Copy blocked. The address bar has your link')
+      show('Copy blocked. The address bar has your link')
     }
   }
 
@@ -54,13 +56,13 @@ export const useShareControls = ({
     isSaving.value = true
     try {
       const blob = await renderCard(format, {
-        projection: toValue(projection),
-        visited: toValue(visited),
+        projection: input.projection(),
+        visited: input.visited(),
       })
       const outcome = await saveFile(blob, `travel-map-${format}.png`)
-      if (outcome === 'saved') flash('Image saved')
+      if (outcome === 'saved') show('Image saved')
     } catch {
-      flash('Could not create the image. Try again')
+      show('Could not create the image. Try again')
     } finally {
       isSaving.value = false
     }

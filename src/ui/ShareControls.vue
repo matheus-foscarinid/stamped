@@ -5,15 +5,15 @@
       <legend class="visually-hidden">Save as image</legend>
       <span class="share-formats-label" aria-hidden="true">Save image</span>
       <button
-        v-for="format in EXPORT_FORMAT_IDS"
-        :key="format"
+        v-for="option in EXPORT_FORMAT_OPTIONS"
+        :key="option.id"
         type="button"
         class="share-format"
         :aria-disabled="isSaving"
-        :aria-label="`Save ${EXPORT_FORMATS[format].label.toLowerCase()} image, ${EXPORT_FORMATS[format].width} by ${EXPORT_FORMATS[format].height}`"
-        @click="saveImage(format)"
+        :aria-label="option.ariaLabel"
+        @click="saveImage(option.id)"
       >
-        {{ EXPORT_FORMATS[format].label }}
+        {{ option.label }}
       </button>
     </fieldset>
     <p class="share-status" role="status">{{ status }}</p>
@@ -23,7 +23,7 @@
 <script setup vapor lang="ts">
 import type { CountryCode } from '@/countries'
 import type { ProjectionId } from '@/map'
-import { EXPORT_FORMAT_IDS, EXPORT_FORMATS } from '@/share/card-layout'
+import { EXPORT_FORMAT_OPTIONS } from '@/share/card-layout'
 import { useShareControls } from './useShareControls'
 
 const props = defineProps<{

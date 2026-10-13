@@ -1,20 +1,22 @@
-import type { CountryCode } from '@/countries'
+import { COUNTRY_CODES, type CountryCode } from '@/countries'
 import { drawWorldSnapshot, type ProjectionId } from '@/map'
-import {
-  type CardHeadline,
-  describeVisits,
-  EXPORT_FORMATS,
-  type ExportFormat,
-  layoutCard,
-} from './card-layout.ts'
+import { readCssTokens } from '@/styles/css-tokens'
+import { type CardLayout, EXPORT_FORMATS, type ExportFormat, layoutCard } from './card-layout.ts'
 
-const BORDER_WIDTH_PX = 1.2
+const EXPORT_BORDER_WIDTH_PX = 1.2
 
-interface CardTheme {
-  background: string
-  text: string
-  muted: string
-  font: string
+const THEME_TOKENS = {
+  background: '--surface',
+  text: '--text',
+  muted: '--text-muted',
+  font: '--font',
+}
+
+type CardTheme = Record<keyof typeof THEME_TOKENS, string>
+
+interface CardHeadline {
+  title: string
+  subtitle: string
 }
 
 export interface CardContent {
@@ -22,31 +24,41 @@ export interface CardContent {
   visited: readonly CountryCode[]
 }
 
-// tokens live in css, so the image follows whichever theme is on the page
-const readCardTheme = (): CardTheme => {
-  const style = getComputedStyle(document.body)
-  const read = (name: string) => style.getPropertyValue(name).trim()
+const formatWorldShare = (visitedCount: number): string => {
+  const percent = Math.round((visitedCount / COUNTRY_CODES.length) * 100)
+  if (percent === 0 && visitedCount > 0) return '<1%'
+  return `${percent}%`
+}
+
+export const describeVisits = (visitedCount: number): CardHeadline => {
+  const noun = visitedCount === 1 ? 'country' : 'countries'
   return {
-    background: read('--export-bg'),
-    text: read('--export-text'),
-    muted: read('--export-muted'),
-    font: style.fontFamily,
+    title: `${visitedCount} ${noun} visited`,
+    subtitle: `${formatWorldShare(visitedCount)} of the world`,
   }
 }
 
 const drawHeadline = (
   context: CanvasRenderingContext2D,
-  format: ExportFormat,
+  { padding, title, subtitle }: CardLayout,
   theme: CardTheme,
   headline: CardHeadline
 ) => {
-  const { padding, title, subtitle } = layoutCard(format)
   context.fillStyle = theme.text
   context.font = `600 ${title.size}px ${theme.font}`
   context.fillText(headline.title, padding, title.baseline)
   context.fillStyle = theme.muted
   context.font = `400 ${subtitle.size}px ${theme.font}`
   context.fillText(headline.subtitle, padding, subtitle.baseline)
+}
+
+const createCanvas = (format: ExportFormat): CanvasRenderingContext2D => {
+  const canvas = document.createElement('canvas')
+  canvas.width = EXPORT_FORMATS[format].width
+  canvas.height = EXPORT_FORMATS[format].height
+  const context = canvas.getContext('2d')
+  if (!context) throw new Error('canvas 2d context unavailable')
+  return context
 }
 
 const toPngBlob = (canvas: HTMLCanvasElement): Promise<Blob> =>
@@ -58,21 +70,17 @@ const toPngBlob = (canvas: HTMLCanvasElement): Promise<Blob> =>
   })
 
 export const renderCard = async (format: ExportFormat, content: CardContent): Promise<Blob> => {
-  const { width, height } = EXPORT_FORMATS[format]
-  const canvas = document.createElement('canvas')
-  canvas.width = width
-  canvas.height = height
-  const context = canvas.getContext('2d')
-  if (!context) throw new Error('canvas 2d context unavailable')
-  const theme = readCardTheme()
+  const context = createCanvas(format)
+  const layout = layoutCard(format)
+  const theme = readCssTokens(document.documentElement, THEME_TOKENS)
   context.fillStyle = theme.background
-  context.fillRect(0, 0, width, height)
-  drawHeadline(context, format, theme, describeVisits(content.visited.length))
+  context.fillRect(0, 0, context.canvas.width, context.canvas.height)
+  drawHeadline(context, layout, theme, describeVisits(content.visited.length))
   await drawWorldSnapshot(context, {
     projection: content.projection,
     visited: content.visited,
-    rect: layoutCard(format).map,
-    borderWidth: BORDER_WIDTH_PX,
+    rect: layout.map,
+    borderWidth: EXPORT_BORDER_WIDTH_PX,
   })
-  return toPngBlob(canvas)
+  return toPngBlob(context.canvas)
 }

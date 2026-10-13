@@ -1,6 +1,7 @@
+import { readCssTokens } from '@/styles/css-tokens'
 import type { MapGeometry } from './format.ts'
 import type { MapRenderer, MapScene } from './renderer.ts'
-import { fitViewport, type ScreenPoint, type ScreenRect } from './viewport.ts'
+import { fitViewport, type ScreenPoint, type ScreenRect, type Viewport } from './viewport.ts'
 
 const BORDER_WIDTH_PX = 0.6
 
@@ -55,17 +56,16 @@ const getCountryPaths = (geometry: MapGeometry): CountryPath[] => {
 const isInsideBounds = ({ minX, minY, maxX, maxY }: Bounds, { x, y }: ScreenPoint): boolean =>
   x >= minX && x <= maxX && y >= minY && y <= maxY
 
-// colors live in css so the map follows the page theme
-export const readMapPalette = (element: Element): MapPalette => {
-  const style = getComputedStyle(element)
-  const read = (name: string) => style.getPropertyValue(name).trim()
-  return {
-    land: read('--map-land'),
-    border: read('--map-border'),
-    visited: read('--map-visited'),
-    hover: read('--map-hover'),
-  }
+const PALETTE_TOKENS = {
+  land: '--map-land',
+  border: '--map-border',
+  visited: '--map-visited',
+  hover: '--map-hover',
 }
+
+// colors live in css so the map follows the page theme
+export const readMapPalette = (element: Element): MapPalette =>
+  readCssTokens(element, PALETTE_TOKENS)
 
 const pickFill = (scene: MapScene, index: number, palette: MapPalette): string => {
   const code = scene.codes[index]
@@ -74,7 +74,21 @@ const pickFill = (scene: MapScene, index: number, palette: MapPalette): string =
   return palette.land
 }
 
-const paintScene = (context: CanvasRenderingContext2D, scene: MapScene, palette: MapPalette) => {
+interface PaintStyle {
+  palette: MapPalette
+  borderWidth: number
+}
+
+// the viewport must already be in target canvas pixels
+const paintScene = (
+  context: CanvasRenderingContext2D,
+  scene: MapScene,
+  { palette, borderWidth }: PaintStyle
+) => {
+  const { scale, offsetX, offsetY } = scene.viewport
+  context.setTransform(scale, 0, 0, scale, offsetX, offsetY)
+  context.lineWidth = borderWidth / scale
+  context.lineJoin = 'round'
   const paths = getCountryPaths(scene.geometry)
   paths.forEach(({ path }, index) => {
     context.fillStyle = pickFill(scene, index, palette)
@@ -84,19 +98,17 @@ const paintScene = (context: CanvasRenderingContext2D, scene: MapScene, palette:
   for (const { path } of paths) context.stroke(path)
 }
 
-// viewport in output pixels: whatever the target, grid units become pixels the same way
-const paintWithViewport = (
-  context: CanvasRenderingContext2D,
-  scene: MapScene,
-  palette: MapPalette,
-  borderWidth: number
-) => {
-  const { scale, offsetX, offsetY } = scene.viewport
-  context.setTransform(scale, 0, 0, scale, offsetX, offsetY)
-  context.lineWidth = borderWidth / scale
-  context.lineJoin = 'round'
-  paintScene(context, scene, palette)
-}
+const scaleViewport = ({ scale, offsetX, offsetY }: Viewport, factor: number): Viewport => ({
+  scale: scale * factor,
+  offsetX: offsetX * factor,
+  offsetY: offsetY * factor,
+})
+
+const offsetViewport = (viewport: Viewport, { x, y }: ScreenPoint): Viewport => ({
+  ...viewport,
+  offsetX: viewport.offsetX + x,
+  offsetY: viewport.offsetY + y,
+})
 
 const drawScene = (
   canvas: HTMLCanvasElement,
@@ -104,48 +116,28 @@ const drawScene = (
   scene: MapScene
 ) => {
   const pixelRatio = window.devicePixelRatio || 1
-  const { scale, offsetX, offsetY } = scene.viewport
   context.setTransform(1, 0, 0, 1, 0, 0)
   context.clearRect(0, 0, canvas.width, canvas.height)
-  const deviceViewport = {
-    scale: scale * pixelRatio,
-    offsetX: offsetX * pixelRatio,
-    offsetY: offsetY * pixelRatio,
-  }
-  paintWithViewport(
+  paintScene(
     context,
-    { ...scene, viewport: deviceViewport },
-    readMapPalette(canvas),
-    BORDER_WIDTH_PX * pixelRatio
+    { ...scene, viewport: scaleViewport(scene.viewport, pixelRatio) },
+    { palette: readMapPalette(canvas), borderWidth: BORDER_WIDTH_PX * pixelRatio }
   )
 }
 
-interface MapSnapshot {
-  geometry: MapGeometry
-  codes: (string | null)[]
-  visited: ReadonlySet<string>
-  palette: MapPalette
-  // where the map goes on the target canvas, in its pixels
-  rect: ScreenRect
-  borderWidth: number
-}
-
-// draws the whole world fitted into a rect, for images that leave the app
-export const drawMapSnapshot = (context: CanvasRenderingContext2D, snapshot: MapSnapshot): void => {
-  const { geometry, rect } = snapshot
-  const fitted = fitViewport(geometry, rect)
-  const viewport = {
-    scale: fitted.scale,
-    offsetX: rect.x + fitted.offsetX,
-    offsetY: rect.y + fitted.offsetY,
+type MapSnapshot = Omit<MapScene, 'hoveredIndex' | 'viewport'> &
+  PaintStyle & {
+    // in target canvas pixels
+    rect: ScreenRect
   }
+
+export const drawMapSnapshot = (
+  context: CanvasRenderingContext2D,
+  { rect, ...snapshot }: MapSnapshot
+): void => {
+  const viewport = offsetViewport(fitViewport(snapshot.geometry, rect), rect)
   context.save()
-  paintWithViewport(
-    context,
-    { geometry, codes: snapshot.codes, visited: snapshot.visited, hoveredIndex: null, viewport },
-    snapshot.palette,
-    snapshot.borderWidth
-  )
+  paintScene(context, { ...snapshot, hoveredIndex: null, viewport }, snapshot)
   context.restore()
 }
 
