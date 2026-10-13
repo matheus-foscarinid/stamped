@@ -23,3 +23,28 @@ export const stubDevice = ({
 }
 
 export const rejectWith = (name: string) => () => Promise.reject(new DOMException(name, name))
+
+interface AddressBarStubOptions {
+  hash?: string
+  search?: string
+}
+
+export const stubAddressBar = ({ hash = '', search = '' }: AddressBarStubOptions = {}) => {
+  const location = { pathname: '/', search, hash }
+  const browserWindow = Object.assign(new EventTarget(), { location })
+  const replaceState = vi.fn((_state: unknown, _unused: string, url: string) => {
+    location.hash = new URL(url, 'https://map.test').hash
+  })
+  vi.stubGlobal('window', browserWindow)
+  vi.stubGlobal('history', { replaceState })
+  const pasteLink = (pastedHash: string) => {
+    location.hash = pastedHash
+    browserWindow.dispatchEvent(new Event('hashchange'))
+  }
+  return { location, replaceState, pasteLink }
+}
+
+export const stubClipboard = (writeText: () => Promise<void> = () => Promise.resolve()) => {
+  vi.stubGlobal('window', { location: { href: 'https://map.test/#v=br' } })
+  vi.stubGlobal('navigator', { clipboard: { writeText: vi.fn(writeText) } })
+}
