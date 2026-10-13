@@ -61,8 +61,8 @@ const { hasLoadError, hoveredCode, zoomIn, zoomOut, resetZoom } = useWorldMap({
 
 .world-map-hover {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: var(--hover-inset-y, 12px);
+  left: var(--hover-inset-x, 12px);
   margin: 0;
   padding: 6px 12px;
   border-radius: var(--radius-control);
@@ -71,8 +71,8 @@ const { hasLoadError, hoveredCode, zoomIn, zoomOut, resetZoom } = useWorldMap({
 
 .world-map-zoom {
   position: absolute;
-  right: 12px;
-  bottom: 12px;
+  right: var(--zoom-inset-x, 12px);
+  bottom: var(--zoom-inset-y, 12px);
   display: grid;
   gap: 4px;
 }
