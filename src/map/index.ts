@@ -1,8 +1,16 @@
 import { createCanvasRenderer } from './canvas-renderer.ts'
-import type { MapGeometry } from './format.ts'
+import { attachInteraction } from './interaction.ts'
 import { loadCountryCodes, loadGeometry } from './load.ts'
 import type { ProjectionId } from './projections.ts'
-import type { MapRenderer } from './renderer.ts'
+import type { MapRenderer, MapScene } from './renderer.ts'
+import {
+  fitViewport,
+  panViewport,
+  type ScreenPoint,
+  type ScreenSize,
+  toGridPoint,
+  zoomViewport,
+} from './viewport.ts'
 
 export { PROJECTION_IDS, PROJECTION_LABELS, type ProjectionId } from './projections.ts'
 
@@ -10,48 +18,152 @@ export interface WorldMapOptions {
   projection: ProjectionId
   // defaults to the canvas renderer. pass one to try another way of drawing
   renderer?: MapRenderer
+  // codes outside this check are drawn but ignore hover and clicks
+  isSelectable?: (code: string) => boolean
+  onCountryClick?: (code: string) => void
+  onCountryHover?: (code: string | null) => void
 }
 
 export interface WorldMap {
   setProjection: (projection: ProjectionId) => Promise<void>
   setVisited: (codes: Iterable<string>) => void
+  zoomBy: (factor: number) => void
+  resetZoom: () => void
   destroy: () => void
 }
 
-interface WorldMapState {
-  geometry: MapGeometry
-  codes: (string | null)[]
-  visited: ReadonlySet<string>
-  latestProjectionRequest: number
+interface MapController {
+  scene: MapScene
+  size: ScreenSize
+  renderer: MapRenderer
+  options: WorldMapOptions
+  scheduleRender: () => void
+}
+
+const createRenderScheduler = (render: () => void): (() => void) => {
+  let isScheduled = false
+  return () => {
+    if (isScheduled) return
+    isScheduled = true
+    requestAnimationFrame(() => {
+      isScheduled = false
+      render()
+    })
+  }
+}
+
+const findSelectableIndex = (controller: MapController, point: ScreenPoint): number | null => {
+  const { scene, renderer, options } = controller
+  const index = renderer.pick(scene.geometry, toGridPoint(scene.viewport, point))
+  if (index === null) return null
+  const code = scene.codes[index]
+  const isSelectable = options.isSelectable ?? (() => true)
+  return code && isSelectable(code) ? index : null
+}
+
+const updateHover = (
+  controller: MapController,
+  canvas: HTMLCanvasElement,
+  point: ScreenPoint | null
+) => {
+  const index = point && findSelectableIndex(controller, point)
+  if (index === controller.scene.hoveredIndex) return
+  controller.scene.hoveredIndex = index
+  canvas.style.cursor = index === null ? '' : 'pointer'
+  controller.options.onCountryHover?.(
+    index === null ? null : (controller.scene.codes[index] ?? null)
+  )
+  controller.scheduleRender()
+}
+
+const handleTap = (controller: MapController, point: ScreenPoint) => {
+  const index = findSelectableIndex(controller, point)
+  const code = index === null ? null : controller.scene.codes[index]
+  if (code) controller.options.onCountryClick?.(code)
+}
+
+const zoomAround = (controller: MapController, factor: number, anchor: ScreenPoint) => {
+  const { scene, size } = controller
+  scene.viewport = zoomViewport(scene.viewport, { geometry: scene.geometry, size, factor, anchor })
+  controller.scheduleRender()
+}
+
+const panBy = (controller: MapController, delta: ScreenPoint) => {
+  const { scene, size } = controller
+  scene.viewport = panViewport(scene.viewport, delta, scene.geometry, size)
+  controller.scheduleRender()
+}
+
+const refit = (controller: MapController) => {
+  controller.size = controller.renderer.resize()
+  controller.scene.viewport = fitViewport(controller.scene.geometry, controller.size)
+  controller.renderer.render(controller.scene)
+}
+
+const createController = async (
+  canvas: HTMLCanvasElement,
+  options: WorldMapOptions
+): Promise<MapController> => {
+  const renderer = options.renderer ?? createCanvasRenderer(canvas)
+  const [geometry, codes] = await Promise.all([
+    loadGeometry(options.projection),
+    loadCountryCodes(),
+  ])
+  const size = renderer.resize()
+  const scene: MapScene = {
+    geometry,
+    codes,
+    visited: new Set(),
+    hoveredIndex: null,
+    viewport: fitViewport(geometry, size),
+  }
+  const scheduleRender = createRenderScheduler(() => renderer.render(scene))
+  return { scene, size, renderer, options, scheduleRender }
+}
+
+const createProjectionSetter = (controller: MapController) => {
+  let latestRequest = 0
+  return async (projection: ProjectionId) => {
+    latestRequest += 1
+    const request = latestRequest
+    const geometry = await loadGeometry(projection)
+    // a quicker toggle may have landed while this file was loading
+    if (request !== latestRequest) return
+    controller.scene.geometry = geometry
+    controller.scene.hoveredIndex = null
+    refit(controller)
+  }
 }
 
 export const createWorldMap = async (
   canvas: HTMLCanvasElement,
   options: WorldMapOptions
 ): Promise<WorldMap> => {
-  const renderer = options.renderer ?? createCanvasRenderer(canvas)
-  const [geometry, codes] = await Promise.all([
-    loadGeometry(options.projection),
-    loadCountryCodes(),
-  ])
-  const state: WorldMapState = { geometry, codes, visited: new Set(), latestProjectionRequest: 0 }
-  const render = () => renderer.render(state)
-  render()
+  const controller = await createController(canvas, options)
+  const detachInteraction = attachInteraction(canvas, {
+    onZoom: (factor, anchor) => zoomAround(controller, factor, anchor),
+    onPan: delta => panBy(controller, delta),
+    onTap: point => handleTap(controller, point),
+    onHover: point => updateHover(controller, canvas, point),
+  })
+  const resizeObserver = new ResizeObserver(() => refit(controller))
+  resizeObserver.observe(canvas)
 
   return {
-    setProjection: async projection => {
-      state.latestProjectionRequest += 1
-      const request = state.latestProjectionRequest
-      const next = await loadGeometry(projection)
-      // a quicker toggle may have landed while this file was loading
-      if (request !== state.latestProjectionRequest) return
-      state.geometry = next
-      render()
+    setProjection: createProjectionSetter(controller),
+    setVisited: codes => {
+      controller.scene.visited = new Set(codes)
+      controller.scheduleRender()
     },
-    setVisited: visitedCodes => {
-      state.visited = new Set(visitedCodes)
-      render()
+    zoomBy: factor => {
+      const { width, height } = controller.size
+      zoomAround(controller, factor, { x: width / 2, y: height / 2 })
     },
-    destroy: () => renderer.destroy(),
+    resetZoom: () => refit(controller),
+    destroy: () => {
+      detachInteraction()
+      resizeObserver.disconnect()
+      controller.renderer.destroy()
+    },
   }
 }

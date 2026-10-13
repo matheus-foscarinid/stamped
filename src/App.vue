@@ -5,7 +5,7 @@
         <CountrySearch :is-visited="isVisited" @toggle="toggleVisited" />
         <p class="visited-count">{{ visited.length }} of {{ COUNTRY_CODES.length }} countries</p>
       </header>
-      <WorldMap :projection="projection" :visited="visited" />
+      <WorldMap :projection="projection" :visited="visited" @toggle="toggleVisited" />
       <ProjectionToggle v-model="projection" />
     </section>
   </main>
