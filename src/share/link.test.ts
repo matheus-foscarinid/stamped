@@ -14,9 +14,12 @@ describe('readVisitedFromHash', () => {
     expect(readVisitedFromHash('#v=BR, br ,,zz,jp')).toEqual(['br', 'jp'])
   })
 
-  it('opens an empty map when there is no hash or no v param', () => {
-    expect(readVisitedFromHash('')).toEqual([])
-    expect(readVisitedFromHash('#other=1')).toEqual([])
+  it('finds v among other params', () => {
+    expect(readVisitedFromHash('#ref=x&v=br,jp&utm=1')).toEqual(['br', 'jp'])
+  })
+
+  it.each(['', '#', '#v=', '#other=1'])('opens an empty map for %j', hash => {
+    expect(readVisitedFromHash(hash)).toEqual([])
   })
 })
 
