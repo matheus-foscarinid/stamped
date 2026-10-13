@@ -1,8 +1,17 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true, "defaultBranch": "main" },
-  "files": { "includes": ["**", "!.claude", "!.vibe-wise"] },
-  "html": { "experimentalFullSupportEnabled": true },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "defaultBranch": "main"
+  },
+  "files": {
+    "includes": ["**", "!.claude", "!.vibe-wise"]
+  },
+  "html": {
+    "experimentalFullSupportEnabled": true
+  },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
@@ -18,7 +27,13 @@
       "arrowParentheses": "asNeeded"
     }
   },
-  "assist": { "actions": { "source": { "organizeImports": "on" } } },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
   "linter": {
     "enabled": true,
     "rules": {
@@ -26,13 +41,23 @@
       "complexity": {
         "noExcessiveCognitiveComplexity": {
           "level": "error",
-          "options": { "maxAllowedComplexity": 10 }
+          "options": {
+            "maxAllowedComplexity": 10
+          }
         },
         "noExcessiveLinesPerFunction": {
           "level": "error",
-          "options": { "maxLines": 40, "skipBlankLines": true }
+          "options": {
+            "maxLines": 40,
+            "skipBlankLines": true
+          }
         },
-        "useMaxParams": { "level": "error", "options": { "max": 4 } },
+        "useMaxParams": {
+          "level": "error",
+          "options": {
+            "max": 4
+          }
+        },
         "noImplicitCoercions": "error",
         "noUselessRename": "error",
         "noUselessReturn": "error",
@@ -52,17 +77,32 @@
         "useConst": "error",
         "useTemplate": "error",
         "useObjectSpread": "error",
-        "useImportType": { "level": "error", "options": { "style": "inlineType" } },
+        "useImportType": {
+          "level": "error",
+          "options": {
+            "style": "auto"
+          }
+        },
         "noRestrictedImports": {
           "level": "error",
           "options": {
-            "patterns": [{ "group": ["../../*"], "message": "import through the @/ alias" }]
+            "patterns": [
+              {
+                "group": ["../../*"],
+                "message": "import through the @/ alias"
+              }
+            ]
           }
         }
       },
       "suspicious": {
         "noExplicitAny": "error",
-        "noDoubleEquals": { "level": "error", "options": { "ignoreNull": true } },
+        "noDoubleEquals": {
+          "level": "error",
+          "options": {
+            "ignoreNull": true
+          }
+        },
         "noVar": "error",
         "noConsole": "error",
         "noDebugger": "error"
@@ -74,14 +114,38 @@
         "noFloatingPromises": "error",
         "noMisusedPromises": "error",
         "useExhaustiveSwitchCases": "error",
-        "noExcessiveNestedCallbacks": { "level": "error", "options": { "max": 3 } }
+        "noExcessiveNestedCallbacks": {
+          "level": "error",
+          "options": {
+            "max": 3
+          }
+        }
       }
     }
   },
   "overrides": [
     {
       "includes": ["build/**", "scripts/**"],
-      "linter": { "rules": { "suspicious": { "noConsole": "off" } } }
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.test.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveLinesPerFunction": "off"
+          },
+          "nursery": {
+            "noExcessiveNestedCallbacks": "off"
+          }
+        }
+      }
     }
   ]
 }

@@ -7,29 +7,36 @@
     "node": ">=24"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "npm run typecheck && vite build && npm run check:dist",
+    "dev": "npm run build:map && vite",
+    "build": "npm run build:map && npm run typecheck && vite build && npm run check:dist",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "knip": "knip",
     "check:dist": "node scripts/check-dist.ts",
-    "check": "npm run lint && npm run typecheck && npm run knip",
-    "prepare": "husky"
+    "check": "npm run lint && npm run typecheck && npm run knip && npm run test",
+    "prepare": "husky",
+    "build:map": "node build/build-map.ts",
+    "test": "vitest run"
   },
   "dependencies": {
     "vue": "3.6.0-rc.11"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
+    "@types/d3-geo": "3.1.1",
+    "@types/geojson": "7946.0.16",
     "@types/node": "24.19.2",
     "@vitejs/plugin-vue": "6.0.10",
+    "d3-geo": "3.1.1",
+    "d3-geo-projection": "4.0.0",
     "husky": "9.1.7",
     "knip": "6.41.0",
     "lint-staged": "17.6.0",
     "typescript": "6.0.3",
     "vite": "8.3.4",
+    "vitest": "5.0.4",
     "vue-tsc": "3.3.13"
   },
   "lint-staged": {

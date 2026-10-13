@@ -33,7 +33,8 @@ src/main.ts      mounts the app
 ```
 
 - The map module is a facade. Callers use `createWorldMap(canvas, options)` and its methods, never the decoder or renderer directly. The renderer is swappable through an optional override, with canvas as the default
-- The encoder (`build/`) and decoder (`src/map/`) share one format contract. Change both together
+- The encoder (`build/`) and decoder (`src/map/`) share one format contract in `src/map/format.ts`. Change both together, and bump `MAP_FORMAT_VERSION` when the layout changes
+- `build/` runs on plain Node (type stripping), so the `src/map/` files it imports use relative imports with the `.ts` extension and no `@/` alias
 - Land without an ISO code (Kosovo, Northern Cyprus) is drawn but not selectable
 - Every country is searchable, including ones too small to draw or click
 
