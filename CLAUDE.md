@@ -39,6 +39,7 @@ src/main.ts      mounts the app
 
 ## Rules
 
+- The production build inlines the entry JS and CSS into `index.html` and preloads the default projection's map file (`build/vite-plugins.ts`). Change `DEFAULT_PROJECTION` and the preload follows
 - Never ship source maps. `vite.config.ts` disables them and `check:dist` fails the build if a `.map` file or an oversized file lands in `dist/`
 - Imports more than one level up go through the `@/` alias
 - Generated files (`public/maps/`) and downloaded sources (`data/source/`) are not committed

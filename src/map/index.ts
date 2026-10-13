@@ -12,7 +12,12 @@ import {
   zoomViewport,
 } from './viewport.ts'
 
-export { PROJECTION_IDS, PROJECTION_LABELS, type ProjectionId } from './projections.ts'
+export {
+  DEFAULT_PROJECTION,
+  PROJECTION_IDS,
+  PROJECTION_LABELS,
+  type ProjectionId,
+} from './projections.ts'
 
 export interface WorldMapOptions {
   projection: ProjectionId

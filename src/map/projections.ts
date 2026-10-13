@@ -13,3 +13,5 @@ export const PROJECTION_LABELS: Record<ProjectionId, string> = {
   robinson: 'Robinson',
   mercator: 'Mercator',
 }
+
+export const DEFAULT_PROJECTION: ProjectionId = 'equal-earth'

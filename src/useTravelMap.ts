@@ -1,6 +1,6 @@
 import { type Ref, ref } from 'vue'
 import type { CountryCode } from '@/countries'
-import type { ProjectionId } from '@/map'
+import { DEFAULT_PROJECTION, type ProjectionId } from '@/map'
 
 interface UseTravelMapResult {
   projection: Ref<ProjectionId>
@@ -10,7 +10,7 @@ interface UseTravelMapResult {
 }
 
 export const useTravelMap = (): UseTravelMapResult => {
-  const projection = ref<ProjectionId>('equal-earth')
+  const projection = ref<ProjectionId>(DEFAULT_PROJECTION)
   // replaced, never mutated, so the map sees every change
   const visited = ref<readonly CountryCode[]>([])
 
