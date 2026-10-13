@@ -2,7 +2,8 @@ import { type MaybeRefOrGetter, onScopeDispose, type Ref, ref, toValue } from 'v
 import type { CountryCode } from '@/countries'
 import type { ProjectionId } from '@/map'
 import type { ExportFormat } from '@/share/card-layout'
-import { downloadBlob, renderCard } from '@/share/export-card'
+import { renderCard } from '@/share/export-card'
+import { saveFile } from '@/share/save-file'
 
 const STATUS_DURATION_MS = 2500
 
@@ -56,8 +57,8 @@ export const useShareControls = ({
         projection: toValue(projection),
         visited: toValue(visited),
       })
-      downloadBlob(blob, `travel-map-${format}.png`)
-      flash('Image saved')
+      const outcome = await saveFile(blob, `travel-map-${format}.png`)
+      if (outcome === 'saved') flash('Image saved')
     } catch {
       flash('Could not create the image. Try again')
     } finally {

@@ -76,13 +76,3 @@ export const renderCard = async (format: ExportFormat, content: CardContent): Pr
   })
   return toPngBlob(canvas)
 }
-
-export const downloadBlob = (blob: Blob, fileName: string): void => {
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = fileName
-  link.click()
-  // safari drops the download if the url is revoked in the same task
-  setTimeout(() => URL.revokeObjectURL(url), 0)
-}
