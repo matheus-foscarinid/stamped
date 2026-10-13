@@ -24,10 +24,9 @@ The top priority is weight and speed. Every dependency, byte and runtime step ha
 ## Architecture
 
 ```
-data/            country catalog (code + aliases). Add a country = add a row
 build/           source GeoJSON -> project -> round -> delta-encode -> public/maps/
 src/map/         facade over decoder, renderer, hit-testing and viewport
-src/countries/   catalog access, search, names, flags
+src/countries/   catalog.ts (iso codes + aliases, add a country = add a code), search, names, flags
 src/ui/          presentational Vapor components
 src/main.ts      mounts the app
 ```

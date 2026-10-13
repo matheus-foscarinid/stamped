@@ -1,21 +1,24 @@
 <template>
   <main class="page">
     <section class="card">
+      <header class="card-header">
+        <CountrySearch :is-visited="isVisited" @toggle="toggleVisited" />
+        <p class="visited-count">{{ visited.length }} of {{ COUNTRY_CODES.length }} countries</p>
+      </header>
+      <WorldMap :projection="projection" :visited="visited" />
       <ProjectionToggle v-model="projection" />
-      <WorldMap :projection="projection" :visited="NO_VISITED" />
     </section>
   </main>
 </template>
 
 <script setup vapor lang="ts">
-import { ref } from 'vue'
-import type { ProjectionId } from '@/map'
+import { COUNTRY_CODES } from '@/countries'
+import CountrySearch from '@/ui/CountrySearch.vue'
 import ProjectionToggle from '@/ui/ProjectionToggle.vue'
 import WorldMap from '@/ui/WorldMap.vue'
+import { useTravelMap } from '@/useTravelMap'
 
-const NO_VISITED: readonly string[] = []
-
-const projection = ref<ProjectionId>('equal-earth')
+const { projection, visited, isVisited, toggleVisited } = useTravelMap()
 </script>
 
 <style scoped>
@@ -34,5 +37,19 @@ const projection = ref<ProjectionId>('equal-earth')
   padding: 24px;
   border-radius: var(--radius-card);
   background: var(--surface);
+}
+
+.card-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.visited-count {
+  margin: 0;
+  color: var(--text-muted);
 }
 </style>
