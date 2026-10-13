@@ -81,10 +81,7 @@ const { status, isSaving, copyLink, saveImage } = useShareControls({
 }
 
 .share-status {
-  flex-basis: 100%;
-  min-height: 1.4em;
   margin: 0;
-  text-align: center;
   color: var(--text-muted);
 }
 </style>

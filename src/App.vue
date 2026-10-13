@@ -1,16 +1,17 @@
 <template>
-  <main class="page">
-    <section class="card">
-      <header class="card-header">
-        <CountrySearch :is-visited="isVisited" @toggle="toggleVisited" />
-        <p class="visited-count">{{ visited.length }} of {{ COUNTRY_CODES.length }} countries</p>
-      </header>
-      <div class="map-frame">
-        <WorldMap :projection="projection" :visited="visited" @toggle="toggleVisited" />
-      </div>
+  <main class="mono">
+    <header class="mono-header">
+      <h1 class="mono-title">Where I've been</h1>
+      <p class="mono-count">{{ visited.length }} of {{ COUNTRY_CODES.length }} countries</p>
+      <CountrySearch :is-visited="isVisited" @toggle="toggleVisited" />
+    </header>
+    <div class="mono-map">
+      <WorldMap :projection="projection" :visited="visited" @toggle="toggleVisited" />
+    </div>
+    <footer class="mono-footer">
       <ProjectionToggle v-model="projection" />
       <ShareControls :projection="projection" :visited="visited" />
-    </section>
+    </footer>
   </main>
 </template>
 
@@ -26,41 +27,52 @@ const { projection, visited, isVisited, toggleVisited } = useTravelMap()
 </script>
 
 <style scoped>
-.page {
+.mono {
   display: grid;
-  place-items: center;
-  min-height: 100dvh;
-  padding: 24px 16px;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
+  height: 100dvh;
+  padding: 24px clamp(16px, 3vw, 40px);
+  letter-spacing: -0.01em;
 }
 
-.card {
-  display: grid;
-  gap: 20px;
-  justify-items: center;
-  width: min(1100px, 100%);
-  padding: 24px;
-  border-radius: var(--radius-card);
-  background: var(--surface);
-}
-
-.card-header {
+.mono-header {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px 20px;
+  gap: 12px 24px;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
 }
 
-.map-frame {
-  width: 100%;
-  aspect-ratio: 2 / 1;
-  overflow: hidden;
-  border-radius: 20px;
+.mono-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
 }
 
-.visited-count {
+.mono-count {
+  flex: 1;
   margin: 0;
   color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.mono-map {
+  min-height: 0;
+}
+
+.mono-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+@media (max-width: 600px) {
+  .mono-count {
+    flex: none;
+  }
 }
 </style>
