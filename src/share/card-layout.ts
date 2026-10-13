@@ -48,8 +48,16 @@ export interface CardHeadline {
   subtitle: string
 }
 
+const formatWorldShare = (visitedCount: number): string => {
+  const percent = Math.round((visitedCount / COUNTRY_CODES.length) * 100)
+  if (percent === 0 && visitedCount > 0) return '<1%'
+  return `${percent}%`
+}
+
 export const describeVisits = (visitedCount: number): CardHeadline => {
   const noun = visitedCount === 1 ? 'country' : 'countries'
-  const share = Math.round((visitedCount / COUNTRY_CODES.length) * 100)
-  return { title: `${visitedCount} ${noun} visited`, subtitle: `${share}% of the world` }
+  return {
+    title: `${visitedCount} ${noun} visited`,
+    subtitle: `${formatWorldShare(visitedCount)} of the world`,
+  }
 }

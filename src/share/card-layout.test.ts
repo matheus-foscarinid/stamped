@@ -41,4 +41,12 @@ describe('describeVisits', () => {
   ])('uses the singular only for one country (%i)', (count, title) => {
     expect(describeVisits(count).title).toBe(title)
   })
+
+  it.each([
+    [0, '0% of the world'],
+    [1, '<1% of the world'],
+    [2, '1% of the world'],
+  ])('never rounds a visited map down to zero (%i)', (count, subtitle) => {
+    expect(describeVisits(count).subtitle).toBe(subtitle)
+  })
 })
