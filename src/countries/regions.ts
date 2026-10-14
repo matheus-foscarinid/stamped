@@ -26,9 +26,10 @@ const CONTINENT_MEMBERS: Record<Continent, string> = {
   southAmerica: 'ar bo br bv cl co ec fk gf gs gy pe py sr uy ve',
 }
 
-// iso codes without a un seat: territories, disputed land and the observers palestine and the vatican
+// iso codes without a un seat: territories, disputed land and the observers palestine and the vatican.
+// our private x codes are never members either
 const NOT_UN_MEMBERS = new Set(
-  'ai aq as aw ax bl bm bq bv cc ck cw cx eh fk fo gf gg gi gl gp gs gu hk hm im io je ky mf mo mp mq ms nc nf nu pf pm pn pr ps re sh sj sx tc tf tk tw um va vg vi wf xa xk xn xo xs xt yt'.split(
+  'ai aq as aw ax bl bm bq bv cc ck cw cx eh fk fo gf gg gi gl gp gs gu hk hm im io je ky mf mo mp mq ms nc nf nu pf pm pn pr ps re sh sj sx tc tf tk tw um va vg vi wf yt'.split(
     ' '
   )
 )
@@ -42,4 +43,5 @@ const CONTINENT_BY_CODE = new Map<string, Continent>(
 export const getContinent = (code: CountryCode): Continent | undefined =>
   CONTINENT_BY_CODE.get(code)
 
-export const isUnMember = (code: CountryCode): boolean => !NOT_UN_MEMBERS.has(code)
+export const isUnMember = (code: CountryCode): boolean =>
+  !code.startsWith('x') && !NOT_UN_MEMBERS.has(code)
