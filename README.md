@@ -1,8 +1,8 @@
 <div align="center">
 
-# <picture><source media="(prefers-color-scheme: dark)" srcset="docs/logo-dark.svg"><img src="docs/logo.svg" alt="" width="44" height="44" align="center"></picture> Stamped
+# <picture><source media="(prefers-color-scheme: dark)" srcset="docs/logo-dark.svg"><img src="docs/logo.svg" alt="" width="44" height="44" align="absmiddle"></picture> Stamped
 
-A map of the countries you've visited, shareable! Stamp countries.
+A map of the countries you've visited, shareable! Stamp countries.<br>
 No account, no server, no tracking.
 
 <picture>
