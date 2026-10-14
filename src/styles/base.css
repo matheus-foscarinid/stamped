@@ -27,6 +27,29 @@
   color-scheme: light;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page-bg: #000000;
+    --surface: #000000;
+    --text: #ffffff;
+    --text-muted: #9b9ba1;
+    --accent: #ffffff;
+
+    --map-land: #2c2c30;
+    --map-border: #000000;
+    --map-visited: #ffffff;
+    --map-hover: #4a4a50;
+
+    --control-bg: #000000;
+    --control-border: #ffffff;
+    --control-hover-bg: #1c1c1f;
+    --control-active-bg: #ffffff;
+    --control-active-text: #000000;
+
+    color-scheme: dark;
+  }
+}
+
 *,
 *::before,
 *::after {

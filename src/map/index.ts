@@ -150,6 +150,9 @@ export const createWorldMap = async (
   })
   const resizeObserver = new ResizeObserver(() => refit(controller))
   resizeObserver.observe(canvas)
+  // colors come from css, so a light or dark switch needs a fresh frame
+  const colorScheme = window.matchMedia('(prefers-color-scheme: dark)')
+  colorScheme.addEventListener('change', controller.scheduleRender)
 
   return {
     setProjection: createProjectionSetter(controller),
@@ -165,6 +168,7 @@ export const createWorldMap = async (
     destroy: () => {
       detachInteraction()
       resizeObserver.disconnect()
+      colorScheme.removeEventListener('change', controller.scheduleRender)
       controller.renderer.destroy()
     },
   }
