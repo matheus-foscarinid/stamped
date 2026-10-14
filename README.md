@@ -16,6 +16,9 @@ No account, no server, no tracking.
 - Search every country and territory, even the tiny ones
 - Stats for continents, UN members and share of the world
 - Save the map as an image: post, story or wide
+- Passport view, with a stamp for every country
+- Disputed territories too: Kosovo, Northern Cyprus, Somaliland
+- In 6 languages, picked from your browser
 - Your map stays saved in the browser
 - 11 themes, light and dark
 - Works on phones and ultrawide screens
@@ -26,6 +29,7 @@ No account, no server, no tracking.
 - [ ] Check for missing countries
 - [x] Disputed territories
 - [x] Passport view
+- [ ] Save the passport as an image
 - [ ] States, regions and cities
 - [x] i18n
 - [ ] Accounts
