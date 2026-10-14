@@ -1,6 +1,6 @@
 <template>
   <main class="app">
-    <div class="stage">
+    <div class="stage glass-panel">
       <WorldMap
         class="stage-map"
         :projection="projection"
@@ -49,7 +49,7 @@ const { projection, visited, isVisited, toggleVisited } = useTravelMap()
   overflow: hidden;
   isolation: isolate;
   border-radius: var(--radius-stage);
-  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
 }
 
 .stage-map {

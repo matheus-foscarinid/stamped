@@ -201,7 +201,18 @@
 body {
   margin: 0;
   min-height: 100dvh;
-  background: var(--page-bg);
+  background:
+    radial-gradient(
+      60% 50% at 15% 0%,
+      color-mix(in srgb, var(--map-visited) 14%, transparent),
+      transparent
+    ),
+    radial-gradient(
+      50% 50% at 90% 100%,
+      color-mix(in srgb, var(--accent) 12%, transparent),
+      transparent
+    ),
+    var(--page-bg);
   color: var(--text);
   font: 15px / 1.4 var(--font);
   letter-spacing: -0.01em;
@@ -227,14 +238,19 @@ button {
   white-space: nowrap;
 }
 
-/* every floating control shares this frosted look, so a theme restyles them all at once */
+/* every glass surface shares this edge, so a theme restyles them all at once */
+.glass-panel,
 .control-surface {
   border: 1px solid var(--glass-line);
-  background: var(--glass-bg);
-  color: var(--text);
   box-shadow:
     inset 0 1px 0 var(--glass-edge),
     var(--glass-shadow);
+}
+
+/* only the floating controls blur. under the stage there's just a soft glow, blur wouldn't change it */
+.control-surface {
+  background: var(--glass-bg);
+  color: var(--text);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
   backdrop-filter: blur(var(--glass-blur)) saturate(180%);
 }
