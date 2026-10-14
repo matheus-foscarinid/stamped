@@ -110,3 +110,26 @@ export const stubCanvas = () =>
     setPointerCapture: vi.fn(),
     getBoundingClientRect: () => ({ left: 0, top: 0 }),
   })
+
+// a document whose events can land inside or outside a menu
+export const stubDocument = () => {
+  class StubNode extends EventTarget {}
+  const document = new StubNode()
+  const insideNode = new StubNode()
+  const outsideNode = new StubNode()
+  const menuRoot = { contains: (node: unknown) => node === insideNode }
+  vi.stubGlobal('Node', StubNode)
+  vi.stubGlobal('document', document)
+  const press = (target: EventTarget) => {
+    const event = createPointerEvent('pointerdown')
+    Object.defineProperty(event, 'target', { value: target })
+    const stopPropagation = vi.spyOn(event, 'stopPropagation')
+    document.dispatchEvent(event)
+    return { stopPropagation }
+  }
+  return {
+    menuRoot,
+    pressInside: () => press(insideNode),
+    pressOutside: () => press(outsideNode),
+  }
+}

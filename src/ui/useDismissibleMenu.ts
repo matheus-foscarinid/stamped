@@ -23,8 +23,10 @@ export const useDismissibleMenu = ({
     trigger.value?.focus()
   }
 
+  // the press only closes the menu, so a tap on the map doesn't also stamp a country
   const closeOnOutsidePress = (event: PointerEvent) => {
     if (event.target instanceof Node && root.value?.contains(event.target)) return
+    event.stopPropagation()
     isOpen.value = false
   }
 
@@ -33,13 +35,13 @@ export const useDismissibleMenu = ({
   }
 
   const stopListening = () => {
-    document.removeEventListener('pointerdown', closeOnOutsidePress)
+    document.removeEventListener('pointerdown', closeOnOutsidePress, { capture: true })
     document.removeEventListener('keydown', closeOnEscape)
   }
 
   watch(isOpen, isNowOpen => {
     if (!isNowOpen) return stopListening()
-    document.addEventListener('pointerdown', closeOnOutsidePress)
+    document.addEventListener('pointerdown', closeOnOutsidePress, { capture: true })
     document.addEventListener('keydown', closeOnEscape)
   })
   onScopeDispose(stopListening)
