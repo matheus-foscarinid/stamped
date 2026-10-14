@@ -1,28 +1,33 @@
 :root {
   --page-bg: #ffffff;
-  --surface: #ffffff;
+  --surface: #ececf0;
   --text: #000000;
-  --text-muted: #6b6b70;
+  --text-muted: #5c5c63;
   --accent: #000000;
 
-  --map-land: #e6e6ea;
-  --map-border: #ffffff;
+  --map-land: #d6d6dd;
+  --map-border: #ececf0;
   --map-visited: #000000;
-  --map-hover: #c4c4cb;
+  --map-hover: #b9b9c3;
 
-  --control-bg: #ffffff;
-  --control-text: var(--text);
-  --control-border: #000000;
-  --control-shadow: none;
-  --control-blur: 0px;
-  --control-hover-bg: #f2f2f4;
+  --glass-bg: rgb(255 255 255 / 0.58);
+  --glass-hover: rgb(255 255 255 / 0.9);
+  --glass-edge: rgb(255 255 255 / 0.95);
+  --glass-line: rgb(0 0 0 / 0.07);
+  --glass-shadow: 0 1px 1px rgb(0 0 0 / 0.04), 0 10px 30px -8px rgb(0 0 0 / 0.14);
+  --glass-blur: 22px;
+
+  --control-hover-bg: rgb(0 0 0 / 0.06);
   --control-active-bg: #000000;
   --control-active-text: #ffffff;
 
-  --radius-card: 0px;
+  --radius-stage: 28px;
   --radius-control: 999px;
-  --radius-menu: 16px;
+  --radius-menu: 20px;
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --motion-fast: 160ms;
+  --motion-base: 220ms;
 
   color-scheme: light;
 }
@@ -30,19 +35,23 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --page-bg: #000000;
-    --surface: #000000;
+    --surface: #131315;
     --text: #ffffff;
-    --text-muted: #9b9ba1;
+    --text-muted: #a3a3aa;
     --accent: #ffffff;
 
-    --map-land: #2c2c30;
-    --map-border: #000000;
+    --map-land: #2c2c31;
+    --map-border: #131315;
     --map-visited: #ffffff;
-    --map-hover: #4a4a50;
+    --map-hover: #47474e;
 
-    --control-bg: #000000;
-    --control-border: #ffffff;
-    --control-hover-bg: #1c1c1f;
+    --glass-bg: rgb(48 48 54 / 0.52);
+    --glass-hover: rgb(72 72 80 / 0.7);
+    --glass-edge: rgb(255 255 255 / 0.14);
+    --glass-line: rgb(255 255 255 / 0.08);
+    --glass-shadow: 0 1px 1px rgb(0 0 0 / 0.3), 0 12px 32px -8px rgb(0 0 0 / 0.7);
+
+    --control-hover-bg: rgb(255 255 255 / 0.1);
     --control-active-bg: #ffffff;
     --control-active-text: #000000;
 
@@ -62,6 +71,7 @@ body {
   background: var(--page-bg);
   color: var(--text);
   font: 15px / 1.4 var(--font);
+  letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -84,11 +94,31 @@ button {
   white-space: nowrap;
 }
 
-/* shared look for every floating control, so a theme restyles them all at once */
+/* every floating control shares this frosted look, so a theme restyles them all at once */
 .control-surface {
-  border: 1px solid var(--control-border);
-  background: var(--control-bg);
-  color: var(--control-text);
-  box-shadow: var(--control-shadow);
-  backdrop-filter: blur(var(--control-blur)) saturate(160%);
+  border: 1px solid var(--glass-line);
+  background: var(--glass-bg);
+  color: var(--text);
+  box-shadow:
+    inset 0 1px 0 var(--glass-edge),
+    var(--glass-shadow);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+}
+
+.press-feedback {
+  transition:
+    background-color var(--motion-fast) var(--ease-out),
+    transform var(--motion-fast) var(--ease-out);
+}
+
+.press-feedback:active {
+  transform: scale(0.95);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-base: 0ms;
+  }
 }

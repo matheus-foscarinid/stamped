@@ -1,16 +1,23 @@
 <template>
-  <main class="mono">
-    <header class="mono-header">
-      <h1 class="mono-title">Where I've been</h1>
-      <p class="mono-count">{{ visited.length }} of {{ COUNTRY_CODES.length }} countries</p>
-      <CountrySearch :is-visited="isVisited" @toggle="toggleVisited" />
-    </header>
-    <div class="mono-map">
-      <WorldMap :projection="projection" :visited="visited" @toggle="toggleVisited" />
+  <main class="app">
+    <div class="stage">
+      <WorldMap
+        class="stage-map"
+        :projection="projection"
+        :visited="visited"
+        @toggle="toggleVisited"
+      />
+      <header class="stage-top">
+        <h1 class="brand control-surface">
+          Where I've been
+          <span class="brand-count">{{ visited.length }} of {{ COUNTRY_CODES.length }}</span>
+        </h1>
+        <CountrySearch :is-visited="isVisited" @toggle="toggleVisited" />
+      </header>
+      <footer class="stage-bottom">
+        <ShareControls :projection="projection" :visited="visited" />
+      </footer>
     </div>
-    <footer class="mono-footer">
-      <ShareControls :projection="projection" :visited="visited" />
-    </footer>
   </main>
 </template>
 
@@ -25,49 +32,100 @@ const { projection, visited, isVisited, toggleVisited } = useTravelMap()
 </script>
 
 <style scoped>
-.mono {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  grid-template-columns: minmax(0, 1fr);
+.app {
   height: 100dvh;
-  padding: 24px clamp(16px, 3vw, 40px);
-  letter-spacing: -0.01em;
+  padding: 12px;
 }
 
-.mono-header {
+.stage {
+  --overlay-inset: 16px;
+  --map-padding-x: 48px;
+  --map-padding-y: 88px;
+  --hover-inset-y: 76px;
+
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: var(--radius-stage);
+  background: var(--surface);
+}
+
+.stage-map {
+  position: absolute;
+  inset: 0;
+}
+
+/* the bars let map drags through their gaps, only the controls catch the pointer */
+.stage-top,
+.stage-bottom {
+  position: absolute;
+  inset-inline: var(--overlay-inset);
   display: flex;
   flex-wrap: wrap;
-  gap: 12px 24px;
-  align-items: center;
+  gap: 10px;
+  align-items: flex-start;
+  justify-content: space-between;
+  pointer-events: none;
 }
 
-.mono-title {
+.stage-top > *,
+.stage-bottom > * {
+  pointer-events: auto;
+}
+
+.stage-top {
+  top: var(--overlay-inset);
+}
+
+.stage-bottom {
+  bottom: var(--overlay-inset);
+  padding-right: 60px;
+}
+
+.brand {
+  display: inline-flex;
+  gap: 10px;
+  align-items: baseline;
   margin: 0;
-  font-size: 20px;
+  padding: 11px 18px;
+  border-radius: var(--radius-control);
+  font-size: 15px;
   font-weight: 650;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
 }
 
-.mono-count {
-  flex: 1;
-  margin: 0;
+.brand-count {
   color: var(--text-muted);
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 
-.mono-map {
-  min-height: 0;
-}
-
-.mono-footer {
-  display: flex;
-  justify-content: flex-end;
-  min-width: 0;
-}
-
 @media (max-width: 600px) {
-  .mono-count {
-    flex: none;
+  .app {
+    padding: 8px;
+  }
+
+  .stage {
+    --overlay-inset: 10px;
+    --map-padding-x: 12px;
+    --map-padding-y: 140px;
+    --hover-inset-y: 124px;
+    --zoom-inset-x: 10px;
+    --zoom-inset-y: 112px;
+    --radius-stage: 24px;
+  }
+
+  .stage-top > * {
+    flex: 1 1 100%;
+  }
+
+  .brand {
+    justify-content: space-between;
+  }
+
+  .stage-bottom {
+    padding-right: 0;
   }
 }
 </style>

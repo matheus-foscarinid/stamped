@@ -51,24 +51,45 @@ const { query, matches, pick, pickTopMatch } = useCountrySearch({
 <style scoped>
 .country-search {
   position: relative;
-  width: min(360px, 100%);
+  width: min(340px, 100%);
 }
 
 .country-search-input {
   width: 100%;
-  padding: 10px 16px;
+  padding: 11px 18px;
   border-radius: var(--radius-control);
   font: inherit;
+  outline-offset: 3px;
+  transition: background-color var(--motion-fast) var(--ease-out);
+}
+
+.country-search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.country-search-input:focus {
+  background: var(--glass-hover);
 }
 
 .country-search-results {
   position: absolute;
   z-index: 1;
-  inset: calc(100% + 6px) 0 auto;
+  inset: calc(100% + 8px) 0 auto;
   margin: 0;
   padding: 6px;
   list-style: none;
   border-radius: var(--radius-menu);
+  transform-origin: top center;
+  transition:
+    opacity var(--motion-fast) var(--ease-out),
+    transform var(--motion-base) var(--ease-out);
+}
+
+@starting-style {
+  .country-search-results {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
 }
 
 .country-option {
@@ -79,9 +100,10 @@ const { query, matches, pick, pickTopMatch } = useCountrySearch({
   display: flex;
   gap: 10px;
   align-items: center;
-  padding: 8px 10px;
+  padding: 9px 12px;
   border-radius: calc(var(--radius-menu) - 6px);
   cursor: pointer;
+  transition: background-color var(--motion-fast) var(--ease-out);
 }
 
 .country-option:hover,
@@ -94,7 +116,11 @@ const { query, matches, pick, pickTopMatch } = useCountrySearch({
 }
 
 .country-visited {
-  color: var(--accent);
-  font-size: 13px;
+  padding: 2px 8px;
+  border-radius: var(--radius-control);
+  background: var(--control-active-bg);
+  color: var(--control-active-text);
+  font-size: 12px;
+  font-weight: 600;
 }
 </style>

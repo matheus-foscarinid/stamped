@@ -7,12 +7,21 @@
       aria-label="World map of the countries you visited. Use the search to add countries with the keyboard"
     />
     <p v-if="hoveredCode" class="world-map-hover control-surface" aria-hidden="true">
-      {{ getFlagEmoji(hoveredCode) }} {{ getCountryName(hoveredCode) }}
+      <span>{{ getFlagEmoji(hoveredCode) }}</span>
+      {{ getCountryName(hoveredCode) }}
     </p>
-    <div class="world-map-zoom">
-      <button type="button" class="zoom-button control-surface" aria-label="Zoom in" @click="zoomIn">+</button>
-      <button type="button" class="zoom-button control-surface" aria-label="Zoom out" @click="zoomOut">−</button>
-      <button type="button" class="zoom-button control-surface" aria-label="Reset zoom" @click="resetZoom">⟲</button>
+    <div class="world-map-zoom control-surface">
+      <button type="button" class="zoom-button press-feedback" aria-label="Zoom in" @click="zoomIn">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" /></svg>
+      </button>
+      <button type="button" class="zoom-button press-feedback" aria-label="Zoom out" @click="zoomOut">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10" /></svg>
+      </button>
+      <button type="button" class="zoom-button press-feedback" aria-label="Reset zoom" @click="resetZoom">
+        <svg viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M3 6V3h3M10 3h3v3M13 10v3h-3M6 13H3v-3" />
+        </svg>
+      </button>
     </div>
     <p v-if="hasLoadError" class="world-map-error" role="alert">
       The map couldn't load. Refresh to try again.
@@ -62,27 +71,61 @@ const { hasLoadError, hoveredCode, zoomIn, zoomOut, resetZoom } = useWorldMap({
 .world-map-hover {
   position: absolute;
   top: var(--hover-inset-y, 12px);
-  left: var(--hover-inset-x, 12px);
+  left: 50%;
+  display: flex;
+  gap: 8px;
   margin: 0;
-  padding: 6px 12px;
+  padding: 7px 14px;
   border-radius: var(--radius-control);
+  font-weight: 550;
+  white-space: nowrap;
   pointer-events: none;
+  translate: -50% 0;
+  transition:
+    opacity var(--motion-fast) var(--ease-out),
+    translate var(--motion-fast) var(--ease-out);
+}
+
+@starting-style {
+  .world-map-hover {
+    opacity: 0;
+    translate: -50% -4px;
+  }
 }
 
 .world-map-zoom {
   position: absolute;
-  right: var(--zoom-inset-x, 12px);
-  bottom: var(--zoom-inset-y, 12px);
+  right: var(--zoom-inset-x, 16px);
+  bottom: var(--zoom-inset-y, 16px);
   display: grid;
-  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radius-control);
 }
 
 .zoom-button {
+  display: grid;
+  place-items: center;
   width: 36px;
   height: 36px;
+  padding: 0;
+  border: 0;
   border-radius: 50%;
-  font-size: 18px;
+  background: transparent;
   cursor: pointer;
+}
+
+.zoom-button:hover {
+  background: var(--control-hover-bg);
+}
+
+.zoom-button svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .world-map-error {
