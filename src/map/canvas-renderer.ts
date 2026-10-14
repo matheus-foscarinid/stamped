@@ -4,8 +4,9 @@ import type { MapRenderer, MapScene, MarkState } from './renderer.ts'
 import { fitViewport, type ScreenPoint, type ScreenRect, type Viewport } from './viewport.ts'
 
 const BORDER_WIDTH_PX = 0.6
-// stripes scale with the border, so exports drawn with thicker borders get wider stripes too
-const HATCH = { spacing: 10, width: 2.6 }
+// dot size follows the border width, so thicker export borders get bigger dots
+const DOTS = { spacing: 12, radius: 2 }
+const MIN_TILE_PX = 2
 
 interface Bounds {
   minX: number
@@ -85,8 +86,8 @@ interface MarkFill {
 const fillMark = (context: CanvasRenderingContext2D, { path, mark, isHovered, inks }: MarkFill) => {
   context.fillStyle = pickBaseFill(inks.palette, mark, isHovered)
   context.fill(path, 'evenodd')
-  if (mark !== 'wishlist' || !inks.hatch) return
-  context.fillStyle = inks.hatch
+  if (mark !== 'wishlist' || !inks.wishTexture) return
+  context.fillStyle = inks.wishTexture
   context.fill(path, 'evenodd')
 }
 
@@ -107,45 +108,43 @@ const fillCountry = (
   context.globalAlpha = 1
 }
 
-// one tile of diagonal stripes, with the corner pieces so tiles join seamlessly
-const drawHatchTile = (color: string, borderWidth: number): HTMLCanvasElement => {
+// two staggered dots per tile, so the grid reads as a texture and not as rows
+const drawDotTile = (color: string, borderWidth: number): HTMLCanvasElement => {
   const tile = document.createElement('canvas')
-  const size = Math.max(2, Math.round(HATCH.spacing * borderWidth))
+  const size = Math.max(MIN_TILE_PX, Math.round(DOTS.spacing * borderWidth))
   tile.width = size
   tile.height = size
   const context = tile.getContext('2d')
   if (!context) return tile
-  context.strokeStyle = color
-  context.lineWidth = HATCH.width * borderWidth
+  context.fillStyle = color
   context.beginPath()
-  for (const shift of [-size, 0, size]) {
-    context.moveTo(shift, size)
-    context.lineTo(shift + size, 0)
+  for (const center of [size / 4, (size * 3) / 4]) {
+    context.moveTo(center + DOTS.radius * borderWidth, center)
+    context.arc(center, center, DOTS.radius * borderWidth, 0, Math.PI * 2)
   }
-  context.stroke()
+  context.fill()
   return tile
 }
 
-let hatchCache: { key: string; pattern: CanvasPattern | null } | null = null
+// exports and the live map draw one at a time, so one cached pattern covers both
+let textureCache: { key: string; pattern: CanvasPattern | null } | null = null
 
-const getHatch = (
+const getWishTexture = (
   context: CanvasRenderingContext2D,
   color: string,
   borderWidth: number
 ): CanvasPattern | null => {
   const key = `${color} ${borderWidth}`
-  if (hatchCache?.key !== key) {
-    hatchCache = {
-      key,
-      pattern: context.createPattern(drawHatchTile(color, borderWidth), 'repeat'),
-    }
+  if (textureCache?.key !== key) {
+    const tile = drawDotTile(color, borderWidth)
+    textureCache = { key, pattern: context.createPattern(tile, 'repeat') }
   }
-  return hatchCache.pattern
+  return textureCache.pattern
 }
 
 interface Inks {
   palette: MapPalette
-  hatch: CanvasPattern | null
+  wishTexture: CanvasPattern | null
 }
 
 interface PaintStyle {
@@ -170,10 +169,10 @@ const paintScene = (
   context.setTransform(scale, 0, 0, scale, offsetX, offsetY)
   context.lineWidth = borderWidth / scale
   context.lineJoin = 'round'
-  const hatch = getHatch(context, palette.visited, borderWidth)
-  // the map transform would scale the stripes with the zoom, this keeps them a fixed width
-  hatch?.setTransform(new DOMMatrix().scale(1 / scale))
-  const inks = { palette, hatch }
+  const wishTexture = getWishTexture(context, palette.visited, borderWidth)
+  // undo the zoom so the dots keep their size
+  wishTexture?.setTransform(new DOMMatrix().scale(1 / scale))
+  const inks = { palette, wishTexture }
   const paths = getCountryPaths(scene.geometry)
   paths.forEach(({ path }, index) => {
     fillCountry(context, { path, scene, index, inks })
