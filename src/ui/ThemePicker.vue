@@ -51,14 +51,14 @@ const pickTheme = (choice: ThemeChoice, close: () => void) => {
   height: 18px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--map-land) 50%, var(--map-visited) 50%);
+  background: linear-gradient(135deg, var(--page-bg) 50%, var(--map-visited) 50%);
   box-shadow:
     0 0 0 2px var(--surface),
     0 0 0 3px var(--glass-line);
 }
 
 .theme-swatch:not([data-theme]) {
-  background: linear-gradient(135deg, #ffffff 50%, #000000 50%);
+  background: linear-gradient(90deg, #ffffff 50%, #000000 50%);
 }
 
 .menu-item[aria-pressed='true'] {
