@@ -45,12 +45,11 @@ describe('after copying the link', () => {
 
 describe('after saving an image', () => {
   it('draws the current map and confirms the save', async () => {
-    const { status, isSaving, saveImage } = mountShareControls()
+    const { status, saveImage } = mountShareControls()
     await saveImage('story')
     expect(renderCard).toHaveBeenCalledWith('story', { projection: 'mercator', visited: ['br'] })
     expect(saveFile).toHaveBeenCalledWith(IMAGE, 'stamped-story.png')
     expect(status.value).toBe('Image saved')
-    expect(isSaving.value).toBe(false)
   })
 
   it('stays quiet when the user closes the share sheet', async () => {

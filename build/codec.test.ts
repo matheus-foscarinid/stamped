@@ -26,14 +26,19 @@ describe('map codec', () => {
     expect(decodeMap(toBuffer(encodeMap(TWO_COUNTRIES)))).toEqual(TWO_COUNTRIES)
   })
 
-  it('stores small moves in one byte per coordinate', () => {
-    const tinySteps: MapGeometry = {
-      width: 100,
-      height: 100,
-      countries: [{ rings: [Int16Array.from([0, 0, 1, 1, 2, 0, 1, -1])] }],
-    }
-    const headerBytes = 4 + 1 + 1 + 1 + 1 + 1 + 1
-    expect(encodeMap(tinySteps).length).toBe(headerBytes + 8)
+  it.each([
+    [63, 0],
+    [-64, 0],
+    [64, 1],
+    [-65, 1],
+  ])('spends %i grid units of movement on %i extra bytes over a standstill', (move, extraBytes) => {
+    const encodeMove = (distance: number) =>
+      encodeMap({
+        width: 100,
+        height: 100,
+        countries: [{ rings: [Int16Array.from([0, 0, distance, 0])] }],
+      })
+    expect(encodeMove(move).length - encodeMove(0).length).toBe(extraBytes)
   })
 
   it('rejects files that are not maps or use another format version', () => {

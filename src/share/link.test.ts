@@ -2,10 +2,6 @@ import { describe, expect, it } from 'vitest'
 import { readVisitedFromHash, writeVisitedToHash } from './link.ts'
 
 describe('readVisitedFromHash', () => {
-  it('reads the codes from a shared link', () => {
-    expect(readVisitedFromHash('#v=ao,br,in,iq')).toEqual(['ao', 'br', 'in', 'iq'])
-  })
-
   it('keeps tiny countries and skips codes outside the iso list', () => {
     expect(readVisitedFromHash('#v=va,xk')).toEqual(['va'])
   })

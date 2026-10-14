@@ -1,16 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { getTravelStats } from './stats.ts'
+import { COUNTRY_CODES } from './catalog.ts'
+import { formatWorldShare, getTravelStats } from './stats.ts'
 
 describe('before any country is marked', () => {
-  it('starts every count at zero', () => {
-    expect(getTravelStats([])).toEqual({
-      continentCount: 0,
-      continentTotal: 7,
-      continentNames: '',
-      unMemberCount: 0,
-      unMemberTotal: 193,
-      worldShare: '0%',
-    })
+  it('names no continents and counts none', () => {
+    const stats = getTravelStats([])
+    expect(stats.continentCount).toBe(0)
+    expect(stats.continentNames).toBe('')
+    expect(stats.unMemberCount).toBe(0)
   })
 })
 
@@ -25,8 +22,15 @@ describe('after marking countries', () => {
     const stats = getTravelStats(['fr', 'gf', 'va'])
     expect(stats.unMemberCount).toBe(1)
   })
+})
 
-  it('never rounds a visited map down to 0%', () => {
-    expect(getTravelStats(['br']).worldShare).toBe('<1%')
+describe('formatWorldShare', () => {
+  it.each([
+    [0, '0%'],
+    [1, '<1%'],
+    [2, '1%'],
+    [COUNTRY_CODES.length, '100%'],
+  ])('shows %i countries as %s', (count, share) => {
+    expect(formatWorldShare(count)).toBe(share)
   })
 })

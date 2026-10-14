@@ -49,17 +49,46 @@ describe('zoomViewport', () => {
   })
 
   it('never zooms out past the fitted map or in past six times', () => {
-    expect(zoomBy(0.1).scale).toBeCloseTo(fitted.scale)
-    expect(zoomBy(100).scale).toBeCloseTo(fitted.scale * 6)
+    expect(zoomBy(0.9).scale).toBeCloseTo(fitted.scale)
+    expect(zoomBy(5.9).scale).toBeCloseTo(fitted.scale * 5.9)
+    expect(zoomBy(6.1).scale).toBeCloseTo(fitted.scale * 6)
   })
 })
 
 describe('panViewport', () => {
-  it('stops at the map edge instead of showing empty space', () => {
-    const zoomed = zoomBy(4)
-    const panned = panViewport(zoomed, { x: 10_000, y: 10_000 }, WIDE_MAP, SCREEN)
-    expect(panned.offsetX).toBe(0)
-    expect(panned.offsetY).toBe(0)
+  const zoomed = zoomBy(4)
+  const farOffsetX = SCREEN.width - WIDE_MAP.width * zoomed.scale
+  const farOffsetY = SCREEN.height - WIDE_MAP.height * zoomed.scale
+  const dragTo = (offsetX: number, offsetY: number) =>
+    panViewport(
+      zoomed,
+      { x: offsetX - zoomed.offsetX, y: offsetY - zoomed.offsetY },
+      WIDE_MAP,
+      SCREEN
+    )
+
+  it('follows the drag while the map still covers the screen', () => {
+    const panned = dragTo(zoomed.offsetX + 100, zoomed.offsetY + 50)
+    expect(panned.offsetX).toBeCloseTo(zoomed.offsetX + 100)
+    expect(panned.offsetY).toBeCloseTo(zoomed.offsetY + 50)
+  })
+
+  it('stops at the top left edge instead of showing empty space', () => {
+    const justShort = dragTo(-1, -1)
+    const pastEdge = dragTo(1, 1)
+    expect(justShort.offsetX).toBeCloseTo(-1)
+    expect(justShort.offsetY).toBeCloseTo(-1)
+    expect(pastEdge.offsetX).toBe(0)
+    expect(pastEdge.offsetY).toBe(0)
+  })
+
+  it('stops at the bottom right edge instead of showing empty space', () => {
+    const justShort = dragTo(farOffsetX + 1, farOffsetY + 1)
+    const pastEdge = dragTo(farOffsetX - 1, farOffsetY - 1)
+    expect(justShort.offsetX).toBeCloseTo(farOffsetX + 1)
+    expect(justShort.offsetY).toBeCloseTo(farOffsetY + 1)
+    expect(pastEdge.offsetX).toBeCloseTo(farOffsetX)
+    expect(pastEdge.offsetY).toBeCloseTo(farOffsetY)
   })
 
   it('keeps the map centered while it is smaller than the screen', () => {

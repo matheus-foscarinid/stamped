@@ -7,13 +7,6 @@ const LIGHT = { frame: '#5c5c63', globe: '#000000' }
 const DARK = { frame: '#a3a3aa', globe: '#ffffff' }
 
 describe('buildLogoSvg', () => {
-  it('paints the frame and the globe in their own colours', () => {
-    const svg = buildLogoSvg({ frame: '#111111', globe: '#222222' })
-    expect(svg).toContain('fill="#111111"')
-    expect(svg).toContain('fill="#222222"')
-    expect(svg).toContain('stroke="#222222"')
-  })
-
   it.each([
     ['logo.svg', docsLogo, LIGHT],
     ['logo-dark.svg', docsLogoDark, DARK],

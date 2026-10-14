@@ -7,6 +7,7 @@ import { countryFeature, squareAt } from './test-fixtures.ts'
 const METROPOLITAN_FRANCE = squareAt([2, 46])
 const CORSICA = squareAt([9, 42])
 const FRENCH_GUIANA = squareAt([-53, 4])
+const FRENCH_CARIBBEAN = squareAt([-62, 16])
 const MAINLAND_NORWAY = squareAt([10, 62])
 const SVALBARD = squareAt([16, 78])
 
@@ -20,6 +21,16 @@ describe('splitOverseasParts', () => {
   it('gives french guiana its own shape and keeps corsica with france', () => {
     const split = splitOverseasParts([
       countryFeature('FR', [METROPOLITAN_FRANCE, CORSICA, FRENCH_GUIANA]),
+    ])
+    expect(describeFeatures(split)).toEqual([
+      { code: 'FR', parts: 2 },
+      { code: 'GF', parts: 1 },
+    ])
+  })
+
+  it('keeps far west land north of french guiana with france', () => {
+    const split = splitOverseasParts([
+      countryFeature('FR', [METROPOLITAN_FRANCE, FRENCH_CARIBBEAN, FRENCH_GUIANA]),
     ])
     expect(describeFeatures(split)).toEqual([
       { code: 'FR', parts: 2 },

@@ -27,9 +27,9 @@ describe('on a desktop', () => {
   it('keeps the download url alive while ios asks the user to confirm', async () => {
     const { revokeObjectURL } = stubDevice()
     await saveFile(IMAGE, FILE_NAME)
-    vi.advanceTimersByTime(30_000)
+    vi.advanceTimersByTime(39_500)
     expect(revokeObjectURL).not.toHaveBeenCalled()
-    vi.advanceTimersByTime(10_000)
+    vi.advanceTimersByTime(1_000)
     expect(revokeObjectURL).toHaveBeenCalledWith('blob:map')
   })
 })

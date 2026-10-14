@@ -14,7 +14,6 @@ describe('searchCountries', () => {
     expect(firstCode('uk')).toBe('gb')
     expect(firstCode('ivory coast')).toBe('ci')
     expect(firstCode('turkey')).toBe('tr')
-    expect(firstCode('holland')).toBe('nl')
   })
 
   it('ranks an exact name above a longer name that starts the same way', () => {

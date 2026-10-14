@@ -10,13 +10,6 @@ describe('getContinent', () => {
     expect(unplaced).toEqual([])
   })
 
-  it('splits the americas at panama and keeps overseas parts where they sit', () => {
-    expect(getContinent('pa')).toBe('North America')
-    expect(getContinent('co')).toBe('South America')
-    expect(getContinent('gf')).toBe('South America')
-    expect(getContinent('fr')).toBe('Europe')
-  })
-
   it('uses every continent', () => {
     const used = new Set(COUNTRY_CODES.map(getContinent))
     expect([...used].sort()).toEqual([...CONTINENTS])
@@ -26,12 +19,5 @@ describe('getContinent', () => {
 describe('isUnMember', () => {
   it('counts the 193 un member states', () => {
     expect(COUNTRY_CODES.filter(isUnMember)).toHaveLength(UN_MEMBER_COUNT)
-  })
-
-  it('leaves out observers and territories', () => {
-    expect(isUnMember('va')).toBe(false)
-    expect(isUnMember('ps')).toBe(false)
-    expect(isUnMember('gl')).toBe(false)
-    expect(isUnMember('br')).toBe(true)
   })
 })

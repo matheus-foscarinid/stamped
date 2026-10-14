@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { stubStorage } from '@/test/browser-stubs'
+import { stubBlockedStorage, stubStorage } from '@/test/browser-stubs'
 import { readStoredTheme, resolveTheme, storeTheme } from './themes.ts'
 
 afterEach(() => {
@@ -32,11 +32,14 @@ describe('readStoredTheme', () => {
   })
 
   it('falls back to auto when storage is blocked', () => {
-    vi.stubGlobal('localStorage', {
-      getItem: () => {
-        throw new DOMException('blocked', 'SecurityError')
-      },
-    })
+    stubBlockedStorage()
     expect(readStoredTheme()).toBe('auto')
+  })
+})
+
+describe('storeTheme', () => {
+  it('keeps the page working when storage is blocked', () => {
+    stubBlockedStorage()
+    expect(() => storeTheme('dusk')).not.toThrow()
   })
 })
