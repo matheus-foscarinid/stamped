@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { brotliCompressSync, gzipSync } from 'node:zlib'
 import { getMapFileName, PROJECTION_IDS } from '../src/map/projections.ts'
 import { encodeMap } from './encode.ts'
+import { splitOverseasParts } from './overseas.ts'
 import { projectCountries } from './project.ts'
 import { PROJECTION_FACTORIES } from './projections.ts'
 import { COUNTRIES_110M, type CountryCollection, loadSource } from './source.ts'
@@ -23,7 +24,9 @@ const describeSize = (name: string, content: Uint8Array): string =>
   ].join('')
 
 const selectFeatures = (collection: CountryCollection) =>
-  collection.features.filter(feature => !EXCLUDED_CODES.has(feature.properties.ISO_A2_EH))
+  splitOverseasParts(
+    collection.features.filter(feature => !EXCLUDED_CODES.has(feature.properties.ISO_A2_EH))
+  )
 
 const writeIndex = (codes: (string | null)[]): string => {
   const content = new TextEncoder().encode(JSON.stringify({ codes }))

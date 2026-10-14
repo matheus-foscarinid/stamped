@@ -40,6 +40,7 @@ src/main.ts      mounts the app
 - The encoder (`build/`) and decoder (`src/map/`) share one format contract in `src/map/format.ts`. Change both together, and bump `MAP_FORMAT_VERSION` when the layout changes
 - `build/` runs on plain Node (type stripping), so the `src/map/` files it imports use relative imports with the `.ts` extension and no `@/` alias
 - Land without an ISO code (Kosovo, Northern Cyprus) is drawn but not selectable
+- Natural Earth folds some territories into their country (French Guiana into France, Svalbard into Norway). `build/overseas.ts` splits them out under their own ISO code. Add a row there for any new case
 - Every country is searchable, including ones too small to draw or click
 
 ## Rules
