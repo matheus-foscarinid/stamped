@@ -12,6 +12,7 @@ interface UseWorldMapInput {
 }
 
 interface UseWorldMapResult {
+  isReady: Ref<boolean>
   hasLoadError: Ref<boolean>
   hoveredCode: Ref<CountryCode | null>
   zoomIn: () => void
@@ -20,6 +21,7 @@ interface UseWorldMapResult {
 }
 
 export const useWorldMap = (input: UseWorldMapInput): UseWorldMapResult => {
+  const isReady = ref(false)
   const hasLoadError = ref(false)
   const hoveredCode = ref<CountryCode | null>(null)
   let map: WorldMap | null = null
@@ -41,6 +43,7 @@ export const useWorldMap = (input: UseWorldMapInput): UseWorldMapResult => {
     if (isUnmounted) return created.destroy()
     created.setMarks(input.marks())
     map = created
+    isReady.value = true
   }
 
   onMounted(() => {
@@ -54,6 +57,7 @@ export const useWorldMap = (input: UseWorldMapInput): UseWorldMapResult => {
   })
 
   return {
+    isReady,
     hasLoadError,
     hoveredCode,
     zoomIn: () => map?.zoomBy(ZOOM_STEP),

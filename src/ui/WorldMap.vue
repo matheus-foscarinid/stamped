@@ -3,6 +3,7 @@
     <canvas
       ref="canvas"
       class="world-map-canvas"
+      :data-ready="isReady"
       role="img"
       :aria-label="t('map.label')"
     />
@@ -49,7 +50,7 @@ const emit = defineEmits<{
 
 const { language, t } = useI18n()
 const canvas = useTemplateRef<HTMLCanvasElement>('canvas')
-const { hasLoadError, hoveredCode, zoomIn, zoomOut, resetZoom } = useWorldMap({
+const { isReady, hasLoadError, hoveredCode, zoomIn, zoomOut, resetZoom } = useWorldMap({
   canvas,
   projection: () => props.projection,
   marks: () => ({ visited: props.visited, wishlist: props.wishlist }),
@@ -70,6 +71,17 @@ const { hasLoadError, hoveredCode, zoomIn, zoomOut, resetZoom } = useWorldMap({
   width: 100%;
   height: 100%;
   touch-action: none;
+  opacity: 0;
+  scale: 0.96;
+  transition:
+    opacity calc(var(--motion-base) * 3) var(--ease-out),
+    scale calc(var(--motion-base) * 4) var(--ease-out);
+}
+
+/* stays hidden until the first frame is drawn, so the land arrives in one piece */
+.world-map-canvas[data-ready="true"] {
+  opacity: 1;
+  scale: 1;
 }
 
 .world-map-hover {
