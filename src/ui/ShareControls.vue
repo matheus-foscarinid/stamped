@@ -1,7 +1,14 @@
 <template>
   <div class="share-controls">
-    <button type="button" class="share-button control-surface press-feedback" @click="copyLink">
-      {{ t('share.copyLink') }}
+    <button
+      type="button"
+      class="share-button icon-label-button control-surface press-feedback"
+      @click="copyLink"
+    >
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M6.5 9.5l3-3M7 4.5l1.2-1.2a2.8 2.8 0 014 4L11 8.5M9 11.5l-1.2 1.2a2.8 2.8 0 01-4-4L5 7.5" />
+      </svg>
+      <span>{{ t('share.copyLink') }}</span>
     </button>
     <div ref="menuRoot" class="menu-button">
       <button
@@ -73,15 +80,8 @@ const pickFormat = (format: ExportFormat) => {
 .share-controls {
   position: relative;
   display: flex;
-  flex-wrap: wrap;
   gap: 8px;
   align-items: center;
-}
-
-.share-button {
-  padding: var(--button-padding);
-  border-radius: var(--radius-control);
-  cursor: pointer;
 }
 
 .share-button:hover {

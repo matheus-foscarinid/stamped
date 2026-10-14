@@ -15,7 +15,7 @@
         <CountrySearch class="stage-search" :is-visited="isVisited" @toggle="toggleVisited" />
         <button
           type="button"
-          class="view-toggle stage-view-toggle control-surface press-feedback"
+          class="view-toggle stage-view-toggle icon-label-button control-surface press-feedback"
           @click="togglePassport"
         >
           <svg v-if="isPassportOpen" viewBox="0 0 16 16" aria-hidden="true">
@@ -26,7 +26,7 @@
             <circle cx="8" cy="7" r="2.5" />
             <path d="M6 11.5h4" />
           </svg>
-          <span class="view-toggle-label">
+          <span>
             {{ isPassportOpen ? t('view.map') : t('view.passport') }}
           </span>
         </button>
@@ -99,24 +99,6 @@ const { t } = useI18n()
 /* hidden, not unmounted, so the map keeps its zoom while the passport is open */
 .stage-map[data-hidden="true"] {
   visibility: hidden;
-}
-
-.view-toggle {
-  display: inline-flex;
-  gap: 8px;
-  align-items: center;
-  padding: var(--button-padding);
-  border-radius: var(--radius-control);
-  cursor: pointer;
-}
-
-.view-toggle svg {
-  width: 16px;
-  height: 16px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.5;
-  stroke-linejoin: round;
 }
 
 .view-toggle:hover {
@@ -193,23 +175,6 @@ const { t } = useI18n()
 
   .stage-github {
     order: 3;
-  }
-
-  /* icon only, so it fits beside the search */
-  .view-toggle {
-    justify-content: center;
-    width: var(--control-height);
-    height: var(--control-height);
-    padding: 0;
-  }
-
-  .view-toggle-label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
   }
 
 }

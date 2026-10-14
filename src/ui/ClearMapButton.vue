@@ -2,11 +2,14 @@
   <div class="clear-map">
     <button
       type="button"
-      class="clear-button control-surface press-feedback"
+      class="clear-button icon-label-button control-surface press-feedback"
       :disabled="count === 0"
       @click="openDialog"
     >
-      {{ t('clear.button') }}
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M2.5 4.5h11M6 4.5V3a1 1 0 011-1h2a1 1 0 011 1v1.5M4 4.5l.7 8.6a1 1 0 001 .9h4.6a1 1 0 001-.9l.7-8.6" />
+      </svg>
+      <span>{{ t('clear.button') }}</span>
     </button>
     <dialog
       ref="dialog"
@@ -56,12 +59,6 @@ const clearIfConfirmed = () => {
 </script>
 
 <style scoped>
-.clear-button {
-  padding: var(--button-padding);
-  border-radius: var(--radius-control);
-  cursor: pointer;
-}
-
 .clear-button:hover:enabled {
   background: var(--glass-hover);
 }

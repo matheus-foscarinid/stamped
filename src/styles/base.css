@@ -391,6 +391,45 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
+/* phones keep only the icon. the label stays for screen readers */
+.icon-label-button {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: var(--button-padding);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+}
+
+.icon-label-button svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (max-width: 600px) {
+  .icon-label-button {
+    justify-content: center;
+    width: var(--control-height);
+    height: var(--control-height);
+    padding: 0;
+  }
+
+  .icon-label-button > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
 .press-feedback {
   transition:
     background-color var(--motion-fast) var(--ease-out),
