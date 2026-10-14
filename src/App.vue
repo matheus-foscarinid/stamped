@@ -10,7 +10,10 @@
       <header class="stage-top">
         <TravelSummary class="stage-summary" :visited="visited" />
         <CountrySearch class="stage-search" :is-visited="isVisited" @toggle="toggleVisited" />
-        <ThemePicker />
+        <div class="stage-pickers">
+          <LanguagePicker />
+          <ThemePicker />
+        </div>
       </header>
       <footer class="stage-bottom">
         <ShareControls :projection="projection" :visited="visited" />
@@ -23,6 +26,7 @@
 <script setup vapor lang="ts">
 import ClearMapButton from '@/ui/ClearMapButton.vue'
 import CountrySearch from '@/ui/CountrySearch.vue'
+import LanguagePicker from '@/ui/LanguagePicker.vue'
 import ShareControls from '@/ui/ShareControls.vue'
 import ThemePicker from '@/ui/ThemePicker.vue'
 import TravelSummary from '@/ui/TravelSummary.vue'
@@ -83,6 +87,11 @@ const { projection, visited, isVisited, toggleVisited, clearVisited } = useTrave
 
 .stage-search {
   margin-left: auto;
+}
+
+.stage-pickers {
+  display: flex;
+  gap: 10px;
 }
 
 .stage-bottom {

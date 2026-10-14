@@ -21,7 +21,7 @@ const RANK_PREFIX = 1
 const RANK_WORD = 2
 const RANK_ANYWHERE = 3
 
-let entries: SearchEntry[] | null = null
+const entriesByLocale = new Map<string, SearchEntry[]>()
 
 // "Côte d’Ivoire" and "cote d'ivoire" both become "cote d ivoire"
 const normalizeForSearch = (text: string): string =>
@@ -32,14 +32,20 @@ const normalizeForSearch = (text: string): string =>
     .replace(/[^a-z0-9]+/g, ' ')
     .trim()
 
-const buildEntry = (code: CountryCode): SearchEntry => {
-  const name = getCountryName(code)
-  const terms = [name, code, ...(COUNTRY_ALIASES[code] ?? [])].map(normalizeForSearch)
+// english names stay searchable in every language, since many people type those
+const buildEntry = (code: CountryCode, locale: string): SearchEntry => {
+  const name = getCountryName(code, locale)
+  const englishName = getCountryName(code, 'en')
+  const terms = [name, englishName, code, ...(COUNTRY_ALIASES[code] ?? [])].map(normalizeForSearch)
   return { code, name, terms }
 }
 
-const getEntries = (): SearchEntry[] => {
-  entries ??= COUNTRY_CODES.map(buildEntry)
+const getEntries = (locale: string): SearchEntry[] => {
+  let entries = entriesByLocale.get(locale)
+  if (!entries) {
+    entries = COUNTRY_CODES.map(code => buildEntry(code, locale))
+    entriesByLocale.set(locale, entries)
+  }
   return entries
 }
 
@@ -56,13 +62,21 @@ const rankEntry = (entry: SearchEntry, query: string): number | null => {
   return ranks.length > 0 ? Math.min(...ranks) : null
 }
 
-export const searchCountries = (query: string, limit = DEFAULT_LIMIT): CountryMatch[] => {
+interface SearchOptions {
+  locale: string
+  limit?: number
+}
+
+export const searchCountries = (
+  query: string,
+  { locale, limit = DEFAULT_LIMIT }: SearchOptions
+): CountryMatch[] => {
   const normalizedQuery = normalizeForSearch(query)
   if (normalizedQuery === '') return []
-  return getEntries()
+  return getEntries(locale)
     .map(entry => ({ entry, rank: rankEntry(entry, normalizedQuery) }))
     .filter((ranked): ranked is { entry: SearchEntry; rank: number } => ranked.rank !== null)
-    .sort((a, b) => a.rank - b.rank || a.entry.name.localeCompare(b.entry.name))
+    .sort((a, b) => a.rank - b.rank || a.entry.name.localeCompare(b.entry.name, locale))
     .slice(0, limit)
     .map(({ entry }) => ({ code: entry.code, name: entry.name, flag: getFlagEmoji(entry.code) }))
 }

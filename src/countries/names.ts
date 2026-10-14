@@ -1,10 +1,13 @@
 import type { CountryCode } from './catalog.ts'
 
-const DISPLAY_LOCALE = 'en'
+const regionNamesByLocale = new Map<string, Intl.DisplayNames>()
 
-const regionNames = new Intl.DisplayNames([DISPLAY_LOCALE], { type: 'region' })
-
-export const getCountryName = (code: CountryCode): string => {
+export const getCountryName = (code: CountryCode, locale: string): string => {
+  let regionNames = regionNamesByLocale.get(locale)
+  if (!regionNames) {
+    regionNames = new Intl.DisplayNames([locale], { type: 'region' })
+    regionNamesByLocale.set(locale, regionNames)
+  }
   const upperCode = code.toUpperCase()
   return regionNames.of(upperCode) ?? upperCode
 }

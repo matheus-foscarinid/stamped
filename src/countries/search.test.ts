@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { getFlagEmoji, isCountryCode, searchCountries } from './index.ts'
 
-const firstCode = (query: string) => searchCountries(query)[0]?.code
+const EN = { locale: 'en' }
+
+const firstCode = (query: string) => searchCountries(query, EN)[0]?.code
 
 describe('searchCountries', () => {
   it('ignores accents and punctuation in both the query and the names', () => {
@@ -17,23 +19,35 @@ describe('searchCountries', () => {
   })
 
   it('ranks an exact name above a longer name that starts the same way', () => {
-    expect(searchCountries('niger').map(match => match.code)).toEqual(['ne', 'ng'])
+    expect(searchCountries('niger', EN).map(match => match.code)).toEqual(['ne', 'ng'])
   })
 
   it('ranks names that start with the query above ones that only contain it', () => {
-    const codes = searchCountries('guinea').map(match => match.code)
+    const codes = searchCountries('guinea', EN).map(match => match.code)
     expect(codes[0]).toBe('gn')
     expect(codes.indexOf('pg')).toBeGreaterThan(codes.indexOf('gw'))
   })
 
   it('returns nothing for a blank query and respects the limit', () => {
-    expect(searchCountries('   ')).toEqual([])
-    expect(searchCountries('a', 3)).toHaveLength(3)
+    expect(searchCountries('   ', EN)).toEqual([])
+    expect(searchCountries('a', { locale: 'en', limit: 3 })).toHaveLength(3)
   })
 
   it('returns tiny countries the map cannot draw', () => {
     expect(firstCode('vatican')).toBe('va')
     expect(firstCode('monaco')).toBe('mc')
+  })
+})
+
+describe('searching in another language', () => {
+  const PT = { locale: 'pt' }
+
+  it('finds countries by their name in that language', () => {
+    expect(searchCountries('alemanha', PT)[0]).toMatchObject({ code: 'de', name: 'Alemanha' })
+  })
+
+  it('still finds them by their english name', () => {
+    expect(searchCountries('germany', PT)[0]?.code).toBe('de')
   })
 })
 

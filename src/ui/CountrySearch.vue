@@ -1,19 +1,19 @@
 <template>
   <div class="country-search">
-    <label class="visually-hidden" for="country-search-input">Search countries</label>
+    <label class="visually-hidden" for="country-search-input">{{ t('search.label') }}</label>
     <input
       id="country-search-input"
       :value="query"
       class="country-search-input control-surface"
       type="search"
       autocomplete="off"
-      placeholder="Search countries"
+      :placeholder="t('search.label')"
       aria-describedby="country-search-status"
       @input="updateQuery"
       @keydown="pickOnEnter"
     />
     <p id="country-search-status" class="visually-hidden" aria-live="polite">
-      {{ query ? `${matches.length} matching countries` : '' }}
+      {{ query ? t('search.status', { count: matches.length }) : '' }}
     </p>
     <ul v-show="matches.length > 0" class="country-search-results control-surface">
       <li v-for="match in matches" :key="match.code">
@@ -25,7 +25,7 @@
         >
           <span class="country-flag" aria-hidden="true">{{ match.flag }}</span>
           <span class="country-name">{{ match.name }}</span>
-          <span v-if="isVisited(match.code)" class="country-visited">Visited</span>
+          <span v-if="isVisited(match.code)" class="country-visited">{{ t('search.visited') }}</span>
         </button>
       </li>
     </ul>
@@ -34,6 +34,7 @@
 
 <script setup vapor lang="ts">
 import type { CountryCode } from '@/countries'
+import { useI18n } from '@/i18n/useI18n'
 import { useCountrySearch } from './useCountrySearch'
 
 defineProps<{
@@ -43,6 +44,8 @@ defineProps<{
 const emit = defineEmits<{
   toggle: [code: CountryCode]
 }>()
+
+const { t } = useI18n()
 
 const { query, matches, pick, updateQuery, pickOnEnter } = useCountrySearch({
   onPick: code => emit('toggle', code),

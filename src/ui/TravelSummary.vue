@@ -20,13 +20,15 @@
           </svg>
           Stamped
         </span>
-        <span class="summary-count">{{ visited.length }} of {{ COUNTRY_CODES.length }}</span>
+        <span class="summary-count">
+          {{ describeRatio(visited.length, COUNTRY_CODES.length) }}
+        </span>
       </button>
     </h1>
     <div id="travel-stats" class="summary-details">
       <div class="summary-details-inner">
         <dl class="summary-stats">
-          <div v-for="stat in statRows" :key="stat.label" class="summary-stat">
+          <div v-for="stat in statRows" :key="stat.key" class="summary-stat">
             <dt>{{ stat.label }}</dt>
             <dd>{{ stat.value }}</dd>
             <progress class="summary-bar" :value="stat.ratio" aria-hidden="true" />
@@ -50,6 +52,7 @@ import {
   STAMPED_CELL_PATH,
 } from '@/brand/logo'
 import { COUNTRY_CODES, type CountryCode, getTravelStats } from '@/countries'
+import { useI18n } from '@/i18n/useI18n'
 import { useDismissibleMenu } from './useDismissibleMenu'
 
 const props = defineProps<{
@@ -59,27 +62,38 @@ const props = defineProps<{
 const anchor = useTemplateRef<HTMLElement>('anchor')
 const toggleButton = useTemplateRef<HTMLButtonElement>('toggleButton')
 const { isOpen, toggle } = useDismissibleMenu({ root: anchor, trigger: toggleButton })
-const stats = computed(() => getTravelStats(props.visited))
+const { language, t } = useI18n()
+const stats = computed(() => getTravelStats(props.visited, language.value))
+
+const describeRatio = (count: number, total: number) => t('summary.count', { count, total })
 
 const statRows = computed(() => [
   {
-    label: 'Continents',
-    value: `${stats.value.continentCount} of ${stats.value.continentTotal}`,
-    ratio: stats.value.continentCount / stats.value.continentTotal,
+    key: 'continents',
+    label: t('stats.continents'),
+    value: describeRatio(stats.value.continents.length, stats.value.continentTotal),
+    ratio: stats.value.continents.length / stats.value.continentTotal,
   },
   {
-    label: 'UN members',
-    value: `${stats.value.unMemberCount} of ${stats.value.unMemberTotal}`,
+    key: 'unMembers',
+    label: t('stats.unMembers'),
+    value: describeRatio(stats.value.unMemberCount, stats.value.unMemberTotal),
     ratio: stats.value.unMemberCount / stats.value.unMemberTotal,
   },
   {
-    label: 'Share of the world',
+    key: 'worldShare',
+    label: t('stats.worldShare'),
     value: stats.value.worldShare,
     ratio: props.visited.length / COUNTRY_CODES.length,
   },
 ])
 
-const continentNote = computed(() => stats.value.continentNames || 'Mark a country to start your map')
+const continentNote = computed(() => {
+  const { continents } = stats.value
+  if (continents.length === 0) return t('stats.empty')
+  const names = continents.map(continent => t(`continent.${continent}`))
+  return new Intl.ListFormat(language.value, { type: 'conjunction' }).format(names)
+})
 </script>
 
 <style scoped>
@@ -88,7 +102,7 @@ const continentNote = computed(() => stats.value.continentNames || 'Mark a count
   position: relative;
   z-index: 3;
   width: 272px;
-  height: 45px;
+  height: var(--control-height);
 }
 
 .summary {

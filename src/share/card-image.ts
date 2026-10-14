@@ -1,4 +1,4 @@
-import { type CountryCode, formatWorldShare } from '@/countries'
+import type { CountryCode } from '@/countries'
 import { drawWorldSnapshot, type ProjectionId } from '@/map'
 import { readCssTokens } from '@/styles/css-tokens'
 import { type CardLayout, EXPORT_FORMATS, type ExportFormat, layoutCard } from './card-layout.ts'
@@ -23,14 +23,7 @@ interface CardHeadline {
 export interface CardContent {
   projection: ProjectionId
   visited: readonly CountryCode[]
-}
-
-export const describeVisits = (visitedCount: number): CardHeadline => {
-  const noun = visitedCount === 1 ? 'country' : 'countries'
-  return {
-    title: `${visitedCount} ${noun} visited`,
-    subtitle: `${formatWorldShare(visitedCount)} of the world`,
-  }
+  headline: CardHeadline
 }
 
 const drawHeadline = (
@@ -72,7 +65,7 @@ export const renderCard = async (format: ExportFormat, content: CardContent): Pr
   const theme = readCssTokens(document.documentElement, THEME_TOKENS)
   context.fillStyle = theme.background
   context.fillRect(0, 0, context.canvas.width, context.canvas.height)
-  drawHeadline(context, layout, theme, describeVisits(content.visited.length))
+  drawHeadline(context, layout, theme, content.headline)
   await drawWorldSnapshot(context, {
     projection: content.projection,
     visited: content.visited,

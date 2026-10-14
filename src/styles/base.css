@@ -4,6 +4,7 @@
   --radius-control: 999px;
   --radius-menu: 20px;
   --button-padding: 11px 18px;
+  --control-height: 45px;
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --motion-fast: 160ms;
@@ -291,6 +292,17 @@ button {
   rotate: 225deg;
 }
 
+.menu-trigger-icon {
+  justify-content: center;
+  width: var(--control-height);
+  height: var(--control-height);
+  padding: 0;
+}
+
+.menu-trigger-icon::after {
+  content: none;
+}
+
 .menu-panel {
   position: absolute;
   z-index: 2;
@@ -346,6 +358,11 @@ button {
 .menu-item:hover,
 .menu-item:focus-visible {
   background: var(--control-hover-bg);
+}
+
+.menu-item[aria-pressed="true"] {
+  background: var(--control-hover-bg);
+  font-weight: 600;
 }
 
 .menu-item[aria-disabled="true"] {

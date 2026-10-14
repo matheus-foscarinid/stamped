@@ -1,7 +1,7 @@
 <template>
   <div class="share-controls">
     <button type="button" class="share-button control-surface press-feedback" @click="copyLink">
-      Copy link
+      {{ t('share.copyLink') }}
     </button>
     <div ref="menuRoot" class="menu-button">
       <button
@@ -12,7 +12,7 @@
         aria-controls="save-image-menu"
         @click="toggle"
       >
-        Save image
+        {{ t('share.saveImage') }}
       </button>
       <div
         v-show="isOpen"
@@ -29,7 +29,7 @@
           :aria-disabled="isSaving"
           @click="pickFormat(option.id)"
         >
-          {{ option.label }}
+          {{ t(`format.${option.id}`) }}
           <span class="menu-item-hint">{{ option.size }}</span>
         </button>
       </div>
@@ -41,6 +41,7 @@
 <script setup vapor lang="ts">
 import { useTemplateRef } from 'vue'
 import type { CountryCode } from '@/countries'
+import { useI18n } from '@/i18n/useI18n'
 import type { ProjectionId } from '@/map'
 import { EXPORT_FORMAT_OPTIONS, type ExportFormat } from '@/share/card-layout'
 import { useDismissibleMenu } from './useDismissibleMenu'
@@ -50,6 +51,8 @@ const props = defineProps<{
   projection: ProjectionId
   visited: readonly CountryCode[]
 }>()
+
+const { t } = useI18n()
 
 const { status, isSaving, copyLink, saveImage } = useShareControls({
   projection: () => props.projection,

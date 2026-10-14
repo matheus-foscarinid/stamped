@@ -1,5 +1,6 @@
 import { type ComputedRef, computed, type Ref, ref } from 'vue'
 import { type CountryCode, type CountryMatch, searchCountries } from '@/countries'
+import { useI18n } from '@/i18n/useI18n'
 
 interface UseCountrySearchInput {
   onPick: (code: CountryCode) => void
@@ -15,7 +16,8 @@ interface UseCountrySearchResult {
 
 export const useCountrySearch = ({ onPick }: UseCountrySearchInput): UseCountrySearchResult => {
   const query = ref('')
-  const matches = computed(() => searchCountries(query.value))
+  const { language } = useI18n()
+  const matches = computed(() => searchCountries(query.value, { locale: language.value }))
 
   const pick = (code: CountryCode) => {
     onPick(code)

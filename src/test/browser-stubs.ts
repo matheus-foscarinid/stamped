@@ -153,3 +153,26 @@ export const stubPixelRatio = (initialRatio: number) => {
   }
   return { moveToScreen }
 }
+
+export const stubBrowserLanguages = (languages: string[]) => {
+  vi.stubGlobal('navigator', { languages })
+}
+
+// serves locale files by language. a language left out answers 404
+export const stubLocaleFiles = (files: Record<string, unknown>) => {
+  const fetch = vi.fn((url: string) => {
+    const language = url.match(/\/locales\/(\w+)\.json$/)?.[1] ?? ''
+    const body = files[language]
+    if (body === undefined) return Promise.resolve(new Response(null, { status: 404 }))
+    return Promise.resolve(new Response(JSON.stringify(body)))
+  })
+  vi.stubGlobal('fetch', fetch)
+  return { fetch }
+}
+
+// stub after vue is imported, since vue's dom layer grabs the real document on load
+export const stubPageLanguage = () => {
+  const documentElement = { lang: 'en' }
+  vi.stubGlobal('document', { documentElement })
+  return { documentElement }
+}

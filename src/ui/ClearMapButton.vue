@@ -6,7 +6,7 @@
       :disabled="count === 0"
       @click="openDialog"
     >
-      Clear
+      {{ t('clear.button') }}
     </button>
     <dialog
       ref="dialog"
@@ -15,13 +15,15 @@
       @close="clearIfConfirmed"
     >
       <form method="dialog">
-        <h2 id="clear-dialog-title" class="clear-dialog-title">Clear your map?</h2>
-        <p class="clear-dialog-text">
-          This removes {{ describeCount(count) }}. Copy your link first if you want to keep them.
-        </p>
+        <h2 id="clear-dialog-title" class="clear-dialog-title">{{ t('clear.title') }}</h2>
+        <p class="clear-dialog-text">{{ t('clear.text', { count }) }}</p>
         <div class="clear-dialog-actions">
-          <button type="submit" class="dialog-button" value="cancel" autofocus>Cancel</button>
-          <button type="submit" class="dialog-button dialog-button-confirm" :value="CONFIRM_VALUE">Clear map</button>
+          <button type="submit" class="dialog-button" value="cancel" autofocus>
+            {{ t('clear.cancel') }}
+          </button>
+          <button type="submit" class="dialog-button dialog-button-confirm" :value="CONFIRM_VALUE">
+            {{ t('clear.confirm') }}
+          </button>
         </div>
       </form>
     </dialog>
@@ -30,6 +32,7 @@
 
 <script setup vapor lang="ts">
 import { useTemplateRef } from 'vue'
+import { useI18n } from '@/i18n/useI18n'
 
 defineProps<{ count: number }>()
 
@@ -38,8 +41,7 @@ const emit = defineEmits<{ clear: [] }>()
 const CONFIRM_VALUE = 'clear'
 
 const dialog = useTemplateRef<HTMLDialogElement>('dialog')
-
-const describeCount = (count: number) => (count === 1 ? '1 country' : `all ${count} countries`)
+const { t } = useI18n()
 
 const openDialog = () => {
   if (!dialog.value) return

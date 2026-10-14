@@ -4,27 +4,27 @@
       ref="canvas"
       class="world-map-canvas"
       role="img"
-      aria-label="World map of the countries you visited. Use the search to add countries with the keyboard"
+      :aria-label="t('map.label')"
     />
     <p v-if="hoveredCode" class="world-map-hover control-surface" aria-hidden="true">
       <span>{{ getFlagEmoji(hoveredCode) }}</span>
-      {{ getCountryName(hoveredCode) }}
+      {{ getCountryName(hoveredCode, language) }}
     </p>
     <div class="world-map-zoom control-surface">
-      <button type="button" class="zoom-button press-feedback" aria-label="Zoom in" @click="zoomIn">
+      <button type="button" class="zoom-button press-feedback" :aria-label="t('map.zoomIn')" @click="zoomIn">
         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" /></svg>
       </button>
-      <button type="button" class="zoom-button press-feedback" aria-label="Zoom out" @click="zoomOut">
+      <button type="button" class="zoom-button press-feedback" :aria-label="t('map.zoomOut')" @click="zoomOut">
         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10" /></svg>
       </button>
-      <button type="button" class="zoom-button press-feedback" aria-label="Reset zoom" @click="resetZoom">
+      <button type="button" class="zoom-button press-feedback" :aria-label="t('map.resetZoom')" @click="resetZoom">
         <svg viewBox="0 0 16 16" aria-hidden="true">
           <path d="M3 6V3h3M10 3h3v3M13 10v3h-3M6 13H3v-3" />
         </svg>
       </button>
     </div>
     <p v-if="hasLoadError" class="world-map-error" role="alert">
-      The map couldn't load. Refresh to try again.
+      {{ t('map.loadError') }}
     </p>
   </div>
 </template>
@@ -32,6 +32,7 @@
 <script setup vapor lang="ts">
 import { useTemplateRef } from 'vue'
 import { type CountryCode, getCountryName, getFlagEmoji } from '@/countries'
+import { useI18n } from '@/i18n/useI18n'
 import type { ProjectionId } from '@/map'
 import { useWorldMap } from './useWorldMap'
 
@@ -44,6 +45,7 @@ const emit = defineEmits<{
   toggle: [code: CountryCode]
 }>()
 
+const { language, t } = useI18n()
 const canvas = useTemplateRef<HTMLCanvasElement>('canvas')
 const { hasLoadError, hoveredCode, zoomIn, zoomOut, resetZoom } = useWorldMap({
   canvas,

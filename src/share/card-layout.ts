@@ -5,28 +5,26 @@ export const EXPORT_FORMAT_IDS = ['post', 'story', 'wide'] as const
 export type ExportFormat = (typeof EXPORT_FORMAT_IDS)[number]
 
 interface ExportFormatSpec {
-  label: string
   width: number
   height: number
   safeInset?: number
 }
 
 export const EXPORT_FORMATS: Record<ExportFormat, ExportFormatSpec> = {
-  post: { label: 'Post', width: 1080, height: 1350 },
+  post: { width: 1080, height: 1350 },
   // stories put the profile bar and reply box over the top and bottom of the image
-  story: { label: 'Story', width: 1080, height: 1920, safeInset: 250 },
-  wide: { label: 'Wide', width: 1200, height: 630 },
+  story: { width: 1080, height: 1920, safeInset: 250 },
+  wide: { width: 1200, height: 630 },
 }
 
 interface ExportFormatOption {
   id: ExportFormat
-  label: string
   size: string
 }
 
 export const EXPORT_FORMAT_OPTIONS: ExportFormatOption[] = EXPORT_FORMAT_IDS.map(id => {
-  const { label, width, height } = EXPORT_FORMATS[id]
-  return { id, label, size: `${width} × ${height}` }
+  const { width, height } = EXPORT_FORMATS[id]
+  return { id, size: `${width} × ${height}` }
 })
 
 const PADDING_RATIO = 0.07

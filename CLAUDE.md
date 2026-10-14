@@ -32,6 +32,7 @@ src/ui/          presentational Vapor components and their hooks
 src/brand/       the logo drawing, shared by the header, the favicon and docs/logo*.svg
 src/styles/      shared tokens, theme palettes on [data-theme] and the css token reader
 src/theme/       theme catalog, saved choice and the auto (system) theme
+src/i18n/        UI text. English ships in the page, the other languages load from public/locales/ on demand
 src/test/        browser stubs, since tests run in node
 src/use*.ts      page state. useVisitedCountries keeps the visited countries in the link and saves your edits
 src/main.ts      mounts the app
@@ -43,6 +44,7 @@ src/main.ts      mounts the app
 - Land without an ISO code (Kosovo, Northern Cyprus) is drawn but not selectable
 - Natural Earth folds some territories into their country (French Guiana into France, Svalbard into Norway). `build/overseas.ts` splits them out under their own ISO code. Add a row there for any new case
 - Every country is searchable, including ones too small to draw or click
+- Country names come from `Intl.DisplayNames`. Continent names live in the locale files, since Chrome can't name M49 regions. A test fails if a locale file misses a key or a placeholder
 
 ## Rules
 

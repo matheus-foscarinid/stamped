@@ -1,5 +1,6 @@
 import { onScopeDispose, type Ref, ref } from 'vue'
-import type { CountryCode } from '@/countries'
+import { type CountryCode, formatWorldShare } from '@/countries'
+import { useI18n } from '@/i18n/useI18n'
 import type { ProjectionId } from '@/map'
 import { renderCard } from '@/share/card-image'
 import type { ExportFormat } from '@/share/card-layout'
@@ -40,14 +41,20 @@ const useStatusMessage = (): StatusMessage => {
 
 export const useShareControls = (input: UseShareControlsInput): UseShareControlsResult => {
   const { status, show } = useStatusMessage()
+  const { language, t } = useI18n()
   const isSaving = ref(false)
+
+  const describeVisits = (count: number) => ({
+    title: t('card.title', { count }),
+    subtitle: t('card.subtitle', { share: formatWorldShare(count, language.value) }),
+  })
 
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href)
-      show('Link copied')
+      show(t('share.linkCopied'))
     } catch {
-      show('Copy blocked. The address bar has your link')
+      show(t('share.copyBlocked'))
     }
   }
 
@@ -55,14 +62,16 @@ export const useShareControls = (input: UseShareControlsInput): UseShareControls
     if (isSaving.value) return
     isSaving.value = true
     try {
+      const visited = input.visited()
       const blob = await renderCard(format, {
         projection: input.projection(),
-        visited: input.visited(),
+        visited,
+        headline: describeVisits(visited.length),
       })
       const outcome = await saveFile(blob, `stamped-${format}.png`)
-      if (outcome === 'saved') show('Image saved')
+      if (outcome === 'saved') show(t('share.imageSaved'))
     } catch {
-      show('Could not create the image. Try again')
+      show(t('share.imageFailed'))
     } finally {
       isSaving.value = false
     }

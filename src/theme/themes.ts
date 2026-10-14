@@ -19,20 +19,6 @@ export type ThemeChoice = (typeof THEME_CHOICES)[number]
 
 export type ThemeName = Exclude<ThemeChoice, 'auto'>
 
-export const THEME_LABELS: Record<ThemeChoice, string> = {
-  auto: 'Auto',
-  light: 'Light',
-  dark: 'Dark',
-  lilac: 'Lilac',
-  ink: 'Ink',
-  rose: 'Rose',
-  ocean: 'Ocean',
-  sunset: 'Sunset',
-  dusk: 'Dusk',
-  forest: 'Forest',
-  midnight: 'Midnight',
-}
-
 // index.html reads this key before first paint, so keep the two in step
 const THEME_STORAGE_KEY = 'stamped-theme'
 
