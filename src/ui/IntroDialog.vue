@@ -35,10 +35,9 @@ const actions = computed(() => [{ value: 'start', label: t('intro.start'), isPri
   --logo-frame: var(--text-muted);
   --logo-globe: var(--map-visited);
 
-  display: block;
-  width: 44px;
-  height: 44px;
-  margin-bottom: 14px;
+  flex: none;
+  width: 34px;
+  height: 34px;
 }
 
 .intro-steps {

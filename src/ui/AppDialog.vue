@@ -1,8 +1,10 @@
 <template>
   <dialog ref="dialog" class="app-dialog control-surface" :aria-labelledby="titleId" @close="emitClose">
     <form method="dialog">
-      <slot name="lead" />
-      <h2 :id="titleId" class="app-dialog-title">{{ title }}</h2>
+      <div class="app-dialog-heading">
+        <slot name="lead" />
+        <h2 :id="titleId" class="app-dialog-title">{{ title }}</h2>
+      </div>
       <slot />
       <div class="app-dialog-actions">
         <button
@@ -60,9 +62,11 @@ const emitClose = () => emit('close', dialog.value?.returnValue ?? '')
 
 <style scoped>
 .app-dialog {
-  width: min(380px, calc(100% - 32px));
-  padding: 22px;
+  width: min(440px, calc(100% - 32px));
+  padding: 24px;
   border-radius: var(--radius-menu);
+  /* the glass is too see-through for a block of text over the map */
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
   transition:
     opacity var(--motion-fast) var(--ease-out),
     scale var(--motion-base) var(--ease-out);
@@ -79,8 +83,15 @@ const emitClose = () => emit('close', dialog.value?.returnValue ?? '')
   }
 }
 
+.app-dialog-heading {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
 .app-dialog-title {
-  margin: 0 0 6px;
+  margin: 0;
   font-size: 17px;
   font-weight: 650;
 }
