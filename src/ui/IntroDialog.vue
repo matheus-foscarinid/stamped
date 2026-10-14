@@ -43,7 +43,7 @@ const actions = computed(() => [{ value: 'start', label: t('intro.start'), isPri
 .intro-steps {
   display: grid;
   gap: 10px;
-  margin: -6px 0 22px;
+  margin: 0;
   padding-left: 20px;
 }
 

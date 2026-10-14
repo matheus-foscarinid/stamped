@@ -5,7 +5,9 @@
         <slot name="lead" />
         <h2 :id="titleId" class="app-dialog-title">{{ title }}</h2>
       </div>
-      <slot />
+      <div class="app-dialog-body">
+        <slot />
+      </div>
       <div class="app-dialog-actions">
         <button
           v-for="(action, index) in actions"
@@ -33,7 +35,7 @@ interface DialogAction {
 }
 
 const props = defineProps<{
-  // unique per page, it names the title for screen readers
+  // links the title to the dialog for screen readers
   name: string
   isOpen: boolean
   title: string
@@ -48,7 +50,7 @@ const titleId = computed(() => `${props.name}-dialog-title`)
 const syncOpen = ([isOpen, element]: readonly [boolean, HTMLDialogElement | null]) => {
   if (!element) return
   if (isOpen && !element.open) {
-    // escape keeps the last answer, so a past confirm would repeat on the next escape
+    // reset so escape can't replay a past confirm
     element.returnValue = ''
     element.showModal()
   }
@@ -96,8 +98,14 @@ const emitClose = () => emit('close', dialog.value?.returnValue ?? '')
   font-weight: 650;
 }
 
-.app-dialog :slotted(p) {
-  margin: 0 0 20px;
+.app-dialog-body {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.app-dialog-body :slotted(p) {
+  margin: 0;
   color: var(--text-muted);
 }
 
