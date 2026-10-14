@@ -1,5 +1,6 @@
 // fails the build output on what should never be deployed: source maps, which carry
-// the original source, and oversized files, usually a dump that landed in public/
+// the original source, oversized files, usually a dump that landed in public/, and
+// split-off script files
 import { readdirSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 
@@ -15,6 +16,9 @@ const listFiles = (dir: string): string[] =>
 
 const describeProblem = (path: string): string | null => {
   if (path.endsWith('.map')) return 'source map'
+  // the entry is inlined into index.html, so a lazy chunk can't import shared code back from it
+  if (path.endsWith('.js'))
+    return 'separate script, a dynamic import split it off the inlined entry'
   const { size } = statSync(path)
   if (size > MAX_FILE_BYTES) return `${(size / 1024).toFixed(0)}KB`
   return null
