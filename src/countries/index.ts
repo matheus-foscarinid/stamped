@@ -16,7 +16,7 @@ export {
 export { getCountryName } from './names.ts'
 export { getContinent } from './regions.ts'
 export { type CountryMatch, searchCountries } from './search.ts'
-export { formatWorldShare, getTravelStats } from './stats.ts'
+export { getTravelStats } from './stats.ts'
 
 const COUNTRY_CODE_SET: ReadonlySet<string> = new Set(COUNTRY_CODES)
 

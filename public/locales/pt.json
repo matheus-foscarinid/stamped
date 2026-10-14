@@ -78,10 +78,7 @@
   "map.zoomOut": "Afastar",
   "map.resetZoom": "Redefinir zoom",
   "map.loadError": "Não foi possível carregar o mapa. Recarregue para tentar de novo.",
-  "card.title": {
-    "zero": "{count} países visitados",
-    "one": "{count} país visitado",
-    "other": "{count} países visitados"
-  },
-  "card.subtitle": "{share} do mundo"
+  "card.eyebrow": "Meu mapa de viagens",
+  "card.progress": "{count} de {total} países",
+  "card.footer": "Faça o seu em {link}"
 }

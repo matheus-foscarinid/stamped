@@ -28,22 +28,22 @@ describe('formatMessage', () => {
   })
 
   it.each([
-    [0, '0 countries visited'],
-    [1, '1 country visited'],
-    [2, '2 countries visited'],
+    [0, '0 matching countries'],
+    [1, '1 matching country'],
+    [2, '2 matching countries'],
   ])('uses the singular only for one country in english (%i)', (count, text) => {
-    expect(formatMessage({}, 'card.title', 'en', { count })).toBe(text)
+    expect(formatMessage({}, 'search.status', 'en', { count })).toBe(text)
   })
 
   it('follows each language plural rules, with zero as its own form when given', () => {
-    expect(formatMessage({ 'card.title': PT_TITLE }, 'card.title', 'pt', { count: 0 })).toBe(
+    expect(formatMessage({ 'search.status': PT_TITLE }, 'search.status', 'pt', { count: 0 })).toBe(
       '0 países visitados'
     )
-    expect(formatMessage({ 'card.title': PT_TITLE }, 'card.title', 'pt', { count: 1 })).toBe(
+    expect(formatMessage({ 'search.status': PT_TITLE }, 'search.status', 'pt', { count: 1 })).toBe(
       '1 país visitado'
     )
     const frTitle = { one: '{count} pays visité', other: '{count} pays visités' }
-    expect(formatMessage({ 'card.title': frTitle }, 'card.title', 'fr', { count: 0 })).toBe(
+    expect(formatMessage({ 'search.status': frTitle }, 'search.status', 'fr', { count: 0 })).toBe(
       '0 pays visité'
     )
   })

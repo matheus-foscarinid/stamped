@@ -17,7 +17,7 @@ import {
 } from './viewport.ts'
 
 export { watchPixelRatio } from './pixel-ratio.ts'
-export { DEFAULT_PROJECTION, type ProjectionId } from './projections.ts'
+export { DEFAULT_PROJECTION, MAP_ASPECT, type ProjectionId } from './projections.ts'
 export type { ScreenRect } from './viewport.ts'
 
 export interface WorldMapOptions {
@@ -239,6 +239,7 @@ export const createWorldMap = async (
 export interface WorldSnapshotOptions {
   projection: ProjectionId
   visited: Iterable<string>
+  wishlist?: Iterable<string>
   rect: ScreenRect
   borderWidth: number
 }
@@ -255,7 +256,7 @@ export const drawWorldSnapshot = async (
   drawMapSnapshot(context, {
     geometry,
     codes,
-    marks: toMarkStates({ visited: options.visited, wishlist: [] }),
+    marks: toMarkStates({ visited: options.visited, wishlist: options.wishlist ?? [] }),
     palette: readMapPalette(document.documentElement),
     rect: options.rect,
     borderWidth: options.borderWidth,

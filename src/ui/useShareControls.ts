@@ -1,10 +1,10 @@
 import { onScopeDispose, type Ref, ref } from 'vue'
-import { type CountryCode, formatWorldShare } from '@/countries'
+import { COUNTRY_CODES, type CountryCode, getTravelStats } from '@/countries'
 import { useI18n } from '@/i18n/useI18n'
 import type { ProjectionId } from '@/map'
 import { renderPassport } from '@/passport/passport-image'
 import { PASSPORT_IMAGE } from '@/passport/passport-image-layout'
-import { renderCard } from '@/share/card-image'
+import { type CardText, renderCard } from '@/share/card-image'
 import { EXPORT_FORMAT_OPTIONS, type ExportFormat, formatImageSize } from '@/share/card-layout'
 import { saveFile } from '@/share/save-file'
 import { usePassportContent } from './usePassportContent'
@@ -21,6 +21,7 @@ export const IMAGE_OPTIONS: { id: ImageChoice; size: string }[] = [
 interface UseShareControlsInput {
   projection: () => ProjectionId
   visited: () => readonly CountryCode[]
+  wishlist: () => readonly CountryCode[]
 }
 
 interface UseShareControlsResult {
@@ -49,16 +50,36 @@ const useStatusMessage = (): StatusMessage => {
   return { status, show }
 }
 
+// the card's words, in the page language. the footer links back to wherever this copy is hosted
+const useCardText = () => {
+  const { language, t } = useI18n()
+  return (visited: readonly CountryCode[]): CardText => {
+    const stats = getTravelStats(visited, language.value)
+    const count = visited.length
+    return {
+      eyebrow: t('card.eyebrow'),
+      count: String(count),
+      countLabel: t('passport.countriesVisited', { count }),
+      progressLabel: t('card.progress', { count, total: COUNTRY_CODES.length }),
+      share: stats.worldShare,
+      tiles: [
+        { value: `${stats.unMemberCount}/${stats.unMemberTotal}`, label: t('stats.unMembers') },
+        {
+          value: `${stats.continents.length}/${stats.continentTotal}`,
+          label: t('stats.continents'),
+        },
+      ],
+      footer: t('card.footer', { link: window.location.host }),
+    }
+  }
+}
+
 export const useShareControls = (input: UseShareControlsInput): UseShareControlsResult => {
   const { status, show } = useStatusMessage()
-  const { language, t } = useI18n()
+  const { t } = useI18n()
+  const describeCard = useCardText()
   const isSaving = ref(false)
   const passport = usePassportContent(input.visited)
-
-  const describeVisits = (count: number) => ({
-    title: t('card.title', { count }),
-    subtitle: t('card.subtitle', { share: formatWorldShare(count, language.value) }),
-  })
 
   const copyLink = async () => {
     try {
@@ -74,7 +95,9 @@ export const useShareControls = (input: UseShareControlsInput): UseShareControls
     return renderCard(format, {
       projection: input.projection(),
       visited,
-      headline: describeVisits(visited.length),
+      wishlist: input.wishlist(),
+      progress: visited.length / COUNTRY_CODES.length,
+      text: describeCard(visited),
     })
   }
 

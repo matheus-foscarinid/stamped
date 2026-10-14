@@ -8,3 +8,6 @@ export const getMapFileName = (projection: ProjectionId): string =>
   `${projection}-${MAP_RESOLUTION}.bin`
 
 export const DEFAULT_PROJECTION: ProjectionId = 'natural-earth'
+
+// width over height of the default projection's world, so map boxes can be sized to fit it
+export const MAP_ASPECT = 2.2

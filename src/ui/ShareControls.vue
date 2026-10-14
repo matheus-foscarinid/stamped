@@ -56,6 +56,7 @@ import { IMAGE_OPTIONS, useShareControls } from './useShareControls'
 const props = defineProps<{
   projection: ProjectionId
   visited: readonly CountryCode[]
+  wishlist: readonly CountryCode[]
 }>()
 
 const { t } = useI18n()
@@ -63,6 +64,7 @@ const { t } = useI18n()
 const { status, isSaving, copyLink, saveImage } = useShareControls({
   projection: () => props.projection,
   visited: () => props.visited,
+  wishlist: () => props.wishlist,
 })
 
 const menuRoot = useTemplateRef<HTMLElement>('menuRoot')

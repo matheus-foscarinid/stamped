@@ -1,10 +1,5 @@
-import {
-  APP_NAME,
-  GLOBE_LINE_WIDTH,
-  GLOBE_LINES_PATH,
-  STAMP_PATH,
-  STAMPED_CELL_PATH,
-} from '@/brand/logo'
+import { drawLogo } from '@/brand/draw-logo'
+import { APP_NAME } from '@/brand/logo'
 import { type CountryCode, getCountryHue } from '@/countries'
 import { drawWorldSnapshot, type ProjectionId, type ScreenRect } from '@/map'
 import { createExportCanvas, toPngBlob } from '@/share/canvas-export'
@@ -21,7 +16,7 @@ import { getStampStyle } from './stamp-style.ts'
 const MAP_BORDER_WIDTH_PX = 1.2
 // a little room in each cell for the tilt
 const STAMP_FILL = 0.86
-const LOGO = { size: 40, tiltRad: (-15 * Math.PI) / 180, viewBox: 256 }
+const LOGO_SIZE = 40
 const BOOK_RADIUS = { cover: 36, paper: 20 }
 const FOLD = { width: 80, shade: 'rgb(0 0 0 / 0.16)' }
 const ALPHA = { rule: 0.18, label: 0.6, machine: 0.5, empty: 0.7 }
@@ -184,32 +179,20 @@ const drawStampPage = async (
   })
 }
 
-const drawLogo = ({ context, theme }: Paint, { x, y }: Point) => {
-  const center = LOGO.viewBox / 2
-  context.save()
-  context.translate(x + LOGO.size / 2, y + LOGO.size / 2)
-  context.rotate(LOGO.tiltRad)
-  context.scale(LOGO.size / LOGO.viewBox, LOGO.size / LOGO.viewBox)
-  context.translate(-center, -center)
-  context.fillStyle = theme.ink
-  context.fill(new Path2D(STAMP_PATH), 'evenodd')
-  context.fillStyle = theme.visited
-  context.fill(new Path2D(STAMPED_CELL_PATH))
-  context.strokeStyle = theme.visited
-  context.lineWidth = GLOBE_LINE_WIDTH
-  context.lineCap = 'round'
-  context.stroke(new Path2D(GLOBE_LINES_PATH))
-  context.restore()
-}
-
 const drawHeader = (paint: Paint, area: ScreenRect, title: string) => {
   const { context, theme } = paint
   const baseline = area.y + 30
   const { spacing } = TYPE.header
-  drawLogo(paint, { x: area.x, y: area.y - 2 })
+  drawLogo(context, {
+    x: area.x,
+    y: area.y - 2,
+    size: LOGO_SIZE,
+    frame: theme.ink,
+    globe: theme.visited,
+  })
   context.fillStyle = theme.ink
   setFont(paint, TYPE.header)
-  const nameX = area.x + LOGO.size + 16
+  const nameX = area.x + LOGO_SIZE + 16
   drawSpacedText(context, { text: APP_NAME.toUpperCase(), x: nameX, y: baseline, spacing })
   const titleX = area.x + area.width
   drawSpacedText(context, {

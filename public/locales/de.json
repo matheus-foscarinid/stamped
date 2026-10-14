@@ -76,9 +76,7 @@
   "map.zoomOut": "Verkleinern",
   "map.resetZoom": "Zoom zurücksetzen",
   "map.loadError": "Die Karte konnte nicht geladen werden. Lade die Seite neu, um es noch mal zu versuchen.",
-  "card.title": {
-    "one": "{count} Land besucht",
-    "other": "{count} Länder besucht"
-  },
-  "card.subtitle": "{share} der Welt"
+  "card.eyebrow": "Meine Reisekarte",
+  "card.progress": "{count} von {total} Ländern",
+  "card.footer": "Erstelle deine auf {link}"
 }

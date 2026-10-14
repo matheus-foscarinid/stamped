@@ -22,7 +22,7 @@ interface SpacedText {
   x: number
   y: number
   spacing: number
-  align?: 'start' | 'end'
+  align?: 'start' | 'center' | 'end'
 }
 
 // spaces each letter by hand, since canvas letter spacing isn't in every browser yet
@@ -33,7 +33,8 @@ export const drawSpacedText = (
   const characters = [...text]
   const widths = characters.map(character => context.measureText(character).width)
   const total = widths.reduce((sum, width) => sum + width + spacing, -spacing)
-  let cursor = align === 'end' ? x - total : x
+  const offsets = { start: 0, center: total / 2, end: total }
+  let cursor = x - offsets[align]
   characters.forEach((character, index) => {
     context.fillText(character, cursor, y)
     cursor += (widths[index] ?? 0) + spacing

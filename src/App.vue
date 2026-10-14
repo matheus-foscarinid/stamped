@@ -44,7 +44,7 @@
         <GitHubLink class="stage-github" />
       </header>
       <footer class="stage-bottom">
-        <ShareControls :projection="projection" :visited="visited" />
+        <ShareControls :projection="projection" :visited="visited" :wishlist="wishlist" />
         <ClearMapButton :count="markedCount" @clear="clearMap" />
       </footer>
     </div>

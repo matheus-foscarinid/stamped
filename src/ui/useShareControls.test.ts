@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { renderPassport } from '@/passport/passport-image'
 import { renderCard } from '@/share/card-image'
 import { saveFile } from '@/share/save-file'
-import { stubClipboard } from '@/test/browser-stubs'
+import { stubAddressBar, stubClipboard } from '@/test/browser-stubs'
 import { mountComposable } from '@/test/composables'
 import { useShareControls } from './useShareControls.ts'
 
@@ -11,7 +11,11 @@ vi.mock('@/share/card-image', () => ({ renderCard: vi.fn() }))
 vi.mock('@/share/save-file', () => ({ saveFile: vi.fn() }))
 
 const IMAGE = new Blob(['png'], { type: 'image/png' })
-const MAP_INPUT = { projection: () => 'mercator' as const, visited: () => ['br' as const] }
+const MAP_INPUT = {
+  projection: () => 'mercator' as const,
+  visited: () => ['br' as const],
+  wishlist: () => ['is' as const],
+}
 
 const TWO_CONTINENTS_INPUT = { ...MAP_INPUT, visited: () => ['br' as const, 'fr' as const] }
 
@@ -24,6 +28,7 @@ const mountShareControls = ({ input = MAP_INPUT }: MountShareControlsOptions = {
 
 beforeEach(() => {
   vi.useFakeTimers()
+  stubAddressBar()
   vi.mocked(renderCard).mockResolvedValue(IMAGE)
   vi.mocked(renderPassport).mockResolvedValue(IMAGE)
   vi.mocked(saveFile).mockResolvedValue('saved')
@@ -54,13 +59,26 @@ describe('after copying the link', () => {
 })
 
 describe('after saving an image', () => {
-  it('draws the current map and confirms the save', async () => {
+  it('draws the current map with its stats and link, and confirms the save', async () => {
     const { status, saveImage } = mountShareControls()
     await saveImage('story')
     expect(renderCard).toHaveBeenCalledWith('story', {
       projection: 'mercator',
       visited: ['br'],
-      headline: { title: '1 country visited', subtitle: '<1% of the world' },
+      wishlist: ['is'],
+      progress: expect.closeTo(1 / 255),
+      text: {
+        eyebrow: 'My travel map',
+        count: '1',
+        countLabel: 'country visited',
+        progressLabel: '1 of 255 countries',
+        share: '<1%',
+        tiles: [
+          { value: '1/193', label: 'UN members' },
+          { value: '1/7', label: 'Continents' },
+        ],
+        footer: 'Map yours at map.test',
+      },
     })
     expect(saveFile).toHaveBeenCalledWith(IMAGE, 'stamped-story.png')
     expect(status.value).toBe('Image saved')

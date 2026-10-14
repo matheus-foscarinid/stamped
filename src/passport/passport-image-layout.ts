@@ -1,4 +1,4 @@
-import type { ScreenRect } from '@/map'
+import { MAP_ASPECT, type ScreenRect } from '@/map'
 
 export const PASSPORT_IMAGE = { width: 2000, height: 1300 }
 
@@ -6,8 +6,6 @@ const MARGIN = 70
 const COVER_PADDING = 18
 const PAGE_PADDING = 64
 const MAX_STAMP_CELL = 240
-// map's aspect ratio, so it fills the box
-export const MAP_ASPECT = 2.2
 const MAP_BLEED = 24
 
 const HEADER_HEIGHT = 40

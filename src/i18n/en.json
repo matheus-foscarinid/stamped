@@ -76,9 +76,7 @@
   "map.zoomOut": "Zoom out",
   "map.resetZoom": "Reset zoom",
   "map.loadError": "The map couldn't load. Refresh to try again.",
-  "card.title": {
-    "one": "{count} country visited",
-    "other": "{count} countries visited"
-  },
-  "card.subtitle": "{share} of the world"
+  "card.eyebrow": "My travel map",
+  "card.progress": "{count} of {total} countries",
+  "card.footer": "Map yours at {link}"
 }

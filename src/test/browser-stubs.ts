@@ -30,7 +30,7 @@ interface AddressBarStubOptions {
 }
 
 export const stubAddressBar = ({ hash = '', search = '' }: AddressBarStubOptions = {}) => {
-  const location = { pathname: '/', search, hash }
+  const location = { host: 'map.test', pathname: '/', search, hash }
   const browserWindow = Object.assign(new EventTarget(), { location })
   const replaceState = vi.fn((_state: unknown, _unused: string, url: string) => {
     location.hash = new URL(url, 'https://map.test').hash
