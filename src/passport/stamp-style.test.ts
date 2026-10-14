@@ -20,12 +20,16 @@ describe('getStampStyle', () => {
 
 describe('fitLabelSize', () => {
   it('keeps short names at the full size', () => {
-    expect(fitLabelSize('Peru', 84)).toBe(9)
+    expect(fitLabelSize('Peru', 84)).toBe(fitLabelSize('Chad', 84))
   })
 
-  it('shrinks long names so they still fit the space', () => {
-    const size = fitLabelSize('Bosnia and Herzegovina', 84)
-    expect(size).toBeLessThan(9)
-    expect(size * 'Bosnia and Herzegovina'.length * 0.68).toBeCloseTo(84)
+  it('shrinks long names in proportion, so they still fit the space', () => {
+    const long = fitLabelSize('A'.repeat(40), 84)
+    expect(long).toBeLessThan(fitLabelSize('Peru', 84))
+    expect(fitLabelSize('A'.repeat(80), 84)).toBeCloseTo(long / 2)
+  })
+
+  it('copes with an empty label', () => {
+    expect(fitLabelSize('', 84)).toBe(fitLabelSize('Peru', 84))
   })
 })
