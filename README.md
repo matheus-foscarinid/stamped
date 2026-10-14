@@ -1,12 +1,11 @@
 <div align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/logo-dark.svg">
-    <img src="docs/logo.svg" alt="" width="88" height="88">
-  </picture>
-  <h1>Stamped</h1>
-  <p>A map of the countries you've visited, shareable! Stamp countries.<br>No account, no server, no tracking.</p>
-  <br>
-  <picture>
+
+# <picture><source media="(prefers-color-scheme: dark)" srcset="docs/logo-dark.svg"><img src="docs/logo.svg" alt="" width="44" height="44" align="center"></picture> Stamped
+
+A map of the countries you've visited, shareable! Stamp countries.
+No account, no server, no tracking.
+
+<picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/screenshot-dark.png">
     <img src="docs/screenshot.png" alt="Stamped showing a world map with 28 visited countries filled in">
   </picture>
