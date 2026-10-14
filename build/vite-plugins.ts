@@ -10,11 +10,18 @@ const findHtml = (bundle: Rolldown.OutputBundle): Rolldown.OutputAsset | undefin
   return html?.type === 'asset' ? html : undefined
 }
 
+// the script goes to the end of the body, so the browser reads the css before 140 kb of js.
+// a module script waits for the parse either way
 const inlineChunk = (html: string, chunk: Rolldown.OutputChunk): string =>
-  html.replace(
-    new RegExp(`<script type="module" crossorigin src="[^"]*${chunk.fileName}"></script>`),
-    () => `<script type="module">${escapeForInlineScript(chunk.code)}</script>`
-  )
+  html
+    .replace(
+      new RegExp(`<script type="module" crossorigin src="[^"]*${chunk.fileName}"></script>`),
+      ''
+    )
+    .replace(
+      '</body>',
+      () => `<script type="module">${escapeForInlineScript(chunk.code)}</script></body>`
+    )
 
 const inlineStylesheet = (html: string, asset: Rolldown.OutputAsset): string =>
   html.replace(
