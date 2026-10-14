@@ -90,3 +90,23 @@ export const stubBlockedStorage = () => {
   }
   vi.stubGlobal('localStorage', { getItem: blocked, setItem: blocked })
 }
+
+interface PointerStubEvent {
+  pointerId?: number
+  pointerType?: string
+  button?: number
+  x?: number
+  y?: number
+}
+
+// node has no PointerEvent, so tests dispatch plain events carrying the fields the code reads
+export const createPointerEvent = (
+  type: string,
+  { pointerId = 1, pointerType = 'mouse', button = 0, x = 0, y = 0 }: PointerStubEvent = {}
+) => Object.assign(new Event(type), { pointerId, pointerType, button, clientX: x, clientY: y })
+
+export const stubCanvas = () =>
+  Object.assign(new EventTarget(), {
+    setPointerCapture: vi.fn(),
+    getBoundingClientRect: () => ({ left: 0, top: 0 }),
+  })

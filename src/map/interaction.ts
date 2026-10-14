@@ -87,6 +87,7 @@ export const attachInteraction = (
   canvas.addEventListener(
     'pointerdown',
     event => {
+      if (event.pointerType === 'mouse' && event.button !== 0) return
       canvas.setPointerCapture(event.pointerId)
       state.pointers.set(event.pointerId, toLocal(event))
       state.travel = state.pointers.size > 1 ? Number.POSITIVE_INFINITY : 0
@@ -103,9 +104,10 @@ export const attachInteraction = (
     },
     { signal }
   )
-  canvas.addEventListener('pointercancel', event => state.pointers.delete(event.pointerId), {
-    signal,
-  })
+  const forgetPointer = (event: PointerEvent) => state.pointers.delete(event.pointerId)
+  canvas.addEventListener('pointercancel', forgetPointer, { signal })
+  // a release the page never sees, like one under a context menu, would leave the map dragging
+  canvas.addEventListener('lostpointercapture', forgetPointer, { signal })
   canvas.addEventListener(
     'pointerleave',
     () => {
