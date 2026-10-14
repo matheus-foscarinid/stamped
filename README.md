@@ -1,45 +1,39 @@
-<p align="center">
+<div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/logo-dark.svg">
-    <img src="docs/logo.svg" alt="" width="96" height="96">
+    <img src="docs/logo.svg" alt="" width="88" height="88">
   </picture>
-</p>
-
-# Stamped
-
-A map of the countries you've visited, shareable as a link.
-
-Click a country or search for it to stamp it. The map lives in the link (`#v=br,jp,pt`), so sharing it is copying the address. No account, no server, no tracking.
+  <h1>Stamped</h1>
+  <p>A map of the countries you've visited, shareable! Stamp countries.<br>No account, no server, no tracking.</p>
+  <br>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/screenshot-dark.png">
+    <img src="docs/screenshot.png" alt="Stamped showing a world map with 28 visited countries filled in">
+  </picture>
+</div>
 
 ## Features
 
-- Every ISO 3166-1 country and territory is searchable, including ones too small to click
+- Search every country and territory, even the tiny ones
 - Stats for continents, UN members and share of the world
-- Save the map as an image: post (1080 × 1350), story (1080 × 1920) or wide (1200 × 630)
-- Your map is saved in the browser, so it's there when you come back
-- 11 themes, light and dark, following the system by default
+- Save the map as an image: post, story or wide
+- Your map stays saved in the browser
+- 11 themes, light and dark
 - Works on phones and ultrawide screens
 
-## How it stays fast
+## Fast by design
 
-The whole app is one HTML file of about 38 KB gzipped, plus one binary map file.
+One HTML page of about 39 KB gzipped, plus a binary map. The map is a single canvas, the UI is Vue Vapor, and no geo code ships to the browser.
 
-- The map is drawn on a single `<canvas>` from Natural Earth data, which a build step projects, rounds and delta-encodes to binary. No geo code ships to the browser
-- The UI is Vue 3.6 in Vapor mode, with no virtual DOM
-- Country names come from `Intl.DisplayNames` and flags are emoji, so neither ships as data
-- The build inlines the JS and CSS into `index.html` and fails if a source map or a split-off script lands in `dist/`
+## Run it
 
-## Running it
-
-Needs Node 24 (pinned in `mise.toml`).
+Needs Node 24.
 
 ```bash
 npm install
-npm run dev      # downloads the map source on first run, then starts Vite
-npm run build    # typecheck, build and check dist/
-npm run check    # lint, typecheck, unused code and tests
+npm run dev
 ```
 
 ## Data
 
-Country shapes come from [Natural Earth](https://www.naturalearthdata.com/) (public domain), version 5.1.2. Some territories Natural Earth folds into their country, such as French Guiana, are split out under their own code.
+Country shapes come from [Natural Earth](https://www.naturalearthdata.com/), public domain.
