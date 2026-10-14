@@ -5,7 +5,7 @@ const LETTER_A = 'a'.charCodeAt(0)
 const PLAIN_FLAG = '🏳️'
 
 // emoji sets have no flag for these, so the letters would show as boxes
-const CODES_WITHOUT_FLAG: ReadonlySet<CountryCode> = new Set(['xk', 'xn', 'xs'])
+const CODES_WITHOUT_FLAG: ReadonlySet<CountryCode> = new Set(['xa', 'xk', 'xn', 'xo', 'xs', 'xt'])
 
 // a flag emoji is just the two-letter code written in regional indicator symbols
 export const getFlagEmoji = (code: CountryCode): string => {

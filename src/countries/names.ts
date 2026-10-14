@@ -2,6 +2,14 @@ import type { CountryCode } from './catalog.ts'
 
 // the browser has no names for our private-use codes
 const UNLISTED_NAMES: Partial<Record<CountryCode, Record<string, string>>> = {
+  xa: {
+    de: 'Abchasien',
+    en: 'Abkhazia',
+    es: 'Abjasia',
+    fr: 'Abkhazie',
+    it: 'Abcasia',
+    pt: 'Abcásia',
+  },
   xn: {
     de: 'Nordzypern',
     en: 'Northern Cyprus',
@@ -10,6 +18,14 @@ const UNLISTED_NAMES: Partial<Record<CountryCode, Record<string, string>>> = {
     it: 'Cipro del Nord',
     pt: 'Chipre do Norte',
   },
+  xo: {
+    de: 'Südossetien',
+    en: 'South Ossetia',
+    es: 'Osetia del Sur',
+    fr: 'Ossétie du Sud',
+    it: 'Ossezia del Sud',
+    pt: 'Ossétia do Sul',
+  },
   xs: {
     de: 'Somaliland',
     en: 'Somaliland',
@@ -17,6 +33,14 @@ const UNLISTED_NAMES: Partial<Record<CountryCode, Record<string, string>>> = {
     fr: 'Somaliland',
     it: 'Somaliland',
     pt: 'Somalilândia',
+  },
+  xt: {
+    de: 'Transnistrien',
+    en: 'Transnistria',
+    es: 'Transnistria',
+    fr: 'Transnistrie',
+    it: 'Transnistria',
+    pt: 'Transnístria',
   },
 }
 

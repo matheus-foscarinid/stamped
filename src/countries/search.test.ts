@@ -37,6 +37,14 @@ describe('searchCountries', () => {
     expect(firstCode('vatican')).toBe('va')
     expect(firstCode('monaco')).toBe('mc')
   })
+
+  it('finds breakaway states the map has no shape for, by name and local name', () => {
+    expect(firstCode('abkhazia')).toBe('xa')
+    expect(firstCode('south ossetia')).toBe('xo')
+    expect(firstCode('transnistria')).toBe('xt')
+    expect(firstCode('pridnestrovie')).toBe('xt')
+    expect(searchCountries('transnistrien', { locale: 'de' })[0]?.code).toBe('xt')
+  })
 })
 
 describe('searching in another language', () => {
