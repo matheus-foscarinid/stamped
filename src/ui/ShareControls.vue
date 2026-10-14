@@ -29,12 +29,12 @@
         data-align="start"
       >
         <button
-          v-for="option in EXPORT_FORMAT_OPTIONS"
+          v-for="option in IMAGE_OPTIONS"
           :key="option.id"
           type="button"
           class="menu-item"
           :aria-disabled="isSaving"
-          @click="pickFormat(option.id)"
+          @click="pickImage(option.id)"
         >
           {{ t(`format.${option.id}`) }}
           <span class="menu-item-hint">{{ option.size }}</span>
@@ -50,9 +50,8 @@ import { useTemplateRef } from 'vue'
 import type { CountryCode } from '@/countries'
 import { useI18n } from '@/i18n/useI18n'
 import type { ProjectionId } from '@/map'
-import { EXPORT_FORMAT_OPTIONS, type ExportFormat } from '@/share/card-layout'
 import { useDismissibleMenu } from './useDismissibleMenu'
-import { useShareControls } from './useShareControls'
+import { IMAGE_OPTIONS, useShareControls } from './useShareControls'
 
 const props = defineProps<{
   projection: ProjectionId
@@ -70,9 +69,9 @@ const menuRoot = useTemplateRef<HTMLElement>('menuRoot')
 const menuTrigger = useTemplateRef<HTMLButtonElement>('menuTrigger')
 const { isOpen, toggle, close } = useDismissibleMenu({ root: menuRoot, trigger: menuTrigger })
 
-const pickFormat = (format: ExportFormat) => {
+const pickImage = (choice: (typeof IMAGE_OPTIONS)[number]['id']) => {
   close()
-  saveImage(format)
+  saveImage(choice)
 }
 </script>
 

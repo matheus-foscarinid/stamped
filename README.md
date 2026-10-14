@@ -29,7 +29,7 @@ No account, no server, no tracking.
 - [ ] Check for missing countries
 - [x] Disputed territories
 - [x] Passport view
-- [ ] Save the passport as an image
+- [x] Save the passport as an image
 - [ ] Different passport covers
 - [ ] Intro dialog on first open
 - [ ] States, regions and cities
@@ -39,7 +39,7 @@ No account, no server, no tracking.
 
 ## Fast by design
 
-One HTML page of about 47 KB gzipped, plus a binary map. The map is a single canvas, the UI is Vue Vapor, and no geo code ships to the browser.
+One HTML page of about 52 KB gzipped, plus a binary map. The map is a single canvas, the UI is Vue Vapor, and no geo code ships to the browser.
 
 ## Run it
 

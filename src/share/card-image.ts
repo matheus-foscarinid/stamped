@@ -1,10 +1,11 @@
+import { APP_NAME } from '@/brand/logo'
 import type { CountryCode } from '@/countries'
 import { drawWorldSnapshot, type ProjectionId } from '@/map'
 import { readCssTokens } from '@/styles/css-tokens'
+import { createExportCanvas, toPngBlob } from './canvas-export.ts'
 import { type CardLayout, EXPORT_FORMATS, type ExportFormat, layoutCard } from './card-layout.ts'
 
 const EXPORT_BORDER_WIDTH_PX = 1.2
-const APP_NAME = 'Stamped'
 
 const THEME_TOKENS = {
   background: '--surface',
@@ -42,25 +43,9 @@ const drawHeadline = (
   context.fillText(APP_NAME, padding, wordmark.baseline)
 }
 
-const createCanvas = (format: ExportFormat): CanvasRenderingContext2D => {
-  const canvas = document.createElement('canvas')
-  canvas.width = EXPORT_FORMATS[format].width
-  canvas.height = EXPORT_FORMATS[format].height
-  const context = canvas.getContext('2d')
-  if (!context) throw new Error('canvas 2d context unavailable')
-  return context
-}
-
-const toPngBlob = (canvas: HTMLCanvasElement): Promise<Blob> =>
-  new Promise((resolve, reject) => {
-    canvas.toBlob(
-      blob => (blob ? resolve(blob) : reject(new Error('could not encode the image'))),
-      'image/png'
-    )
-  })
-
 export const renderCard = async (format: ExportFormat, content: CardContent): Promise<Blob> => {
-  const context = createCanvas(format)
+  const { width, height } = EXPORT_FORMATS[format]
+  const context = createExportCanvas(width, height)
   const layout = layoutCard(format)
   const theme = readCssTokens(document.documentElement, THEME_TOKENS)
   context.fillStyle = theme.background

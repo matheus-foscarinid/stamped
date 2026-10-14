@@ -1,21 +1,31 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { renderPassport } from '@/passport/passport-image'
 import { renderCard } from '@/share/card-image'
 import { saveFile } from '@/share/save-file'
 import { stubClipboard } from '@/test/browser-stubs'
 import { mountComposable } from '@/test/composables'
 import { useShareControls } from './useShareControls.ts'
 
+vi.mock('@/passport/passport-image', () => ({ renderPassport: vi.fn() }))
 vi.mock('@/share/card-image', () => ({ renderCard: vi.fn() }))
 vi.mock('@/share/save-file', () => ({ saveFile: vi.fn() }))
 
 const IMAGE = new Blob(['png'], { type: 'image/png' })
 const MAP_INPUT = { projection: () => 'mercator' as const, visited: () => ['br' as const] }
 
-const mountShareControls = () => mountComposable(() => useShareControls(MAP_INPUT)).result
+const TWO_CONTINENTS_INPUT = { ...MAP_INPUT, visited: () => ['br' as const, 'fr' as const] }
+
+interface MountShareControlsOptions {
+  input?: Parameters<typeof useShareControls>[0]
+}
+
+const mountShareControls = ({ input = MAP_INPUT }: MountShareControlsOptions = {}) =>
+  mountComposable(() => useShareControls(input)).result
 
 beforeEach(() => {
   vi.useFakeTimers()
   vi.mocked(renderCard).mockResolvedValue(IMAGE)
+  vi.mocked(renderPassport).mockResolvedValue(IMAGE)
   vi.mocked(saveFile).mockResolvedValue('saved')
 })
 
@@ -56,6 +66,19 @@ describe('after saving an image', () => {
     expect(status.value).toBe('Image saved')
   })
 
+  it('draws the passport instead of a card, with its stamps in continent order', async () => {
+    const { saveImage } = mountShareControls({ input: TWO_CONTINENTS_INPUT })
+    await saveImage('passport')
+    const [content] = vi.mocked(renderPassport).mock.calls[0] ?? []
+    expect(content?.stamps).toEqual([
+      { code: 'fr', name: 'France', continent: 'Europe' },
+      { code: 'br', name: 'Brazil', continent: 'South America' },
+    ])
+    expect(content?.text.count).toBe(2)
+    expect(renderCard).not.toHaveBeenCalled()
+    expect(saveFile).toHaveBeenCalledWith(IMAGE, 'stamped-passport.png')
+  })
+
   it('stays quiet when the user closes the share sheet', async () => {
     vi.mocked(saveFile).mockResolvedValue('cancelled')
     const { status, saveImage } = mountShareControls()
@@ -69,6 +92,17 @@ describe('after saving an image', () => {
     await saveImage('wide')
     expect(status.value).toBe('Could not create the image. Try again')
     expect(isSaving.value).toBe(false)
+  })
+})
+
+describe('after a passport image fails', () => {
+  it('says so and lets the user retry', async () => {
+    vi.mocked(renderPassport).mockRejectedValue(new Error('stamp image failed to decode'))
+    const { status, isSaving, saveImage } = mountShareControls()
+    await saveImage('passport')
+    expect(status.value).toBe('Could not create the image. Try again')
+    expect(isSaving.value).toBe(false)
+    expect(saveFile).not.toHaveBeenCalled()
   })
 })
 

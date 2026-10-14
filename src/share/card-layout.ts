@@ -22,10 +22,13 @@ interface ExportFormatOption {
   size: string
 }
 
-export const EXPORT_FORMAT_OPTIONS: ExportFormatOption[] = EXPORT_FORMAT_IDS.map(id => {
-  const { width, height } = EXPORT_FORMATS[id]
-  return { id, size: `${width} × ${height}` }
-})
+export const formatImageSize = ({ width, height }: { width: number; height: number }): string =>
+  `${width} × ${height}`
+
+export const EXPORT_FORMAT_OPTIONS: ExportFormatOption[] = EXPORT_FORMAT_IDS.map(id => ({
+  id,
+  size: formatImageSize(EXPORT_FORMATS[id]),
+}))
 
 const PADDING_RATIO = 0.07
 const TITLE_RATIO = 0.08

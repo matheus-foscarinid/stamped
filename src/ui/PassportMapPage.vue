@@ -7,7 +7,7 @@
       </span>
       <span>{{ content.text.title }}</span>
     </header>
-    <div class="map-page-figure">
+    <div class="map-page-figure" :style="{ aspectRatio: MAP_ASPECT }">
       <canvas ref="canvas" class="map-page-canvas" aria-hidden="true" />
     </div>
     <p class="map-page-headline">
@@ -33,6 +33,7 @@ import { useTemplateRef, watch } from 'vue'
 import { APP_NAME } from '@/brand/logo'
 import type { CountryCode } from '@/countries'
 import { drawWorldSnapshot, type ProjectionId } from '@/map'
+import { MAP_ASPECT } from '@/passport/passport-image-layout'
 import StampedLogo from './StampedLogo.vue'
 import { useCanvasRedraw } from './useCanvasRedraw'
 import { usePassportContent } from './usePassportContent'
@@ -119,7 +120,6 @@ watch(() => props.visited, redrawMap)
 
 .map-page-figure {
   position: relative;
-  aspect-ratio: 2.2;
   flex: none;
   margin: auto -12px 0;
 }
