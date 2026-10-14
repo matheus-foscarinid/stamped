@@ -20,6 +20,17 @@ No account, no server, no tracking.
 - 11 themes, light and dark
 - Works on phones and ultrawide screens
 
+## Roadmap
+
+- [ ] Wishlist countries
+- [ ] Check for missing countries
+- [ ] Disputed territories
+- [ ] Passport view
+- [ ] States, regions and cities
+- [ ] i18n
+- [ ] Accounts
+- [ ] 3D globe view
+
 ## Fast by design
 
 One HTML page of about 39 KB gzipped, plus a binary map. The map is a single canvas, the UI is Vue Vapor, and no geo code ships to the browser.
