@@ -1,0 +1,9 @@
+node_modules
+dist
+data/source
+public/maps
+.vibe-wise
+.claude
+.mcp.json
+.playwright-mcp
+*.log
