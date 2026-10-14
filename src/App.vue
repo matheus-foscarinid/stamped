@@ -36,7 +36,7 @@ const { projection, visited, isVisited, toggleVisited } = useTravelMap()
 <style scoped>
 .app {
   height: 100dvh;
-  padding: 12px;
+  padding: 28px 12px;
 }
 
 .stage {
@@ -111,7 +111,7 @@ const { projection, visited, isVisited, toggleVisited } = useTravelMap()
 
 @media (max-width: 600px) {
   .app {
-    padding: 8px;
+    padding: 16px 8px;
   }
 
   .stage {
