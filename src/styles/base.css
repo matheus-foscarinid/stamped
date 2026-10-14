@@ -21,10 +21,15 @@
   --stamp-blend: multiply;
   --stamp-opacity: 0.88;
 
-  /* one passport for now. other covers can swap these */
   --passport-cover: #7a1f30;
-  --passport-cover-dark: #4a1220;
-  --passport-gold: #d9b26a;
+  --passport-foil: #d9b26a;
+  /* the binding and the open book's edge, darker on light pages */
+  --passport-cover-depth: 62%;
+  --passport-cover-dark: color-mix(
+    in srgb,
+    var(--passport-cover) var(--passport-cover-depth),
+    #000
+  );
   --passport-paper: #f5efe0;
   --passport-paper-line: rgb(120 90 40 / 0.14);
   --passport-ink: #3a3326;
@@ -123,6 +128,39 @@
   --control-active-text: #ffffff;
 }
 
+/* registered as a colour, so the passport export reads a resolved colour, not color-mix() */
+@property --passport-cover-dark {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #4a1220;
+}
+
+/* every cover sets both, so a swatch never inherits the colours of the cover in use */
+[data-cover="burgundy"] {
+  --passport-cover: #7a1f30;
+  --passport-foil: #d9b26a;
+}
+
+[data-cover="navy"] {
+  --passport-cover: #1f3160;
+  --passport-foil: #d9b26a;
+}
+
+[data-cover="green"] {
+  --passport-cover: #1f4d38;
+  --passport-foil: #d9b26a;
+}
+
+[data-cover="teal"] {
+  --passport-cover: #135c5e;
+  --passport-foil: #d9b26a;
+}
+
+[data-cover="black"] {
+  --passport-cover: #202024;
+  --passport-foil: #c9ccd2;
+}
+
 [data-theme="dark"],
 [data-theme="dusk"],
 [data-theme="forest"],
@@ -141,7 +179,7 @@
   --passport-paper: #26262b;
   --passport-paper-line: rgb(0 0 0 / 0.28);
   --passport-ink: #ebe8e1;
-  --passport-cover-dark: #6a1a2c;
+  --passport-cover-depth: 88%;
 
   color-scheme: dark;
 }

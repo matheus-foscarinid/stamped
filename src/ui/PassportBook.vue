@@ -7,12 +7,15 @@
       </div>
       <PassportCover />
     </div>
-    <PassportNav
-      v-if="spreadCount > 1"
-      :spread-index="spreadIndex"
-      :spread-count="spreadCount"
-      @turn="turnBy"
-    />
+    <div class="passport-controls">
+      <PassportNav
+        v-if="spreadCount > 1"
+        :spread-index="spreadIndex"
+        :spread-count="spreadCount"
+        @turn="turnBy"
+      />
+      <PassportCoverPicker />
+    </div>
   </section>
 </template>
 
@@ -22,6 +25,7 @@ import type { CountryCode } from '@/countries'
 import { useI18n } from '@/i18n/useI18n'
 import type { ProjectionId } from '@/map'
 import PassportCover from './PassportCover.vue'
+import PassportCoverPicker from './PassportCoverPicker.vue'
 import PassportMapPage from './PassportMapPage.vue'
 import PassportNav from './PassportNav.vue'
 import PassportStampPage from './PassportStampPage.vue'
@@ -73,6 +77,13 @@ const { spreadIndex, spreadCount, turnBy } = usePassportPages({ track })
     background-color: transparent;
     box-shadow: none;
   }
+}
+
+.passport-controls {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
 }
 
 .book-track {
@@ -140,6 +151,10 @@ const { spreadIndex, spreadCount, turnBy } = usePassportPages({ track })
   .book-page {
     flex-basis: 100%;
     padding: 18px;
+  }
+
+  .passport-controls {
+    gap: 10px;
   }
 }
 </style>

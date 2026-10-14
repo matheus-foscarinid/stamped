@@ -58,6 +58,12 @@
   },
   "passport.previous": "Página anterior",
   "passport.next": "Página siguiente",
+  "passport.cover": "Portada",
+  "cover.burgundy": "Burdeos",
+  "cover.navy": "Azul marino",
+  "cover.green": "Verde",
+  "cover.teal": "Verde azulado",
+  "cover.black": "Negro",
   "clear.button": "Borrar",
   "clear.title": "¿Borrar tu mapa?",
   "clear.text": {

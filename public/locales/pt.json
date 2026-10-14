@@ -60,6 +60,12 @@
   },
   "passport.previous": "Página anterior",
   "passport.next": "Próxima página",
+  "passport.cover": "Capa",
+  "cover.burgundy": "Bordô",
+  "cover.navy": "Azul-marinho",
+  "cover.green": "Verde",
+  "cover.teal": "Petróleo",
+  "cover.black": "Preto",
   "clear.button": "Limpar",
   "clear.title": "Limpar seu mapa?",
   "clear.text": {

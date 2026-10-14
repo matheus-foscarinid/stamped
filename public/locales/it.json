@@ -58,6 +58,12 @@
   },
   "passport.previous": "Pagina precedente",
   "passport.next": "Pagina successiva",
+  "passport.cover": "Copertina",
+  "cover.burgundy": "Bordeaux",
+  "cover.navy": "Blu navy",
+  "cover.green": "Verde",
+  "cover.teal": "Ottanio",
+  "cover.black": "Nero",
   "clear.button": "Cancella",
   "clear.title": "Cancellare la mappa?",
   "clear.text": {

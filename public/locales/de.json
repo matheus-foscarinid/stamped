@@ -58,6 +58,12 @@
   },
   "passport.previous": "Vorherige Seite",
   "passport.next": "Nächste Seite",
+  "passport.cover": "Einband",
+  "cover.burgundy": "Bordeaux",
+  "cover.navy": "Marineblau",
+  "cover.green": "Grün",
+  "cover.teal": "Petrol",
+  "cover.black": "Schwarz",
   "clear.button": "Leeren",
   "clear.title": "Karte leeren?",
   "clear.text": {

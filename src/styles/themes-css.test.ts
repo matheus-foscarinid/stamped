@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
+import { COVER_IDS } from '@/passport/covers'
 import { THEME_CHOICES } from '@/theme/themes'
 
 // vitest hands css imports back empty, even with ?raw, so this reads the file itself
@@ -27,5 +28,13 @@ describe('theme palettes in base.css', () => {
     expect(group).toContain('color-scheme: dark')
     expect(group).toContain('--passport-paper:')
     expect(group).not.toContain('--page-bg')
+  })
+})
+
+describe('passport covers in base.css', () => {
+  it.each(COVER_IDS)('gives %s its own cover and foil, so swatches never borrow them', cover => {
+    const [rule] = findRules(`[data-cover="${cover}"] {`)
+    expect(rule).toContain('--passport-cover:')
+    expect(rule).toContain('--passport-foil:')
   })
 })

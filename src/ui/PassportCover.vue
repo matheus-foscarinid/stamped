@@ -45,7 +45,7 @@ const { t } = useI18n()
     linear-gradient(90deg, rgb(0 0 0 / 0.35), transparent 8%),
     radial-gradient(120% 80% at 30% 20%, rgb(255 255 255 / 0.12), transparent 60%),
     var(--passport-cover);
-  color: var(--passport-gold);
+  color: var(--passport-foil);
 }
 
 .passport-cover-front::after,

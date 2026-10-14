@@ -58,6 +58,12 @@
   },
   "passport.previous": "Previous page",
   "passport.next": "Next page",
+  "passport.cover": "Cover",
+  "cover.burgundy": "Burgundy",
+  "cover.navy": "Navy",
+  "cover.green": "Green",
+  "cover.teal": "Teal",
+  "cover.black": "Black",
   "clear.button": "Clear",
   "clear.title": "Clear your map?",
   "clear.text": {

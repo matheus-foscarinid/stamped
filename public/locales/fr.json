@@ -58,6 +58,12 @@
   },
   "passport.previous": "Page précédente",
   "passport.next": "Page suivante",
+  "passport.cover": "Couverture",
+  "cover.burgundy": "Bordeaux",
+  "cover.navy": "Bleu marine",
+  "cover.green": "Vert",
+  "cover.teal": "Bleu canard",
+  "cover.black": "Noir",
   "clear.button": "Effacer",
   "clear.title": "Effacer votre carte ?",
   "clear.text": {
