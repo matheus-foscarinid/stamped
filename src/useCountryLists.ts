@@ -1,5 +1,5 @@
-import { onScopeDispose, type Ref, ref, watch } from 'vue'
-import type { CountryCode, CountryLists } from '@/countries'
+import { onScopeDispose, type Ref, shallowRef, watch } from 'vue'
+import { type CountryCode, type CountryLists, keepVisitWins } from '@/countries'
 import { readCountryList, readListsFromHash, writeListsToHash } from '@/share/link'
 
 const STORAGE_KEYS: Record<keyof CountryLists, string> = {
@@ -25,20 +25,24 @@ const saveLists = (lists: CountryLists) => {
     localStorage.setItem(STORAGE_KEYS.visited, lists.visited.join(','))
     localStorage.setItem(STORAGE_KEYS.wishlist, lists.wishlist.join(','))
   } catch {
-    // blocked storage keeps the map in the link only
+    // the link is the only copy then
   }
 }
 
 const hasCountries = (lists: CountryLists) => lists.visited.length + lists.wishlist.length > 0
 
+const readSavedLists = (): CountryLists =>
+  keepVisitWins({
+    visited: readSavedList(STORAGE_KEYS.visited),
+    wishlist: readSavedList(STORAGE_KEYS.wishlist),
+  })
+
+export const hasSavedMap = (): boolean => hasCountries(readSavedLists())
+
 // a link always wins, so opening someone's map shows theirs
 const readStartingLists = (): CountryLists => {
   const linked = readListsFromHash(window.location.hash)
-  if (hasCountries(linked)) return linked
-  return {
-    visited: readSavedList(STORAGE_KEYS.visited),
-    wishlist: readSavedList(STORAGE_KEYS.wishlist),
-  }
+  return hasCountries(linked) ? linked : readSavedLists()
 }
 
 const writeListsToAddressBar = (lists: CountryLists) => {
@@ -49,8 +53,8 @@ const writeListsToAddressBar = (lists: CountryLists) => {
 
 // only edits are saved, so viewing a friend's link never overwrites your own map
 export const useCountryLists = (): UseCountryListsResult => {
-  const lists = ref<CountryLists>(readStartingLists())
-  // immediate, so a map restored from storage is in the link before anyone copies it
+  const lists = shallowRef<CountryLists>(readStartingLists())
+  // immediate so the link is ready before anyone copies it
   watch(lists, writeListsToAddressBar, { immediate: true })
 
   const followPastedLink = () => {

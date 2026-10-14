@@ -31,6 +31,18 @@ describe('on a later visit', () => {
   })
 })
 
+describe('for someone who made a map before the intro existed', () => {
+  it('keeps the intro closed', () => {
+    stubStorage({ 'stamped-visited': 'br' })
+    expect(mountComposable(useIntroDialog).result.isOpen.value).toBe(false)
+  })
+
+  it('keeps it closed for a saved wishlist too', () => {
+    stubStorage({ 'stamped-wishlist': 'is' })
+    expect(mountComposable(useIntroDialog).result.isOpen.value).toBe(false)
+  })
+})
+
 describe('when storage is blocked', () => {
   it('skips the intro, since it would come back on every visit', () => {
     stubBlockedStorage()
