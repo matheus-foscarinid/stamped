@@ -1,4 +1,5 @@
 import type { Plugin, Rolldown } from 'vite'
+import { buildLogoDataUrl } from '../src/brand/logo.ts'
 import { DEFAULT_PROJECTION, getMapFileName } from '../src/map/projections.ts'
 
 // a closing tag inside inlined code would end the script element early
@@ -58,4 +59,22 @@ export const preloadDefaultMap = (base: string): Plugin => ({
       attrs: { rel: 'preload', href: `${base}maps/${file}`, as: 'fetch', crossorigin: '' },
       injectTo: 'head-prepend' as const,
     })),
+})
+
+// the light theme's colours. the app repaints it for the active theme as soon as it runs
+const STARTING_FAVICON_COLORS = { frame: '#5c5c63', globe: '#000000' }
+
+export const injectFavicon = (): Plugin => ({
+  name: 'travel-tracker:inject-favicon',
+  transformIndexHtml: () => [
+    {
+      tag: 'link',
+      attrs: {
+        rel: 'icon',
+        type: 'image/svg+xml',
+        href: buildLogoDataUrl(STARTING_FAVICON_COLORS),
+      },
+      injectTo: 'head' as const,
+    },
+  ],
 })

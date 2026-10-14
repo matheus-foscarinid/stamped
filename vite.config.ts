@@ -1,7 +1,7 @@
 import { fileURLToPath, URL } from 'node:url'
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
-import { inlineEntryAssets, preloadDefaultMap } from './build/vite-plugins.ts'
+import { injectFavicon, inlineEntryAssets, preloadDefaultMap } from './build/vite-plugins.ts'
 
 const BASE = '/'
 
@@ -10,6 +10,7 @@ export default defineConfig({
   plugins: [
     vue({ features: { vapor: true, optionsAPI: false, prodDevtools: false } }),
     preloadDefaultMap(BASE),
+    injectFavicon(),
     inlineEntryAssets(),
   ],
   resolve: {

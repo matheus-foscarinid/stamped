@@ -10,7 +10,16 @@
         aria-controls="travel-stats"
         @click="toggle"
       >
-        <span>Stamped</span>
+        <span class="summary-brand">
+          <svg class="summary-logo" :viewBox="LOGO_VIEWBOX" aria-hidden="true">
+            <g :transform="LOGO_TILT">
+              <path class="logo-frame" fill-rule="evenodd" :d="STAMP_PATH" />
+              <path class="logo-globe" :d="STAMPED_CELL_PATH" />
+              <path class="logo-globe-lines" :stroke-width="GLOBE_LINE_WIDTH" :d="GLOBE_LINES_PATH" />
+            </g>
+          </svg>
+          Stamped
+        </span>
         <span class="summary-count">{{ visited.length }} of {{ COUNTRY_CODES.length }}</span>
       </button>
     </h1>
@@ -32,6 +41,14 @@
 
 <script setup vapor lang="ts">
 import { computed, useTemplateRef } from 'vue'
+import {
+  GLOBE_LINE_WIDTH,
+  GLOBE_LINES_PATH,
+  LOGO_TILT,
+  LOGO_VIEWBOX,
+  STAMP_PATH,
+  STAMPED_CELL_PATH,
+} from '@/brand/logo'
 import { COUNTRY_CODES, type CountryCode, getTravelStats } from '@/countries'
 import { useDismissibleMenu } from './useDismissibleMenu'
 
@@ -83,6 +100,33 @@ const continentNote = computed(() => stats.value.continentNames || 'Mark a count
 .summary-heading {
   margin: 0;
   font: inherit;
+}
+
+.summary-brand {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  align-self: center;
+}
+
+.summary-logo {
+  width: 24px;
+  height: 24px;
+  margin-block: -3px;
+}
+
+.logo-frame {
+  fill: var(--text-muted);
+}
+
+.logo-globe {
+  fill: var(--map-visited);
+}
+
+.logo-globe-lines {
+  fill: none;
+  stroke: var(--map-visited);
+  stroke-linecap: round;
 }
 
 .summary-toggle {

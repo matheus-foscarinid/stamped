@@ -1,3 +1,6 @@
+import { buildLogoDataUrl } from '@/brand/logo'
+import { readCssTokens } from '@/styles/css-tokens'
+
 export const THEME_CHOICES = [
   'auto',
   'light',
@@ -60,9 +63,18 @@ export const storeTheme = (choice: ThemeChoice): void => {
   }
 }
 
+// keep in step with the .logo-* colours in TravelSummary.vue
+const BROWSER_CHROME_TOKENS = {
+  pageColor: '--page-bg',
+  logoFrame: '--text-muted',
+  logoGlobe: '--map-visited',
+}
+
 export const applyTheme = (name: ThemeName): void => {
   const root = document.documentElement
   root.dataset.theme = name
-  const pageColor = getComputedStyle(root).getPropertyValue('--page-bg').trim()
+  const { pageColor, logoFrame, logoGlobe } = readCssTokens(root, BROWSER_CHROME_TOKENS)
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', pageColor)
+  const favicon = buildLogoDataUrl({ frame: logoFrame, globe: logoGlobe })
+  document.querySelector('link[rel="icon"]')?.setAttribute('href', favicon)
 }

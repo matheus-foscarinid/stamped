@@ -29,6 +29,7 @@ src/map/         facade over decoder, renderer, hit-testing and viewport
 src/countries/   catalog.ts (iso codes + aliases, add a country = add a code), search, names, flags
 src/share/       link codec (#v=br,in), export card layout and drawing, file saving
 src/ui/          presentational Vapor components and their hooks
+src/brand/       the logo drawing, shared by the header, the favicon and docs/logo*.svg
 src/styles/      shared tokens, theme palettes on [data-theme] and the css token reader
 src/theme/       theme catalog, saved choice and the auto (system) theme
 src/test/        browser stubs, since tests run in node
@@ -46,6 +47,7 @@ src/main.ts      mounts the app
 ## Rules
 
 - The production build inlines the entry JS and CSS into `index.html` and preloads the default projection's map file (`build/vite-plugins.ts`). Change `DEFAULT_PROJECTION` and the preload follows
+- The favicon is the logo drawn in the active theme's colours. `build/vite-plugins.ts` injects the light one and `applyTheme` repaints it. A test fails if `docs/logo*.svg` drift from `src/brand/logo.ts`
 - `index.html` sets `data-theme` before first paint with a tiny inline script. It mirrors `src/theme/themes.ts`, so change the storage key or the auto rule in both
 - Never ship source maps. `vite.config.ts` disables them and `check:dist` fails the build if a `.map` file or an oversized file lands in `dist/`
 - Imports more than one level up go through the `@/` alias
