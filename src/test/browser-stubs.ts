@@ -80,4 +80,13 @@ export const stubStorage = (initial: Record<string, string> = {}) => {
     getItem: (key: string) => values.get(key) ?? null,
     setItem: (key: string, value: string) => values.set(key, value),
   })
+  return { values }
+}
+
+// private windows and strict privacy settings throw on any storage access
+export const stubBlockedStorage = () => {
+  const blocked = () => {
+    throw new DOMException('blocked', 'SecurityError')
+  }
+  vi.stubGlobal('localStorage', { getItem: blocked, setItem: blocked })
 }

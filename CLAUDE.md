@@ -32,7 +32,7 @@ src/ui/          presentational Vapor components and their hooks
 src/styles/      shared tokens, theme palettes on [data-theme] and the css token reader
 src/theme/       theme catalog, saved choice and the auto (system) theme
 src/test/        browser stubs, since tests run in node
-src/use*.ts      page state. useVisitedLink keeps the visited countries in the link
+src/use*.ts      page state. useVisitedCountries keeps the visited countries in the link and saves your edits
 src/main.ts      mounts the app
 ```
 
