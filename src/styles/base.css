@@ -206,6 +206,13 @@
   --control-active-text: #0d1830;
 }
 
+/* a theme switch cross-fades the whole page, canvas included */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 420ms;
+  animation-timing-function: var(--ease-out);
+}
+
 @media (prefers-reduced-motion: reduce) {
   :root {
     --motion-fast: 0ms;

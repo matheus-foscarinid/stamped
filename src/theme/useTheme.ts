@@ -5,6 +5,7 @@ import {
   readStoredTheme,
   resolveTheme,
   storeTheme,
+  switchTheme,
   type ThemeChoice,
 } from './themes.ts'
 
@@ -16,7 +17,8 @@ interface UseThemeResult {
 export const useTheme = (): UseThemeResult => {
   const theme = ref<ThemeChoice>(readStoredTheme())
   const darkScheme = window.matchMedia(DARK_SCHEME_QUERY)
-  const applyChoice = () => applyTheme(resolveTheme(theme.value, darkScheme.matches))
+  const resolveChoice = () => resolveTheme(theme.value, darkScheme.matches)
+  const applyChoice = () => switchTheme(resolveChoice())
 
   const setTheme = (choice: ThemeChoice) => {
     theme.value = choice
@@ -27,7 +29,8 @@ export const useTheme = (): UseThemeResult => {
   // auto follows the system, even while the page is open
   darkScheme.addEventListener('change', applyChoice)
   onScopeDispose(() => darkScheme.removeEventListener('change', applyChoice))
-  applyChoice()
+  // the first paint already has the theme, so there's nothing to fade from
+  applyTheme(resolveChoice())
 
   return { theme, setTheme }
 }

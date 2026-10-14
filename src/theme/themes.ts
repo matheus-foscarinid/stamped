@@ -64,3 +64,13 @@ export const applyTheme = (name: ThemeName): void => {
   const favicon = buildLogoDataUrl({ frame: logoFrame, globe: logoGlobe })
   document.querySelector('link[rel="icon"]')?.setAttribute('href', favicon)
 }
+
+// crossfades through a view transition where the browser has one and motion is welcome
+export const switchTheme = (name: ThemeName): void => {
+  const isStill = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (isStill || !document.startViewTransition) {
+    applyTheme(name)
+    return
+  }
+  document.startViewTransition(() => applyTheme(name))
+}

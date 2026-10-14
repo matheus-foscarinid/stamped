@@ -180,3 +180,25 @@ export const stubPageLanguage = () => {
 // node has no KeyboardEvent, so a plain cancelable event carries the key
 export const createKeyEvent = (key: string): KeyboardEvent =>
   Object.assign(new Event('keydown', { cancelable: true }), { key }) as KeyboardEvent
+
+interface ThemeSwitchStubOptions {
+  prefersReducedMotion: boolean
+  hasViewTransitions?: boolean
+}
+
+// a root with no css, so the theme tokens read empty and only the attribute matters
+export const stubThemeSwitch = ({
+  prefersReducedMotion,
+  hasViewTransitions = true,
+}: ThemeSwitchStubOptions) => {
+  const root = { dataset: {} as Record<string, string> }
+  const startViewTransition = vi.fn((update: () => void) => update())
+  vi.stubGlobal('document', {
+    documentElement: root,
+    querySelector: () => null,
+    ...(hasViewTransitions ? { startViewTransition } : {}),
+  })
+  vi.stubGlobal('window', { matchMedia: () => ({ matches: prefersReducedMotion }) })
+  vi.stubGlobal('getComputedStyle', () => ({ getPropertyValue: () => '' }))
+  return { root, startViewTransition }
+}
