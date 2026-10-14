@@ -1,4 +1,16 @@
-export const THEME_CHOICES = ['auto', 'light', 'dark', 'lilac', 'ink', 'rose', 'dusk'] as const
+export const THEME_CHOICES = [
+  'auto',
+  'light',
+  'dark',
+  'lilac',
+  'ink',
+  'rose',
+  'ocean',
+  'sunset',
+  'dusk',
+  'forest',
+  'midnight',
+] as const
 
 export type ThemeChoice = (typeof THEME_CHOICES)[number]
 
@@ -11,7 +23,11 @@ export const THEME_LABELS: Record<ThemeChoice, string> = {
   lilac: 'Lilac',
   ink: 'Ink',
   rose: 'Rose',
+  ocean: 'Ocean',
+  sunset: 'Sunset',
   dusk: 'Dusk',
+  forest: 'Forest',
+  midnight: 'Midnight',
 }
 
 // index.html reads this key before first paint, so keep the two in step

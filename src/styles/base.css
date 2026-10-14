@@ -79,8 +79,40 @@
   --control-active-text: #ffffff;
 }
 
+[data-theme="ocean"] {
+  --page-bg: #cfe6f2;
+  --surface: #e3f1f8;
+  --text: #0f2f3d;
+  --text-muted: #3f6170;
+  --accent: #0f2f3d;
+  --map-land: #ffffff;
+  --map-border: #b5d6e6;
+  --map-visited: #0a7ea4;
+  --map-hover: #d8ecf5;
+  --control-hover-bg: rgb(15 47 61 / 0.07);
+  --control-active-bg: #0f2f3d;
+  --control-active-text: #ffffff;
+}
+
+[data-theme="sunset"] {
+  --page-bg: #ffd8c2;
+  --surface: #ffe9dc;
+  --text: #3b1d2a;
+  --text-muted: #74485a;
+  --accent: #3b1d2a;
+  --map-land: #fff8f3;
+  --map-border: #f5c9b0;
+  --map-visited: #c2185b;
+  --map-hover: #ffe0cf;
+  --control-hover-bg: rgb(59 29 42 / 0.07);
+  --control-active-bg: #3b1d2a;
+  --control-active-text: #ffffff;
+}
+
 [data-theme="dark"],
-[data-theme="dusk"] {
+[data-theme="dusk"],
+[data-theme="forest"],
+[data-theme="midnight"] {
   --glass-bg: rgb(48 48 54 / 0.52);
   --glass-hover: rgb(72 72 80 / 0.7);
   --glass-edge: rgb(255 255 255 / 0.14);
@@ -119,6 +151,38 @@
   --glass-hover: rgb(80 68 120 / 0.6);
   --control-active-bg: #c4aad5;
   --control-active-text: #231d3a;
+}
+
+[data-theme="forest"] {
+  --page-bg: #0c1a12;
+  --surface: #12251a;
+  --text: #e8f3ea;
+  --text-muted: #9cb8a3;
+  --accent: #a6e36b;
+  --map-land: #24402f;
+  --map-border: #12251a;
+  --map-visited: #a6e36b;
+  --map-hover: #2f5340;
+  --glass-bg: rgb(36 64 47 / 0.5);
+  --glass-hover: rgb(50 86 64 / 0.6);
+  --control-active-bg: #a6e36b;
+  --control-active-text: #0c1a12;
+}
+
+[data-theme="midnight"] {
+  --page-bg: #070d1c;
+  --surface: #0d1830;
+  --text: #eef2fb;
+  --text-muted: #9aa8c7;
+  --accent: #f2c14e;
+  --map-land: #1d2b4a;
+  --map-border: #0d1830;
+  --map-visited: #f2c14e;
+  --map-hover: #2a3c63;
+  --glass-bg: rgb(29 43 74 / 0.5);
+  --glass-hover: rgb(42 60 99 / 0.6);
+  --control-active-bg: #f2c14e;
+  --control-active-text: #0d1830;
 }
 
 @media (prefers-reduced-motion: reduce) {
