@@ -3,13 +3,14 @@
     <label class="visually-hidden" for="country-search-input">Search countries</label>
     <input
       id="country-search-input"
-      v-model="query"
+      :value="query"
       class="country-search-input control-surface"
       type="search"
       autocomplete="off"
       placeholder="Search countries"
       aria-describedby="country-search-status"
-      @keydown.enter.prevent="pickTopMatch"
+      @input="updateQuery"
+      @keydown="pickOnEnter"
     />
     <p id="country-search-status" class="visually-hidden" aria-live="polite">
       {{ query ? `${matches.length} matching countries` : '' }}
@@ -43,7 +44,7 @@ const emit = defineEmits<{
   toggle: [code: CountryCode]
 }>()
 
-const { query, matches, pick, pickTopMatch } = useCountrySearch({
+const { query, matches, pick, updateQuery, pickOnEnter } = useCountrySearch({
   onPick: code => emit('toggle', code),
 })
 </script>

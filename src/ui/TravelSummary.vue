@@ -20,7 +20,7 @@
           <div v-for="stat in statRows" :key="stat.label" class="summary-stat">
             <dt>{{ stat.label }}</dt>
             <dd>{{ stat.value }}</dd>
-            <span class="summary-bar" :style="{ '--ratio': stat.ratio }" aria-hidden="true" />
+            <progress class="summary-bar" :value="stat.ratio" aria-hidden="true" />
           </div>
         </dl>
         <p class="summary-note">{{ continentNote }}</p>
@@ -161,12 +161,26 @@ const continentNote = computed(() => stats.value.continentNames || 'Mark a count
 
 .summary-bar {
   grid-column: 1 / -1;
+  width: 100%;
   height: 4px;
+  overflow: hidden;
+  border: 0;
   border-radius: 2px;
-  background: linear-gradient(var(--map-visited), var(--map-visited)) no-repeat 0 0 /
-      calc(var(--ratio) * 100%) 100%,
-    var(--control-hover-bg);
-  transition: background-size var(--motion-base) var(--ease-out);
+  background: var(--control-hover-bg);
+  appearance: none;
+}
+
+.summary-bar::-webkit-progress-bar {
+  background: transparent;
+}
+
+.summary-bar::-webkit-progress-value {
+  background: var(--map-visited);
+  transition: inline-size var(--motion-base) var(--ease-out);
+}
+
+.summary-bar::-moz-progress-bar {
+  background: var(--map-visited);
 }
 
 .summary-note {

@@ -9,7 +9,8 @@ interface UseCountrySearchResult {
   query: Ref<string>
   matches: ComputedRef<CountryMatch[]>
   pick: (code: CountryCode) => void
-  pickTopMatch: () => void
+  updateQuery: (event: Event) => void
+  pickOnEnter: (event: KeyboardEvent) => void
 }
 
 export const useCountrySearch = ({ onPick }: UseCountrySearchInput): UseCountrySearchResult => {
@@ -21,10 +22,16 @@ export const useCountrySearch = ({ onPick }: UseCountrySearchInput): UseCountryS
     query.value = ''
   }
 
-  const pickTopMatch = () => {
+  const updateQuery = (event: Event) => {
+    if (event.target instanceof HTMLInputElement) query.value = event.target.value
+  }
+
+  const pickOnEnter = (event: KeyboardEvent) => {
+    if (event.key !== 'Enter') return
+    event.preventDefault()
     const [topMatch] = matches.value
     if (topMatch) pick(topMatch.code)
   }
 
-  return { query, matches, pick, pickTopMatch }
+  return { query, matches, pick, updateQuery, pickOnEnter }
 }
