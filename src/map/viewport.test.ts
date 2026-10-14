@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { MapGeometry } from './format.ts'
-import { fitViewport, panViewport, toGridPoint, zoomViewport } from './viewport.ts'
+import { fitViewport, homeViewport, panViewport, toGridPoint, zoomViewport } from './viewport.ts'
 
 const WIDE_MAP: MapGeometry = { width: 4000, height: 2000, countries: [] }
 const SCREEN = { width: 1000, height: 500 }
@@ -23,6 +23,19 @@ describe('fitViewport', () => {
     expect(padded.offsetY).toBeGreaterThanOrEqual(100)
     expect(padded.offsetY + mapHeight).toBeLessThanOrEqual(SCREEN.height - 100)
     expect(padded.offsetX).toBeCloseTo((SCREEN.width - WIDE_MAP.width * padded.scale) / 2)
+  })
+})
+
+describe('homeViewport', () => {
+  it('is the fitted map when there is no start zoom', () => {
+    expect(homeViewport(WIDE_MAP, SCREEN, 1)).toEqual(fitted)
+  })
+
+  it('zooms into the middle of the map on tall screens', () => {
+    const home = homeViewport(WIDE_MAP, SCREEN, 2)
+    expect(home.scale).toBeCloseTo(fitted.scale * 2)
+    expect(toGridPoint(home, CENTER).x).toBeCloseTo(WIDE_MAP.width / 2)
+    expect(toGridPoint(home, CENTER).y).toBeCloseTo(WIDE_MAP.height / 2)
   })
 })
 

@@ -6,7 +6,7 @@ import { loadCountryCodes, loadGeometry } from './load.ts'
 import type { ProjectionId } from './projections.ts'
 import type { MapRenderer, MapScene } from './renderer.ts'
 import {
-  fitViewport,
+  homeViewport,
   panViewport,
   type ScreenPoint,
   type ScreenRect,
@@ -46,18 +46,28 @@ interface MapController {
   scheduleRender: () => void
 }
 
-const PADDING_TOKENS = { x: '--map-padding-x', y: '--map-padding-y' }
-
-// overlays float over the map, so css says how much room to keep clear around it
-const readMapPadding = (element: Element): ScreenPoint => {
-  const { x, y } = readCssTokens(element, PADDING_TOKENS)
-  return { x: Number.parseFloat(x) || 0, y: Number.parseFloat(y) || 0 }
+const FRAME_TOKENS = {
+  paddingX: '--map-padding-x',
+  paddingY: '--map-padding-y',
+  startZoom: '--map-start-zoom',
 }
 
-const measureFrame = (canvas: HTMLCanvasElement, renderer: MapRenderer): ScreenSize => ({
-  ...renderer.resize(),
-  padding: readMapPadding(canvas),
-})
+interface MapFrame {
+  size: ScreenSize
+  startZoom: number
+}
+
+const parseCssNumber = (value: string, fallback: number): number => {
+  const number = Number.parseFloat(value)
+  return Number.isFinite(number) ? number : fallback
+}
+
+// overlays float over the map and phones need a closer start, so css sets both per layout
+const measureFrame = (canvas: HTMLCanvasElement, renderer: MapRenderer): MapFrame => {
+  const tokens = readCssTokens(canvas, FRAME_TOKENS)
+  const padding = { x: parseCssNumber(tokens.paddingX, 0), y: parseCssNumber(tokens.paddingY, 0) }
+  return { size: { ...renderer.resize(), padding }, startZoom: parseCssNumber(tokens.startZoom, 1) }
+}
 
 const createRenderScheduler = (render: () => void): (() => void) => {
   let isScheduled = false
@@ -114,8 +124,9 @@ const panBy = (controller: MapController, delta: ScreenPoint) => {
 }
 
 const refit = (controller: MapController) => {
-  controller.size = measureFrame(controller.canvas, controller.renderer)
-  controller.scene.viewport = fitViewport(controller.scene.geometry, controller.size)
+  const { size, startZoom } = measureFrame(controller.canvas, controller.renderer)
+  controller.size = size
+  controller.scene.viewport = homeViewport(controller.scene.geometry, size, startZoom)
   controller.renderer.render(controller.scene)
 }
 
@@ -128,14 +139,14 @@ const createController = async (
     loadGeometry(options.projection),
     loadCountryCodes(),
   ])
-  const size = measureFrame(canvas, renderer)
+  const { size, startZoom } = measureFrame(canvas, renderer)
   const scene: MapScene = {
     geometry,
     codes,
     visited: new Set(),
     fading: new Map(),
     hoveredIndex: null,
-    viewport: fitViewport(geometry, size),
+    viewport: homeViewport(geometry, size, startZoom),
   }
   const scheduleRender = createRenderScheduler(() => renderer.render(scene))
   const fades = createFadeAnimator(fading => {

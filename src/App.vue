@@ -115,6 +115,7 @@ const { projection, visited, isVisited, toggleVisited } = useTravelMap()
     --hover-inset-y: 124px;
     --zoom-inset-x: 10px;
     --zoom-inset-y: 112px;
+    --map-start-zoom: 1.9;
     --radius-stage: 24px;
   }
 
@@ -126,8 +127,5 @@ const { projection, visited, isVisited, toggleVisited } = useTravelMap()
     justify-content: space-between;
   }
 
-  .stage-bottom {
-    padding-right: 0;
-  }
 }
 </style>

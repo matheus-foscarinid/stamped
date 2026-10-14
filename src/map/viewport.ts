@@ -80,6 +80,19 @@ export const zoomViewport = (view: Viewport, request: ZoomRequest): Viewport => 
   )
 }
 
+// the resting view. tall screens start zoomed in so the world isn't a thin strip
+export const homeViewport = (
+  geometry: MapGeometry,
+  size: ScreenSize,
+  startZoom: number
+): Viewport =>
+  zoomViewport(fitViewport(geometry, size), {
+    geometry,
+    size,
+    factor: startZoom,
+    anchor: { x: size.width / 2, y: size.height / 2 },
+  })
+
 export const panViewport = (
   view: Viewport,
   delta: ScreenPoint,
