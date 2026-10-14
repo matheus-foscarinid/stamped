@@ -44,7 +44,9 @@ const { projection, visited, isVisited, toggleVisited } = useTravelMap()
   --hover-inset-y: 76px;
 
   position: relative;
+  max-width: 1680px;
   height: 100%;
+  margin-inline: auto;
   overflow: hidden;
   isolation: isolate;
   border-radius: var(--radius-stage);
