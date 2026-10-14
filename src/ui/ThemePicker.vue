@@ -1,0 +1,68 @@
+<template>
+  <MenuButton class="theme-picker" placement="below" align="end">
+    <template #trigger>
+      <span class="theme-swatch" :data-theme="swatchTheme(theme)" aria-hidden="true" />
+      Theme
+    </template>
+    <template #default="{ close }">
+      <button
+        v-for="choice in THEME_CHOICES"
+        :key="choice"
+        type="button"
+        class="menu-item"
+        :aria-pressed="choice === theme"
+        @click="pickTheme(choice, close)"
+      >
+        <span class="theme-option">
+          <span class="theme-swatch" :data-theme="swatchTheme(choice)" aria-hidden="true" />
+          {{ THEME_LABELS[choice] }}
+        </span>
+        <span v-if="choice === 'auto'" class="menu-item-hint">Matches system</span>
+      </button>
+    </template>
+  </MenuButton>
+</template>
+
+<script setup vapor lang="ts">
+import { THEME_CHOICES, THEME_LABELS, type ThemeChoice } from '@/theme/themes'
+import { useTheme } from '@/theme/useTheme'
+import MenuButton from './MenuButton.vue'
+
+const { theme, setTheme } = useTheme()
+
+// the auto swatch is split light and dark, drawn by its own css
+const swatchTheme = (choice: ThemeChoice) => (choice === 'auto' ? undefined : choice)
+
+const pickTheme = (choice: ThemeChoice, close: () => void) => {
+  setTheme(choice)
+  close()
+}
+</script>
+
+<style scoped>
+.theme-option {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.theme-swatch {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--map-land) 50%, var(--map-visited) 50%);
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 3px var(--glass-line);
+}
+
+.theme-swatch:not([data-theme]) {
+  background: linear-gradient(135deg, #ffffff 50%, #000000 50%);
+}
+
+.menu-item[aria-pressed='true'] {
+  background: var(--control-hover-bg);
+  font-weight: 600;
+}
+</style>

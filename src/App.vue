@@ -12,7 +12,8 @@
           Stamped
           <span class="brand-count">{{ visited.length }} of {{ COUNTRY_CODES.length }}</span>
         </h1>
-        <CountrySearch :is-visited="isVisited" @toggle="toggleVisited" />
+        <CountrySearch class="stage-search" :is-visited="isVisited" @toggle="toggleVisited" />
+        <ThemePicker />
       </header>
       <footer class="stage-bottom">
         <ShareControls :projection="projection" :visited="visited" />
@@ -25,6 +26,7 @@
 import { COUNTRY_CODES } from '@/countries'
 import CountrySearch from '@/ui/CountrySearch.vue'
 import ShareControls from '@/ui/ShareControls.vue'
+import ThemePicker from '@/ui/ThemePicker.vue'
 import WorldMap from '@/ui/WorldMap.vue'
 import { useTravelMap } from '@/useTravelMap'
 
@@ -80,6 +82,10 @@ const { projection, visited, isVisited, toggleVisited } = useTravelMap()
   top: var(--overlay-inset);
 }
 
+.stage-search {
+  margin-left: auto;
+}
+
 .stage-bottom {
   bottom: var(--overlay-inset);
   padding-right: 60px;
@@ -119,12 +125,14 @@ const { projection, visited, isVisited, toggleVisited } = useTravelMap()
     --radius-stage: 24px;
   }
 
-  .stage-top > * {
-    flex: 1 1 100%;
+  .brand {
+    flex: 1;
+    justify-content: space-between;
   }
 
-  .brand {
-    justify-content: space-between;
+  .stage-search {
+    flex: 1 1 100%;
+    order: 1;
   }
 
 }

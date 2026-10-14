@@ -73,3 +73,11 @@ export const stubAnimationFrames = ({
   }
   return { advanceBy, hasPendingFrame: () => pending.length > 0 }
 }
+
+export const stubStorage = (initial: Record<string, string> = {}) => {
+  const values = new Map(Object.entries(initial))
+  vi.stubGlobal('localStorage', {
+    getItem: (key: string) => values.get(key) ?? null,
+    setItem: (key: string, value: string) => values.set(key, value),
+  })
+}

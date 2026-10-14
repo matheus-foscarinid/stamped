@@ -1,26 +1,5 @@
+/* themes live on [data-theme], so a swatch can preview one by carrying the attribute */
 :root {
-  --page-bg: #ffffff;
-  --surface: #ececf0;
-  --text: #000000;
-  --text-muted: #5c5c63;
-  --accent: #000000;
-
-  --map-land: #d6d6dd;
-  --map-border: #ececf0;
-  --map-visited: #000000;
-  --map-hover: #b9b9c3;
-
-  --glass-bg: rgb(255 255 255 / 0.58);
-  --glass-hover: rgb(255 255 255 / 0.9);
-  --glass-edge: rgb(255 255 255 / 0.95);
-  --glass-line: rgb(0 0 0 / 0.07);
-  --glass-shadow: 0 1px 1px rgb(0 0 0 / 0.04), 0 10px 30px -8px rgb(0 0 0 / 0.14);
-  --glass-blur: 22px;
-
-  --control-hover-bg: rgb(0 0 0 / 0.06);
-  --control-active-bg: #000000;
-  --control-active-text: #ffffff;
-
   --radius-stage: 28px;
   --radius-control: 999px;
   --radius-menu: 20px;
@@ -28,34 +7,124 @@
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --motion-fast: 160ms;
   --motion-base: 220ms;
+  --glass-blur: 22px;
+
+  --glass-bg: rgb(255 255 255 / 0.58);
+  --glass-hover: rgb(255 255 255 / 0.9);
+  --glass-edge: rgb(255 255 255 / 0.95);
+  --glass-line: rgb(0 0 0 / 0.07);
+  --glass-shadow: 0 1px 1px rgb(0 0 0 / 0.04), 0 10px 30px -8px rgb(0 0 0 / 0.14);
 
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
+:root,
+[data-theme="light"] {
+  --page-bg: #ffffff;
+  --surface: #ececf0;
+  --text: #000000;
+  --text-muted: #5c5c63;
+  --accent: #000000;
+  --map-land: #d6d6dd;
+  --map-border: #ececf0;
+  --map-visited: #000000;
+  --map-hover: #b9b9c3;
+  --control-hover-bg: rgb(0 0 0 / 0.06);
+  --control-active-bg: #000000;
+  --control-active-text: #ffffff;
+}
+
+[data-theme="lilac"] {
+  --page-bg: #cdb8e0;
+  --surface: #e6dbf1;
+  --text: #2d2340;
+  --text-muted: #5e4f78;
+  --accent: #2d2340;
+  --map-land: #f8f4fc;
+  --map-border: #d5c4e6;
+  --map-visited: #1f9e70;
+  --map-hover: #ece2f6;
+  --control-hover-bg: rgb(45 35 64 / 0.07);
+  --control-active-bg: #2d2340;
+  --control-active-text: #ffffff;
+}
+
+[data-theme="ink"] {
+  --page-bg: #dfe8ef;
+  --surface: #eef3f7;
+  --text: #16324f;
+  --text-muted: #4f667c;
+  --accent: #16324f;
+  --map-land: #ffffff;
+  --map-border: #a9bccb;
+  --map-visited: #16324f;
+  --map-hover: #dbe6ee;
+  --control-hover-bg: rgb(22 50 79 / 0.07);
+  --control-active-bg: #16324f;
+  --control-active-text: #ffffff;
+}
+
+[data-theme="rose"] {
+  --page-bg: #d7eee2;
+  --surface: #e6f5ee;
+  --text: #21352b;
+  --text-muted: #44614f;
+  --accent: #b8327f;
+  --map-land: #ffffff;
+  --map-border: #bfe0cf;
+  --map-visited: #d6409f;
+  --map-hover: #fbe3f3;
+  --control-hover-bg: rgb(33 53 43 / 0.07);
+  --control-active-bg: #21352b;
+  --control-active-text: #ffffff;
+}
+
+[data-theme="dark"],
+[data-theme="dusk"] {
+  --glass-bg: rgb(48 48 54 / 0.52);
+  --glass-hover: rgb(72 72 80 / 0.7);
+  --glass-edge: rgb(255 255 255 / 0.14);
+  --glass-line: rgb(255 255 255 / 0.08);
+  --glass-shadow: 0 1px 1px rgb(0 0 0 / 0.3), 0 12px 32px -8px rgb(0 0 0 / 0.7);
+  --control-hover-bg: rgb(255 255 255 / 0.1);
+
+  color-scheme: dark;
+}
+
+[data-theme="dark"] {
+  --page-bg: #000000;
+  --surface: #131315;
+  --text: #ffffff;
+  --text-muted: #a3a3aa;
+  --accent: #ffffff;
+  --map-land: #2c2c31;
+  --map-border: #131315;
+  --map-visited: #ffffff;
+  --map-hover: #47474e;
+  --control-active-bg: #ffffff;
+  --control-active-text: #000000;
+}
+
+[data-theme="dusk"] {
+  --page-bg: #17132a;
+  --surface: #231d3a;
+  --text: #f1ecfa;
+  --text-muted: #a89cc6;
+  --accent: #c4aad5;
+  --map-land: #3a3158;
+  --map-border: #231d3a;
+  --map-visited: #c4aad5;
+  --map-hover: #4b4172;
+  --glass-bg: rgb(58 49 88 / 0.5);
+  --glass-hover: rgb(80 68 120 / 0.6);
+  --control-active-bg: #c4aad5;
+  --control-active-text: #231d3a;
+}
+
+@media (prefers-reduced-motion: reduce) {
   :root {
-    --page-bg: #000000;
-    --surface: #131315;
-    --text: #ffffff;
-    --text-muted: #a3a3aa;
-    --accent: #ffffff;
-
-    --map-land: #2c2c31;
-    --map-border: #131315;
-    --map-visited: #ffffff;
-    --map-hover: #47474e;
-
-    --glass-bg: rgb(48 48 54 / 0.52);
-    --glass-hover: rgb(72 72 80 / 0.7);
-    --glass-edge: rgb(255 255 255 / 0.14);
-    --glass-line: rgb(255 255 255 / 0.08);
-    --glass-shadow: 0 1px 1px rgb(0 0 0 / 0.3), 0 12px 32px -8px rgb(0 0 0 / 0.7);
-
-    --control-hover-bg: rgb(255 255 255 / 0.1);
-    --control-active-bg: #ffffff;
-    --control-active-text: #000000;
-
-    color-scheme: dark;
+    --motion-fast: 0ms;
+    --motion-base: 0ms;
   }
 }
 
@@ -145,11 +214,4 @@ button {
 
 .press-feedback:active {
   transform: scale(0.95);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  :root {
-    --motion-fast: 0ms;
-    --motion-base: 0ms;
-  }
 }

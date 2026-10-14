@@ -193,9 +193,9 @@ export const createWorldMap = async (
   })
   const resizeObserver = new ResizeObserver(() => refit(controller))
   resizeObserver.observe(canvas)
-  // colors come from css, so a light or dark switch needs a fresh frame
-  const colorScheme = window.matchMedia('(prefers-color-scheme: dark)')
-  colorScheme.addEventListener('change', controller.scheduleRender)
+  // colors come from css, so a theme switch on the page needs a fresh frame
+  const themeObserver = new MutationObserver(controller.scheduleRender)
+  themeObserver.observe(document.documentElement, { attributes: true })
 
   return {
     setProjection: createProjectionSetter(controller),
@@ -209,7 +209,7 @@ export const createWorldMap = async (
       detachInteraction()
       resizeObserver.disconnect()
       controller.fades.stop()
-      colorScheme.removeEventListener('change', controller.scheduleRender)
+      themeObserver.disconnect()
       controller.renderer.destroy()
     },
   }
