@@ -1,4 +1,3 @@
-// how many values land on each key, for checking how evenly something spreads
 export const countBy = <Value>(
   values: readonly Value[],
   toKey: (value: Value) => unknown

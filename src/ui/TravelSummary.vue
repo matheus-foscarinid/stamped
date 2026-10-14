@@ -11,13 +11,7 @@
         @click="toggle"
       >
         <span class="summary-brand">
-          <svg class="summary-logo" :viewBox="LOGO_VIEWBOX" aria-hidden="true">
-            <g :transform="LOGO_TILT">
-              <path class="logo-frame" fill-rule="evenodd" :d="STAMP_PATH" />
-              <path class="logo-globe" :d="STAMPED_CELL_PATH" />
-              <path class="logo-globe-lines" :stroke-width="GLOBE_LINE_WIDTH" :d="GLOBE_LINES_PATH" />
-            </g>
-          </svg>
+          <StampedLogo class="summary-logo" />
           Stamped
         </span>
         <span class="summary-count">
@@ -43,16 +37,9 @@
 
 <script setup vapor lang="ts">
 import { computed, useTemplateRef } from 'vue'
-import {
-  GLOBE_LINE_WIDTH,
-  GLOBE_LINES_PATH,
-  LOGO_TILT,
-  LOGO_VIEWBOX,
-  STAMP_PATH,
-  STAMPED_CELL_PATH,
-} from '@/brand/logo'
 import { COUNTRY_CODES, type CountryCode, getTravelStats } from '@/countries'
 import { useI18n } from '@/i18n/useI18n'
+import StampedLogo from './StampedLogo.vue'
 import { useDismissibleMenu } from './useDismissibleMenu'
 
 const props = defineProps<{
@@ -124,23 +111,12 @@ const continentNote = computed(() => {
 }
 
 .summary-logo {
+  --logo-frame: var(--text-muted);
+  --logo-globe: var(--map-visited);
+
   width: 24px;
   height: 24px;
   margin-block: -3px;
-}
-
-.logo-frame {
-  fill: var(--text-muted);
-}
-
-.logo-globe {
-  fill: var(--map-visited);
-}
-
-.logo-globe-lines {
-  fill: none;
-  stroke: var(--map-visited);
-  stroke-linecap: round;
 }
 
 .summary-toggle {

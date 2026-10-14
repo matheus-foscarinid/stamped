@@ -1,3 +1,5 @@
+export const APP_NAME = 'Stamped'
+
 // one drawing for the header, the favicon and the readme. it's cut bold so the globe still reads at 16px
 export const LOGO_VIEWBOX = '0 0 256 256'
 export const LOGO_TILT = 'rotate(-15 128 128)'

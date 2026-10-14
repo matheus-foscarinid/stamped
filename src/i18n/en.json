@@ -1,6 +1,5 @@
 {
   "summary.count": "{count} of {total}",
-  "stats.countries": "Countries",
   "stats.continents": "Continents",
   "stats.unMembers": "UN members",
   "stats.worldShare": "Share of the world",
@@ -47,6 +46,10 @@
   "view.passport": "Passport",
   "view.map": "Map",
   "passport.empty": "No stamps yet. Tap a country on the map or search for one to get your first.",
+  "passport.countriesVisited": {
+    "one": "country visited",
+    "other": "countries visited"
+  },
   "passport.previous": "Previous page",
   "passport.next": "Next page",
   "clear.button": "Clear",

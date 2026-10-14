@@ -6,6 +6,7 @@
   --button-padding: 11px 18px;
   --control-height: 45px;
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --motion-fast: 160ms;
   --motion-base: 220ms;
@@ -18,6 +19,7 @@
   --glass-shadow: 0 1px 1px rgb(0 0 0 / 0.04), 0 10px 30px -8px rgb(0 0 0 / 0.14);
   --stamp-lightness: 38%;
   --stamp-blend: multiply;
+  --stamp-opacity: 0.88;
 
   /* one passport for now. other covers can swap these */
   --passport-cover: #7a1f30;
@@ -133,9 +135,11 @@
   --control-hover-bg: rgb(255 255 255 / 0.1);
   --stamp-lightness: 72%;
   --stamp-blend: normal;
-  --passport-paper: #2a2620;
-  --passport-paper-line: rgb(0 0 0 / 0.3);
-  --passport-ink: #e8dfcc;
+  /* graphite, not brown, so the page sits with every dark theme's surface */
+  --passport-paper: #26262b;
+  --passport-paper-line: rgb(0 0 0 / 0.28);
+  --passport-ink: #ebe8e1;
+  --passport-cover-dark: #6a1a2c;
 
   color-scheme: dark;
 }

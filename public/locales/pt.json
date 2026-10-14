@@ -1,6 +1,5 @@
 {
   "summary.count": "{count} de {total}",
-  "stats.countries": "Países",
   "stats.continents": "Continentes",
   "stats.unMembers": "Membros da ONU",
   "stats.worldShare": "Parte do mundo",
@@ -48,6 +47,11 @@
   "view.passport": "Passaporte",
   "view.map": "Mapa",
   "passport.empty": "Nenhum carimbo ainda. Toque em um país no mapa ou busque um para ganhar o primeiro.",
+  "passport.countriesVisited": {
+    "one": "país visitado",
+    "other": "países visitados",
+    "zero": "países visitados"
+  },
   "passport.previous": "Página anterior",
   "passport.next": "Próxima página",
   "clear.button": "Limpar",

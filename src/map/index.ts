@@ -16,6 +16,7 @@ import {
   zoomViewport,
 } from './viewport.ts'
 
+export { watchPixelRatio } from './pixel-ratio.ts'
 export { DEFAULT_PROJECTION, type ProjectionId } from './projections.ts'
 export type { ScreenRect } from './viewport.ts'
 

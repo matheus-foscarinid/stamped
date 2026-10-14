@@ -8,16 +8,22 @@ interface UsePassportPagesResult {
   spreadIndex: Ref<number>
   spreadCount: Ref<number>
   turnBy: (step: number) => void
-  measure: () => void
 }
 
 const TURN_KEYS: Record<string, number> = { ArrowLeft: -1, ArrowRight: 1 }
+const OWN_ARROWS_SELECTOR = 'input, textarea, select, dialog, [role="menu"]'
 
-// arrows in a text field move the caret, not the page
-const isTypingTarget = (target: EventTarget | null) =>
-  target instanceof HTMLElement && (target.isContentEditable || target.matches('input, textarea'))
+// arrows in a field, a dialog or with a modifier (back, word jumps) aren't ours to take
+const isOtherArrowUse = (event: KeyboardEvent) => {
+  if (event.defaultPrevented || event.metaKey || event.altKey || event.ctrlKey || event.shiftKey) {
+    return true
+  }
+  const { target } = event
+  if (!(target instanceof HTMLElement)) return false
+  return target.isContentEditable || target.closest(OWN_ARROWS_SELECTOR) !== null
+}
 
-// the track scrolls natively, so phones swipe page by page and this only follows along
+// native scroll drives swipes, this only follows
 export const usePassportPages = ({ track }: UsePassportPagesInput): UsePassportPagesResult => {
   const spreadIndex = ref(0)
   const spreadCount = ref(1)
@@ -36,21 +42,25 @@ export const usePassportPages = ({ track }: UsePassportPagesInput): UsePassportP
 
   const turnOnArrow = (event: KeyboardEvent) => {
     const step = TURN_KEYS[event.key]
-    if (step === undefined || isTypingTarget(event.target)) return
+    if (step === undefined || isOtherArrowUse(event)) return
+    const nextIndex = spreadIndex.value + step
+    if (nextIndex < 0 || nextIndex >= spreadCount.value) return
     event.preventDefault()
     turnBy(step)
   }
 
-  watch(track, (element, previous) => {
-    previous?.removeEventListener('scroll', measure)
-    element?.addEventListener('scroll', measure, { passive: true })
+  watch(track, (element, _previous, onCleanup) => {
+    if (!element) return
+    element.addEventListener('scroll', measure, { passive: true })
+    onCleanup(() => element.removeEventListener('scroll', measure))
     measure()
   })
   document.addEventListener('keydown', turnOnArrow)
+  window.addEventListener('resize', measure)
   onScopeDispose(() => {
-    track.value?.removeEventListener('scroll', measure)
     document.removeEventListener('keydown', turnOnArrow)
+    window.removeEventListener('resize', measure)
   })
 
-  return { spreadIndex, spreadCount, turnBy, measure }
+  return { spreadIndex, spreadCount, turnBy }
 }

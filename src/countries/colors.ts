@@ -11,7 +11,7 @@ const mixBits = (value: number): number => {
   return (mixed ^ (mixed >>> 16)) >>> 0
 }
 
-// small string hash, so a country looks the same on every device
+// stable across devices
 export const hashCountryCode = (code: CountryCode): number =>
   mixBits(
     [...code].reduce((hash, letter) => Math.imul(hash ^ letter.charCodeAt(0), 0x9e3779b1) >>> 0, 7)
