@@ -1,5 +1,6 @@
 {
   "summary.count": "{count} sur {total}",
+  "stats.countries": "Pays",
   "stats.continents": "Continents",
   "stats.unMembers": "Membres de l'ONU",
   "stats.worldShare": "Part du monde",
@@ -46,6 +47,8 @@
   "view.passport": "Passeport",
   "view.map": "Carte",
   "passport.empty": "Pas encore de tampon. Touchez un pays sur la carte ou cherchez-en un pour obtenir le premier.",
+  "passport.previous": "Page précédente",
+  "passport.next": "Page suivante",
   "clear.button": "Effacer",
   "clear.title": "Effacer votre carte ?",
   "clear.text": {

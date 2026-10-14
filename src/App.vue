@@ -9,7 +9,7 @@
         :visited="visited"
         @toggle="toggleVisited"
       />
-      <PassportView v-if="isPassportOpen" class="stage-map" :visited="visited" />
+      <PassportBook v-if="isPassportOpen" class="stage-map" :projection="projection" :visited="visited" />
       <header class="stage-top">
         <TravelSummary class="stage-summary" :visited="visited" />
         <CountrySearch class="stage-search" :is-visited="isVisited" @toggle="toggleVisited" />
@@ -50,7 +50,7 @@ import ClearMapButton from '@/ui/ClearMapButton.vue'
 import CountrySearch from '@/ui/CountrySearch.vue'
 import GitHubLink from '@/ui/GitHubLink.vue'
 import LanguagePicker from '@/ui/LanguagePicker.vue'
-import PassportView from '@/ui/PassportView.vue'
+import PassportBook from '@/ui/PassportBook.vue'
 import ShareControls from '@/ui/ShareControls.vue'
 import ThemePicker from '@/ui/ThemePicker.vue'
 import TravelSummary from '@/ui/TravelSummary.vue'

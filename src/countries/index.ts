@@ -6,6 +6,7 @@ export { groupByContinent } from './continents.ts'
 export { isDisputed } from './disputed.ts'
 export { getFlagEmoji } from './flags.ts'
 export { getCountryName } from './names.ts'
+export { getContinent } from './regions.ts'
 export { type CountryMatch, searchCountries } from './search.ts'
 export { formatWorldShare, getTravelStats } from './stats.ts'
 

@@ -17,3 +17,11 @@ export const getStampStyle = (code: CountryCode): StampStyle => {
     tiltDeg: ((hash >>> 8) % (MAX_TILT_DEG * 2 + 1)) - MAX_TILT_DEG,
   }
 }
+
+const MAX_LABEL_SIZE = 9
+// bold uppercase letters run about this wide, in ems
+const LETTER_WIDTH_EM = 0.68
+
+// rim and line labels shrink to fit, so long names stay on the stamp
+export const fitLabelSize = (label: string, availableWidth: number): number =>
+  Math.min(MAX_LABEL_SIZE, availableWidth / (Math.max(label.length, 1) * LETTER_WIDTH_EM))

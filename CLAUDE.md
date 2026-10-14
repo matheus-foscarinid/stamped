@@ -29,7 +29,7 @@ src/map/         facade over decoder, renderer, hit-testing and viewport
 src/countries/   catalog.ts (iso codes + aliases, add a country = add a code), search, names, flags
 src/share/       link codec (#v=br,in), export card layout and drawing, file saving
 src/ui/          presentational Vapor components and their hooks
-src/passport/    stamp look per country (shape, ink, tilt), stable across devices
+src/passport/    stamp look per country (shape, tilt) and how stamps split into book pages. Colours come from getCountryHue in src/countries/
 src/brand/       the logo drawing, shared by the header, the favicon and docs/logo*.svg
 src/styles/      shared tokens, theme palettes on [data-theme] and the css token reader
 src/theme/       theme catalog, saved choice and the auto (system) theme

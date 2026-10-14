@@ -17,6 +17,15 @@
   --glass-line: rgb(0 0 0 / 0.07);
   --glass-shadow: 0 1px 1px rgb(0 0 0 / 0.04), 0 10px 30px -8px rgb(0 0 0 / 0.14);
   --stamp-lightness: 38%;
+  --stamp-blend: multiply;
+
+  /* one passport for now. other covers can swap these */
+  --passport-cover: #7a1f30;
+  --passport-cover-dark: #4a1220;
+  --passport-gold: #d9b26a;
+  --passport-paper: #f5efe0;
+  --passport-paper-line: rgb(120 90 40 / 0.14);
+  --passport-ink: #3a3326;
 
   color-scheme: light;
 }
@@ -123,6 +132,10 @@
   --glass-shadow: 0 1px 1px rgb(0 0 0 / 0.25), 0 12px 32px -8px rgb(0 0 0 / 0.5);
   --control-hover-bg: rgb(255 255 255 / 0.1);
   --stamp-lightness: 72%;
+  --stamp-blend: normal;
+  --passport-paper: #2a2620;
+  --passport-paper-line: rgb(0 0 0 / 0.3);
+  --passport-ink: #e8dfcc;
 
   color-scheme: dark;
 }

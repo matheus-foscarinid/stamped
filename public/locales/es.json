@@ -1,5 +1,6 @@
 {
   "summary.count": "{count} de {total}",
+  "stats.countries": "Países",
   "stats.continents": "Continentes",
   "stats.unMembers": "Miembros de la ONU",
   "stats.worldShare": "Parte del mundo",
@@ -46,6 +47,8 @@
   "view.passport": "Pasaporte",
   "view.map": "Mapa",
   "passport.empty": "Aún no hay sellos. Toca un país en el mapa o búscalo para conseguir el primero.",
+  "passport.previous": "Página anterior",
+  "passport.next": "Página siguiente",
   "clear.button": "Borrar",
   "clear.title": "¿Borrar tu mapa?",
   "clear.text": {

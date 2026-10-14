@@ -1,5 +1,6 @@
 {
   "summary.count": "{count} di {total}",
+  "stats.countries": "Paesi",
   "stats.continents": "Continenti",
   "stats.unMembers": "Membri dell'ONU",
   "stats.worldShare": "Quota del mondo",
@@ -46,6 +47,8 @@
   "view.passport": "Passaporto",
   "view.map": "Mappa",
   "passport.empty": "Nessun timbro ancora. Tocca un paese sulla mappa o cercane uno per ottenere il primo.",
+  "passport.previous": "Pagina precedente",
+  "passport.next": "Pagina successiva",
   "clear.button": "Cancella",
   "clear.title": "Cancellare la mappa?",
   "clear.text": {

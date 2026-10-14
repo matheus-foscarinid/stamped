@@ -1,5 +1,6 @@
 {
   "summary.count": "{count} von {total}",
+  "stats.countries": "Länder",
   "stats.continents": "Kontinente",
   "stats.unMembers": "UN-Mitglieder",
   "stats.worldShare": "Anteil der Welt",
@@ -46,6 +47,8 @@
   "view.passport": "Reisepass",
   "view.map": "Karte",
   "passport.empty": "Noch keine Stempel. Tippe auf ein Land auf der Karte oder suche eins für deinen ersten.",
+  "passport.previous": "Vorherige Seite",
+  "passport.next": "Nächste Seite",
   "clear.button": "Leeren",
   "clear.title": "Karte leeren?",
   "clear.text": {
