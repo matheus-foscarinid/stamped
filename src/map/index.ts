@@ -1,5 +1,6 @@
 import { readCssTokens } from '@/styles/css-tokens'
 import { createCanvasRenderer, drawMapSnapshot, readMapPalette } from './canvas-renderer.ts'
+import { createFadeAnimator, type FadeAnimator } from './fades.ts'
 import { attachInteraction } from './interaction.ts'
 import { loadCountryCodes, loadGeometry } from './load.ts'
 import type { ProjectionId } from './projections.ts'
@@ -41,6 +42,7 @@ interface MapController {
   size: ScreenSize
   renderer: MapRenderer
   options: WorldMapOptions
+  fades: FadeAnimator
   scheduleRender: () => void
 }
 
@@ -131,11 +133,26 @@ const createController = async (
     geometry,
     codes,
     visited: new Set(),
+    fading: new Map(),
     hoveredIndex: null,
     viewport: fitViewport(geometry, size),
   }
   const scheduleRender = createRenderScheduler(() => renderer.render(scene))
-  return { canvas, scene, size, renderer, options, scheduleRender }
+  const fades = createFadeAnimator(fading => {
+    scene.fading = fading
+    scheduleRender()
+  })
+  return { canvas, scene, size, renderer, options, fades, scheduleRender }
+}
+
+const setVisited = (controller: MapController, codes: Iterable<string>) => {
+  const previous = controller.scene.visited
+  const next = new Set(codes)
+  const added = [...next].filter(code => !previous.has(code))
+  const removed = [...previous].filter(code => !next.has(code))
+  controller.scene.visited = next
+  controller.fades.start([...added, ...removed])
+  controller.scheduleRender()
 }
 
 const createProjectionSetter = (controller: MapController) => {
@@ -171,10 +188,7 @@ export const createWorldMap = async (
 
   return {
     setProjection: createProjectionSetter(controller),
-    setVisited: codes => {
-      controller.scene.visited = new Set(codes)
-      controller.scheduleRender()
-    },
+    setVisited: codes => setVisited(controller, codes),
     zoomBy: factor => {
       const { width, height } = controller.size
       zoomAround(controller, factor, { x: width / 2, y: height / 2 })
@@ -183,6 +197,7 @@ export const createWorldMap = async (
     destroy: () => {
       detachInteraction()
       resizeObserver.disconnect()
+      controller.fades.stop()
       colorScheme.removeEventListener('change', controller.scheduleRender)
       controller.renderer.destroy()
     },

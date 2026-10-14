@@ -67,16 +67,40 @@ const PALETTE_TOKENS = {
 export const readMapPalette = (element: Element): MapPalette =>
   readCssTokens(element, PALETTE_TOKENS)
 
-const pickFill = (scene: MapScene, index: number, palette: MapPalette): string => {
-  const code = scene.codes[index]
-  if (code && scene.visited.has(code)) return palette.visited
-  if (index === scene.hoveredIndex) return palette.hover
+const pickFill = (palette: MapPalette, isVisited: boolean, isHovered: boolean): string => {
+  if (isVisited) return palette.visited
+  if (isHovered) return palette.hover
   return palette.land
+}
+
+const fillCountry = (
+  context: CanvasRenderingContext2D,
+  { path, scene, index, palette }: CountryFill
+) => {
+  const code = scene.codes[index]
+  const isVisited = code ? scene.visited.has(code) : false
+  const isHovered = index === scene.hoveredIndex
+  const fade = code ? scene.fading.get(code) : undefined
+  if (fade !== undefined) {
+    context.fillStyle = pickFill(palette, !isVisited, isHovered)
+    context.fill(path, 'evenodd')
+    context.globalAlpha = fade
+  }
+  context.fillStyle = pickFill(palette, isVisited, isHovered)
+  context.fill(path, 'evenodd')
+  context.globalAlpha = 1
 }
 
 interface PaintStyle {
   palette: MapPalette
   borderWidth: number
+}
+
+interface CountryFill {
+  path: Path2D
+  scene: MapScene
+  index: number
+  palette: MapPalette
 }
 
 // the viewport must already be in target canvas pixels
@@ -91,8 +115,7 @@ const paintScene = (
   context.lineJoin = 'round'
   const paths = getCountryPaths(scene.geometry)
   paths.forEach(({ path }, index) => {
-    context.fillStyle = pickFill(scene, index, palette)
-    context.fill(path, 'evenodd')
+    fillCountry(context, { path, scene, index, palette })
   })
   context.strokeStyle = palette.border
   for (const { path } of paths) context.stroke(path)
@@ -125,7 +148,7 @@ const drawScene = (
   )
 }
 
-type MapSnapshot = Omit<MapScene, 'hoveredIndex' | 'viewport'> &
+type MapSnapshot = Omit<MapScene, 'hoveredIndex' | 'viewport' | 'fading'> &
   PaintStyle & {
     // in target canvas pixels
     rect: ScreenRect
@@ -137,7 +160,7 @@ export const drawMapSnapshot = (
 ): void => {
   const viewport = offsetViewport(fitViewport(snapshot.geometry, rect), rect)
   context.save()
-  paintScene(context, { ...snapshot, hoveredIndex: null, viewport }, snapshot)
+  paintScene(context, { ...snapshot, fading: new Map(), hoveredIndex: null, viewport }, snapshot)
   context.restore()
 }
 

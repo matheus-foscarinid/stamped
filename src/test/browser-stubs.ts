@@ -48,3 +48,28 @@ export const stubClipboard = (writeText: () => Promise<void> = () => Promise.res
   vi.stubGlobal('window', { location: { href: 'https://map.test/#v=br' } })
   vi.stubGlobal('navigator', { clipboard: { writeText: vi.fn(writeText) } })
 }
+
+interface AnimationFrameStubOptions {
+  prefersReducedMotion?: boolean
+}
+
+// frames only run when a test advances the clock, so each step is predictable
+export const stubAnimationFrames = ({
+  prefersReducedMotion = false,
+}: AnimationFrameStubOptions = {}) => {
+  let pending: FrameRequestCallback[] = []
+  let now = 0
+  vi.stubGlobal('window', { matchMedia: () => ({ matches: prefersReducedMotion }) })
+  vi.stubGlobal('performance', { now: () => now })
+  vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => pending.push(callback))
+  vi.stubGlobal('cancelAnimationFrame', () => {
+    pending = []
+  })
+  const advanceBy = (milliseconds: number) => {
+    now += milliseconds
+    const due = pending
+    pending = []
+    for (const callback of due) callback(now)
+  }
+  return { advanceBy, hasPendingFrame: () => pending.length > 0 }
+}

@@ -5,6 +5,8 @@ export interface MapScene {
   geometry: MapGeometry
   codes: (string | null)[]
   visited: ReadonlySet<string>
+  // countries still easing into their color, from 0 to 1. settled ones are left out
+  fading: ReadonlyMap<string, number>
   hoveredIndex: number | null
   viewport: Viewport
 }
