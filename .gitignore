@@ -8,3 +8,4 @@ public/maps
 .playwright-mcp
 .claude/
 .mcp.json
+.vercel
