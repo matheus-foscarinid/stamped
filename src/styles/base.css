@@ -106,6 +106,37 @@ button {
   backdrop-filter: blur(var(--glass-blur)) saturate(180%);
 }
 
+.menu-item {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: calc(var(--radius-menu) - 6px);
+  background: transparent;
+  text-align: start;
+  cursor: pointer;
+  transition: background-color var(--motion-fast) var(--ease-out);
+}
+
+.menu-item:hover,
+.menu-item:focus-visible {
+  background: var(--control-hover-bg);
+}
+
+.menu-item[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: progress;
+}
+
+.menu-item-hint {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
 .press-feedback {
   transition:
     background-color var(--motion-fast) var(--ease-out),

@@ -114,7 +114,7 @@ const { projection, visited, isVisited, toggleVisited } = useTravelMap()
     --map-padding-y: 140px;
     --hover-inset-y: 124px;
     --zoom-inset-x: 10px;
-    --zoom-inset-y: 112px;
+    --zoom-inset-y: 10px;
     --map-start-zoom: 1.9;
     --radius-stage: 24px;
   }

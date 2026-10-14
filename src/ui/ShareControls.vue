@@ -3,21 +3,22 @@
     <button type="button" class="share-button control-surface press-feedback" @click="copyLink">
       Copy link
     </button>
-    <fieldset class="share-formats control-surface" :aria-busy="isSaving">
-      <legend class="visually-hidden">Save as image</legend>
-      <span class="share-formats-label" aria-hidden="true">Save image</span>
-      <button
-        v-for="option in EXPORT_FORMAT_OPTIONS"
-        :key="option.id"
-        type="button"
-        class="share-format press-feedback"
-        :aria-disabled="isSaving"
-        :aria-label="option.ariaLabel"
-        @click="saveImage(option.id)"
-      >
-        {{ option.label }}
-      </button>
-    </fieldset>
+    <MenuButton placement="above">
+      <template #trigger>Save image</template>
+      <template #default="{ close }">
+        <button
+          v-for="option in EXPORT_FORMAT_OPTIONS"
+          :key="option.id"
+          type="button"
+          class="menu-item"
+          :aria-disabled="isSaving"
+          @click="pickFormat(option.id, close)"
+        >
+          {{ option.label }}
+          <span class="menu-item-hint">{{ option.size }}</span>
+        </button>
+      </template>
+    </MenuButton>
     <p class="share-status" role="status">{{ status }}</p>
   </div>
 </template>
@@ -25,7 +26,8 @@
 <script setup vapor lang="ts">
 import type { CountryCode } from '@/countries'
 import type { ProjectionId } from '@/map'
-import { EXPORT_FORMAT_OPTIONS } from '@/share/card-layout'
+import { EXPORT_FORMAT_OPTIONS, type ExportFormat } from '@/share/card-layout'
+import MenuButton from './MenuButton.vue'
 import { useShareControls } from './useShareControls'
 
 const props = defineProps<{
@@ -37,6 +39,11 @@ const { status, isSaving, copyLink, saveImage } = useShareControls({
   projection: () => props.projection,
   visited: () => props.visited,
 })
+
+const pickFormat = (format: ExportFormat, close: () => void) => {
+  close()
+  saveImage(format)
+}
 </script>
 
 <style scoped>
@@ -56,39 +63,6 @@ const { status, isSaving, copyLink, saveImage } = useShareControls({
 
 .share-button:hover {
   background: var(--glass-hover);
-}
-
-.share-formats {
-  display: inline-flex;
-  gap: 2px;
-  align-items: center;
-  min-width: 0;
-  margin: 0;
-  padding: 4px 4px 4px 18px;
-  border-radius: var(--radius-control);
-}
-
-/* aria-disabled, not disabled, so the pressed button keeps keyboard focus */
-.share-formats[aria-busy='true'] {
-  opacity: 0.6;
-  cursor: progress;
-}
-
-.share-formats-label {
-  margin-right: 6px;
-  color: var(--text-muted);
-}
-
-.share-format {
-  padding: 7px 14px;
-  border: 0;
-  border-radius: var(--radius-control);
-  background: transparent;
-  cursor: pointer;
-}
-
-.share-format:hover:not([aria-disabled='true']) {
-  background: var(--control-hover-bg);
 }
 
 .share-status {

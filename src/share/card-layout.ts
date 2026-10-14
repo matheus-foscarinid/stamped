@@ -21,12 +21,12 @@ export const EXPORT_FORMATS: Record<ExportFormat, ExportFormatSpec> = {
 interface ExportFormatOption {
   id: ExportFormat
   label: string
-  ariaLabel: string
+  size: string
 }
 
 export const EXPORT_FORMAT_OPTIONS: ExportFormatOption[] = EXPORT_FORMAT_IDS.map(id => {
   const { label, width, height } = EXPORT_FORMATS[id]
-  return { id, label, ariaLabel: `Save ${label.toLowerCase()} image, ${width} by ${height}` }
+  return { id, label, size: `${width} × ${height}` }
 })
 
 const PADDING_RATIO = 0.07
