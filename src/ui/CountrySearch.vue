@@ -24,7 +24,10 @@
           @click="pick(match.code)"
         >
           <span class="country-flag" aria-hidden="true">{{ match.flag }}</span>
-          <span class="country-name">{{ match.name }}</span>
+          <span class="country-name">
+            {{ match.name }}
+            <span v-if="isDisputed(match.code)" class="country-disputed">{{ t('country.disputed') }}</span>
+          </span>
           <span v-if="isVisited(match.code)" class="country-visited">{{ t('search.visited') }}</span>
         </button>
       </li>
@@ -33,7 +36,7 @@
 </template>
 
 <script setup vapor lang="ts">
-import type { CountryCode } from '@/countries'
+import { type CountryCode, isDisputed } from '@/countries'
 import { useI18n } from '@/i18n/useI18n'
 import { useCountrySearch } from './useCountrySearch'
 
@@ -117,6 +120,12 @@ const { query, matches, pick, updateQuery, pickOnEnter } = useCountrySearch({
 
 .country-name {
   flex: 1;
+}
+
+.country-disputed {
+  margin-left: 6px;
+  color: var(--text-muted);
+  font-size: 12px;
 }
 
 .country-visited {

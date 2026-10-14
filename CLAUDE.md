@@ -41,7 +41,7 @@ src/main.ts      mounts the app
 - The map module is a facade. Callers use `createWorldMap(canvas, options)` and its methods, never the decoder or renderer directly. The renderer is swappable through an optional override, with canvas as the default. Exported images go through `drawWorldSnapshot`, which always draws with canvas
 - The encoder (`build/`) and decoder (`src/map/`) share one format contract in `src/map/format.ts`. Change both together, and bump `MAP_FORMAT_VERSION` when the layout changes
 - `build/` runs on plain Node (type stripping), so the `src/map/` files it imports use relative imports with the `.ts` extension and no `@/` alias
-- Land without an ISO code (Kosovo, Northern Cyprus) is drawn but not selectable
+- Disputed land is selectable. Kosovo uses `xk`, Northern Cyprus and Somaliland get private-use codes (`xn`, `xs`) in `build/build-map.ts`, with their names in `src/countries/names.ts`. `src/countries/disputed.ts` lists what gets the Disputed tag
 - Natural Earth folds some territories into their country (French Guiana into France, Svalbard into Norway). `build/overseas.ts` splits them out under their own ISO code. Add a row there for any new case
 - Every country is searchable, including ones too small to draw or click
 - Country names come from `Intl.DisplayNames`. Continent names live in the locale files, since Chrome can't name M49 regions. A test fails if a locale file misses a key or a placeholder

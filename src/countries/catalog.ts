@@ -246,6 +246,10 @@ export const COUNTRY_CODES = [
   'vu',
   'wf',
   'ws',
+  // iso leaves xa-xz for private use. kosovo's xk is the common pick, xn and xs are ours
+  'xk',
+  'xn',
+  'xs',
   'ye',
   'yt',
   'za',
@@ -270,6 +274,7 @@ export const COUNTRY_ALIASES: Partial<Record<CountryCode, readonly string[]>> = 
   mm: ['burma'],
   nl: ['holland'],
   ps: ['palestine'],
+  xn: ['trnc'],
   ru: ['russian federation'],
   sz: ['swaziland'],
   tl: ['east timor'],

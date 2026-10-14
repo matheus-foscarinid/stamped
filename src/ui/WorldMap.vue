@@ -9,6 +9,7 @@
     <p v-if="hoveredCode" class="world-map-hover control-surface" aria-hidden="true">
       <span>{{ getFlagEmoji(hoveredCode) }}</span>
       {{ getCountryName(hoveredCode, language) }}
+      <span v-if="isDisputed(hoveredCode)" class="world-map-disputed">{{ t('country.disputed') }}</span>
     </p>
     <div class="world-map-zoom control-surface">
       <button type="button" class="zoom-button press-feedback" :aria-label="t('map.zoomIn')" @click="zoomIn">
@@ -31,7 +32,7 @@
 
 <script setup vapor lang="ts">
 import { useTemplateRef } from 'vue'
-import { type CountryCode, getCountryName, getFlagEmoji } from '@/countries'
+import { type CountryCode, getCountryName, getFlagEmoji, isDisputed } from '@/countries'
 import { useI18n } from '@/i18n/useI18n'
 import type { ProjectionId } from '@/map'
 import { useWorldMap } from './useWorldMap'
@@ -93,6 +94,11 @@ const { hasLoadError, hoveredCode, zoomIn, zoomOut, resetZoom } = useWorldMap({
     opacity: 0;
     translate: -50% -4px;
   }
+}
+
+.world-map-disputed {
+  color: var(--text-muted);
+  font-weight: 400;
 }
 
 .world-map-zoom {

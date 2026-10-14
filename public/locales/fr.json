@@ -17,6 +17,7 @@
     "other": "{count} pays trouvés"
   },
   "search.visited": "Visité",
+  "country.disputed": "Contesté",
   "theme.label": "Thème",
   "theme.autoHint": "Suit le système",
   "theme.auto": "Auto",

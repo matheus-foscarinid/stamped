@@ -17,6 +17,7 @@
     "other": "{count} passende Länder"
   },
   "search.visited": "Besucht",
+  "country.disputed": "Umstritten",
   "theme.label": "Design",
   "theme.autoHint": "Folgt dem System",
   "theme.auto": "Automatisch",

@@ -3,7 +3,7 @@ import { readVisitedFromHash, writeVisitedToHash } from './link.ts'
 
 describe('readVisitedFromHash', () => {
   it('keeps tiny countries and skips codes outside the iso list', () => {
-    expect(readVisitedFromHash('#v=va,xk')).toEqual(['va'])
+    expect(readVisitedFromHash('#v=va,zz')).toEqual(['va'])
   })
 
   it('tolerates uppercase, spaces, repeats and junk from hand-edited links', () => {

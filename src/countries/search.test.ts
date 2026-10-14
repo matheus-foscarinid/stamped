@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getFlagEmoji, isCountryCode, searchCountries } from './index.ts'
+import { getFlagEmoji, isCountryCode, isDisputed, searchCountries } from './index.ts'
 
 const EN = { locale: 'en' }
 
@@ -51,13 +51,30 @@ describe('searching in another language', () => {
   })
 })
 
+describe('disputed land', () => {
+  it('is searchable by name, including land with no iso code', () => {
+    expect(firstCode('kosovo')).toBe('xk')
+    expect(firstCode('northern cyprus')).toBe('xn')
+    expect(searchCountries('somalilandia', { locale: 'es' })[0]?.name).toBe('Somalilandia')
+  })
+
+  it('is tagged as disputed, unlike the country that claims it', () => {
+    expect(isDisputed('xs')).toBe(true)
+    expect(isDisputed('so')).toBe(false)
+  })
+})
+
 describe('country helpers', () => {
   it('builds the flag emoji from the code', () => {
     expect(getFlagEmoji('br')).toBe('🇧🇷')
   })
 
+  it('uses a plain flag where emoji sets have none', () => {
+    expect(getFlagEmoji('xk')).toBe('🏳️')
+  })
+
   it('accepts only codes in the catalog', () => {
     expect(isCountryCode('br')).toBe(true)
-    expect(isCountryCode('xk')).toBe(false)
+    expect(isCountryCode('zz')).toBe(false)
   })
 })

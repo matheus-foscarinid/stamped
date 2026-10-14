@@ -5,6 +5,7 @@ import type { FeatureCollection, Geometry } from 'geojson'
 
 export interface CountryProperties {
   ISO_A2_EH: string
+  ADM0_A3?: string
 }
 
 export type CountryCollection = FeatureCollection<Geometry, CountryProperties>

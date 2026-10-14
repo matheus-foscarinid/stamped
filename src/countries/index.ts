@@ -1,6 +1,7 @@
 import { COUNTRY_CODES, type CountryCode } from './catalog.ts'
 
 export { COUNTRY_CODES, type CountryCode } from './catalog.ts'
+export { isDisputed } from './disputed.ts'
 export { getFlagEmoji } from './flags.ts'
 export { getCountryName } from './names.ts'
 export { type CountryMatch, searchCountries } from './search.ts'
