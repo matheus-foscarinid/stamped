@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getCountryMark, toggleVisited, toggleWishlisted } from './lists.ts'
+import { canToggleMark, getCountryMark, keepVisitWins, toggleMark } from './lists.ts'
 
 const LISTS = { visited: ['br', 'jp'], wishlist: ['is'] } as const
 
@@ -11,24 +11,38 @@ describe('getCountryMark', () => {
   })
 })
 
-describe('toggleVisited', () => {
+describe('toggling a visit', () => {
   it('adds an unmarked country and removes a visited one', () => {
-    expect(toggleVisited(LISTS, 'nz').visited).toEqual(['br', 'jp', 'nz'])
-    expect(toggleVisited(LISTS, 'br').visited).toEqual(['jp'])
+    expect(toggleMark(LISTS, 'nz', 'visited').visited).toEqual(['br', 'jp', 'nz'])
+    expect(toggleMark(LISTS, 'br', 'visited').visited).toEqual(['jp'])
   })
 
   it('moves a wished country off the wishlist once visited', () => {
-    expect(toggleVisited(LISTS, 'is')).toEqual({ visited: ['br', 'jp', 'is'], wishlist: [] })
+    expect(toggleMark(LISTS, 'is', 'visited')).toEqual({
+      visited: ['br', 'jp', 'is'],
+      wishlist: [],
+    })
   })
 })
 
-describe('toggleWishlisted', () => {
+describe('toggling a wish', () => {
   it('adds an unmarked country and removes a wished one', () => {
-    expect(toggleWishlisted(LISTS, 'nz').wishlist).toEqual(['is', 'nz'])
-    expect(toggleWishlisted(LISTS, 'is').wishlist).toEqual([])
+    expect(toggleMark(LISTS, 'nz', 'wishlist').wishlist).toEqual(['is', 'nz'])
+    expect(toggleMark(LISTS, 'is', 'wishlist').wishlist).toEqual([])
   })
 
-  it('leaves a visited country as it is', () => {
-    expect(toggleWishlisted(LISTS, 'br')).toBe(LISTS)
+  it('leaves a visited country as it is, and says so up front', () => {
+    expect(canToggleMark(LISTS, 'br', 'wishlist')).toBe(false)
+    expect(toggleMark(LISTS, 'br', 'wishlist')).toBe(LISTS)
+    expect(canToggleMark(LISTS, 'br', 'visited')).toBe(true)
+  })
+})
+
+describe('keepVisitWins', () => {
+  it('drops wishes for countries already visited', () => {
+    expect(keepVisitWins({ visited: ['br'], wishlist: ['br', 'is'] })).toEqual({
+      visited: ['br'],
+      wishlist: ['is'],
+    })
   })
 })

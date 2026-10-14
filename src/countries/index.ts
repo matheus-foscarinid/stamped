@@ -8,10 +8,11 @@ export { getFlagEmoji } from './flags.ts'
 export {
   type CountryLists,
   type CountryMark,
+  canToggleMark,
   EMPTY_LISTS,
   getCountryMark,
-  toggleVisited,
-  toggleWishlisted,
+  keepVisitWins,
+  toggleMark,
 } from './lists.ts'
 export { getCountryName } from './names.ts'
 export { getContinent } from './regions.ts'

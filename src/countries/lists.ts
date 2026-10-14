@@ -18,15 +18,28 @@ export const getCountryMark = (lists: CountryLists, code: CountryCode): CountryM
   return null
 }
 
-// visiting a wished country fulfils the wish, so it leaves the wishlist
-export const toggleVisited = (lists: CountryLists, code: CountryCode): CountryLists => {
+// a visited country can't be wished for, so a stray tap never removes a visit
+export const canToggleMark = (lists: CountryLists, code: CountryCode, mark: CountryMark) =>
+  mark === 'visited' || !lists.visited.includes(code)
+
+// a country is on one list at most. links and storage can disagree, the visit wins
+export const keepVisitWins = ({ visited, wishlist }: CountryLists): CountryLists => ({
+  visited,
+  wishlist: wishlist.filter(code => !visited.includes(code)),
+})
+
+const toggleVisited = (lists: CountryLists, code: CountryCode): CountryLists => {
   if (lists.visited.includes(code)) return { ...lists, visited: without(lists.visited, code) }
+  // a visit fulfils the wish
   return { visited: [...lists.visited, code], wishlist: without(lists.wishlist, code) }
 }
 
-// a visited country can't be wished for, so a stray tap never removes a visit
-export const toggleWishlisted = (lists: CountryLists, code: CountryCode): CountryLists => {
-  if (lists.visited.includes(code)) return lists
+const toggleWishlisted = (lists: CountryLists, code: CountryCode): CountryLists => {
   if (lists.wishlist.includes(code)) return { ...lists, wishlist: without(lists.wishlist, code) }
   return { ...lists, wishlist: [...lists.wishlist, code] }
+}
+
+export const toggleMark = (lists: CountryLists, code: CountryCode, mark: CountryMark) => {
+  if (!canToggleMark(lists, code, mark)) return lists
+  return mark === 'visited' ? toggleVisited(lists, code) : toggleWishlisted(lists, code)
 }

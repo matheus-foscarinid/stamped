@@ -12,18 +12,11 @@
       @input="updateQuery"
       @keydown="pickOnEnter"
     />
-    <button
-      type="button"
-      class="wishlist-mode press-feedback"
-      :aria-pressed="isWishlistMode"
-      :aria-label="t('search.wishlistMode')"
-      :title="t('search.wishlistMode')"
-      @click="emit('toggleMode')"
-    >
-      <svg viewBox="0 0 16 16" aria-hidden="true">
-        <path d="M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z" />
-      </svg>
-    </button>
+    <WishlistModeToggle
+      class="country-search-mode"
+      :is-pressed="markMode === 'wishlist'"
+      @toggle="emit('toggleMode')"
+    />
     <p id="country-search-status" class="visually-hidden" aria-live="polite">
       {{ query ? t('search.status', { count: matches.length }) : '' }}
     </p>
@@ -32,8 +25,8 @@
         <button
           type="button"
           class="country-option"
-          :aria-pressed="getMark(match.code) === activeMark"
-          :disabled="isWishlistMode && getMark(match.code) === 'visited'"
+          :aria-pressed="match.mark === markMode"
+          :disabled="!match.isPickable"
           @click="pick(match.code)"
         >
           <span class="country-flag" aria-hidden="true">{{ match.flag }}</span>
@@ -41,8 +34,8 @@
             {{ match.name }}
             <span v-if="isDisputed(match.code)" class="country-disputed">{{ t('country.disputed') }}</span>
           </span>
-          <span v-if="getMark(match.code)" class="country-mark" :data-mark="getMark(match.code)">
-            {{ t(MARK_LABELS[getMark(match.code) ?? 'visited']) }}
+          <span v-if="match.mark" class="country-mark" :data-mark="match.mark">
+            {{ t(MARK_LABELS[match.mark]) }}
           </span>
         </button>
       </li>
@@ -55,10 +48,12 @@ import { computed } from 'vue'
 import { type CountryCode, type CountryMark, isDisputed } from '@/countries'
 import { useI18n } from '@/i18n/useI18n'
 import { useCountrySearch } from './useCountrySearch'
+import WishlistModeToggle from './WishlistModeToggle.vue'
 
 const props = defineProps<{
+  markMode: CountryMark
   getMark: (code: CountryCode) => CountryMark | null
-  isWishlistMode: boolean
+  canToggle: (code: CountryCode) => boolean
 }>()
 
 const emit = defineEmits<{
@@ -69,10 +64,12 @@ const emit = defineEmits<{
 const MARK_LABELS = { visited: 'search.visited', wishlist: 'search.wishlist' } as const
 
 const { t } = useI18n()
-const activeMark = computed<CountryMark>(() => (props.isWishlistMode ? 'wishlist' : 'visited'))
-const searchLabel = computed(() => t(props.isWishlistMode ? 'search.wishlistLabel' : 'search.label'))
+const SEARCH_LABELS = { visited: 'search.label', wishlist: 'search.wishlistLabel' } as const
+const searchLabel = computed(() => t(SEARCH_LABELS[props.markMode]))
 
 const { query, matches, pick, updateQuery, pickOnEnter } = useCountrySearch({
+  getMark: code => props.getMark(code),
+  canPick: code => props.canToggle(code),
   onPick: code => emit('toggle', code),
 })
 </script>
@@ -100,44 +97,9 @@ const { query, matches, pick, updateQuery, pickOnEnter } = useCountrySearch({
   background: var(--glass-hover);
 }
 
-.wishlist-mode {
+.country-search-mode {
   position: absolute;
   inset: 5px 5px 5px auto;
-  display: grid;
-  place-items: center;
-  aspect-ratio: 1;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition:
-    background-color var(--motion-fast) var(--ease-out),
-    color var(--motion-fast) var(--ease-out);
-}
-
-.wishlist-mode:hover {
-  background: var(--control-hover-bg);
-  color: var(--text);
-}
-
-.wishlist-mode[aria-pressed="true"] {
-  background: var(--control-active-bg);
-  color: var(--control-active-text);
-}
-
-.wishlist-mode svg {
-  width: 16px;
-  height: 16px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.5;
-  stroke-linejoin: round;
-}
-
-.wishlist-mode[aria-pressed="true"] svg {
-  fill: currentColor;
 }
 
 .country-search-results {

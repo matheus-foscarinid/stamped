@@ -15,10 +15,11 @@
         <TravelSummary class="stage-summary" :visited="visited" />
         <CountrySearch
           class="stage-search"
+          :mark-mode="markMode"
           :get-mark="getMark"
-          :is-wishlist-mode="isWishlistMode"
+          :can-toggle="canToggle"
           @toggle="toggleCountry"
-          @toggle-mode="toggleWishlistMode"
+          @toggle-mode="toggleMarkMode"
         />
         <button
           type="button"
@@ -71,11 +72,12 @@ const {
   visited,
   wishlist,
   markedCount,
+  markMode,
+  toggleMarkMode,
   getMark,
+  canToggle,
   toggleCountry,
   clearMap,
-  isWishlistMode,
-  toggleWishlistMode,
   isPassportOpen,
   togglePassport,
 } = useTravelMap()

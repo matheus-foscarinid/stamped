@@ -2,10 +2,10 @@ import { type ComputedRef, computed, type Ref, ref } from 'vue'
 import {
   type CountryCode,
   type CountryMark,
+  canToggleMark,
   EMPTY_LISTS,
   getCountryMark,
-  toggleVisited,
-  toggleWishlisted,
+  toggleMark,
 } from '@/countries'
 import { DEFAULT_PROJECTION, type ProjectionId } from '@/map'
 import { useCountryLists } from '@/useCountryLists'
@@ -15,31 +15,26 @@ interface UseTravelMapResult {
   visited: ComputedRef<readonly CountryCode[]>
   wishlist: ComputedRef<readonly CountryCode[]>
   markedCount: ComputedRef<number>
+  markMode: Ref<CountryMark>
+  toggleMarkMode: () => void
   getMark: (code: CountryCode) => CountryMark | null
+  canToggle: (code: CountryCode) => boolean
   toggleCountry: (code: CountryCode) => void
   clearMap: () => void
-  isWishlistMode: Ref<boolean>
-  toggleWishlistMode: () => void
   isPassportOpen: Ref<boolean>
   togglePassport: () => void
 }
 
 export const useTravelMap = (): UseTravelMapResult => {
   const projection = DEFAULT_PROJECTION
-  // replaced, never mutated, so the map sees every change
   const { lists, setLists } = useCountryLists()
   const visited = computed(() => lists.value.visited)
   const wishlist = computed(() => lists.value.wishlist)
   const markedCount = computed(() => visited.value.length + wishlist.value.length)
 
-  const isWishlistMode = ref(false)
-  const toggleWishlistMode = () => {
-    isWishlistMode.value = !isWishlistMode.value
-  }
-
-  const toggleCountry = (code: CountryCode) => {
-    const toggle = isWishlistMode.value ? toggleWishlisted : toggleVisited
-    setLists(toggle(lists.value, code))
+  const markMode = ref<CountryMark>('visited')
+  const toggleMarkMode = () => {
+    markMode.value = markMode.value === 'visited' ? 'wishlist' : 'visited'
   }
 
   const isPassportOpen = ref(false)
@@ -52,11 +47,12 @@ export const useTravelMap = (): UseTravelMapResult => {
     visited,
     wishlist,
     markedCount,
+    markMode,
+    toggleMarkMode,
     getMark: code => getCountryMark(lists.value, code),
-    toggleCountry,
+    canToggle: code => canToggleMark(lists.value, code, markMode.value),
+    toggleCountry: code => setLists(toggleMark(lists.value, code, markMode.value)),
     clearMap: () => setLists(EMPTY_LISTS),
-    isWishlistMode,
-    toggleWishlistMode,
     isPassportOpen,
     togglePassport,
   }

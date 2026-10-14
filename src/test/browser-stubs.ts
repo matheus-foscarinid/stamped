@@ -176,3 +176,7 @@ export const stubPageLanguage = () => {
   vi.stubGlobal('document', { documentElement })
   return { documentElement }
 }
+
+// node has no KeyboardEvent, so a plain cancelable event carries the key
+export const createKeyEvent = (key: string): KeyboardEvent =>
+  Object.assign(new Event('keydown', { cancelable: true }), { key }) as KeyboardEvent
