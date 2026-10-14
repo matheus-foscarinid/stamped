@@ -13,6 +13,8 @@ export const THEME_CHOICES = [
   'dusk',
   'forest',
   'midnight',
+  'gruvbox',
+  'dracula',
 ] as const
 
 export type ThemeChoice = (typeof THEME_CHOICES)[number]

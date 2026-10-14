@@ -34,6 +34,8 @@
   "theme.dusk": "Dusk",
   "theme.forest": "Forest",
   "theme.midnight": "Midnight",
+  "theme.gruvbox": "Gruvbox",
+  "theme.dracula": "Dracula",
   "language.label": "Language",
   "github.label": "Stamped on GitHub",
   "github.star": "Give it a ⭐",

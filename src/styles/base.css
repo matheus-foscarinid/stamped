@@ -49,47 +49,47 @@
 }
 
 [data-theme="lilac"] {
-  --page-bg: #cdb8e0;
-  --surface: #e6dbf1;
-  --text: #2d2340;
-  --text-muted: #5e4f78;
-  --accent: #2d2340;
-  --map-land: #f8f4fc;
-  --map-border: #d5c4e6;
-  --map-visited: #1f9e70;
-  --map-hover: #ece2f6;
-  --control-hover-bg: rgb(45 35 64 / 0.07);
-  --control-active-bg: #2d2340;
+  --page-bg: #d9cbe8;
+  --surface: #ebe3f4;
+  --text: #33284a;
+  --text-muted: #66597f;
+  --accent: #4a3770;
+  --map-land: #f7f3fb;
+  --map-border: #dccdeb;
+  --map-visited: #7b4fa8;
+  --map-hover: #e3d5f1;
+  --control-hover-bg: rgb(51 40 74 / 0.07);
+  --control-active-bg: #4a3770;
   --control-active-text: #ffffff;
 }
 
 [data-theme="ink"] {
-  --page-bg: #dfe8ef;
-  --surface: #eef3f7;
-  --text: #16324f;
-  --text-muted: #4f667c;
-  --accent: #16324f;
-  --map-land: #ffffff;
-  --map-border: #a9bccb;
-  --map-visited: #16324f;
-  --map-hover: #dbe6ee;
-  --control-hover-bg: rgb(22 50 79 / 0.07);
-  --control-active-bg: #16324f;
+  --page-bg: #e3e6ec;
+  --surface: #eceef2;
+  --text: #1d2a44;
+  --text-muted: #59647a;
+  --accent: #2b4a8b;
+  --map-land: #d8dde6;
+  --map-border: #eceef2;
+  --map-visited: #2b4a8b;
+  --map-hover: #c2cad8;
+  --control-hover-bg: rgb(29 42 68 / 0.07);
+  --control-active-bg: #2b4a8b;
   --control-active-text: #ffffff;
 }
 
 [data-theme="rose"] {
-  --page-bg: #d7eee2;
-  --surface: #e6f5ee;
-  --text: #21352b;
-  --text-muted: #44614f;
+  --page-bg: #f4d9e4;
+  --surface: #f9e8ef;
+  --text: #3d1f2e;
+  --text-muted: #7a4d61;
   --accent: #b8327f;
-  --map-land: #ffffff;
-  --map-border: #bfe0cf;
+  --map-land: #fff7fa;
+  --map-border: #efcadb;
   --map-visited: #d6409f;
-  --map-hover: #fbe3f3;
-  --control-hover-bg: rgb(33 53 43 / 0.07);
-  --control-active-bg: #21352b;
+  --map-hover: #f8dbe8;
+  --control-hover-bg: rgb(61 31 46 / 0.07);
+  --control-active-bg: #9e2a6b;
   --control-active-text: #ffffff;
 }
 
@@ -126,22 +126,22 @@
 [data-theme="dark"],
 [data-theme="dusk"],
 [data-theme="forest"],
-[data-theme="midnight"] {
-  --glass-bg: rgb(48 48 54 / 0.52);
-  --glass-hover: rgb(72 72 80 / 0.7);
-  --glass-edge: rgb(255 255 255 / 0.14);
-  --glass-line: rgb(255 255 255 / 0.08);
-  --glass-shadow: 0 1px 1px rgb(0 0 0 / 0.25), 0 12px 32px -8px rgb(0 0 0 / 0.5);
-  --control-hover-bg: rgb(255 255 255 / 0.1);
-  --stamp-lightness: 72%;
-  --stamp-blend: normal;
-  /* graphite, not brown, so the page sits with every dark theme's surface */
-  --passport-paper: #26262b;
-  --passport-paper-line: rgb(0 0 0 / 0.28);
-  --passport-ink: #ebe8e1;
-  --passport-cover-dark: #6a1a2c;
-
-  color-scheme: dark;
+[data-theme="midnight"],
+[data-theme="gruvbox"],
+[data-theme="dracula"] {
+  --page-bg: #111a2e;
+  --surface: #18233b;
+  --text: #e3e8f3;
+  --text-muted: #9aa6c0;
+  --accent: #e0b65a;
+  --map-land: #2a3753;
+  --map-border: #18233b;
+  --map-visited: #e0b65a;
+  --map-hover: #35466a;
+  --glass-bg: rgb(42 55 83 / 0.5);
+  --glass-hover: rgb(56 72 106 / 0.6);
+  --control-active-bg: #e0b65a;
+  --control-active-text: #18233b;
 }
 
 [data-theme="dark"] {
@@ -204,6 +204,38 @@
   --glass-hover: rgb(42 60 99 / 0.6);
   --control-active-bg: #f2c14e;
   --control-active-text: #0d1830;
+}
+
+[data-theme="gruvbox"] {
+  --page-bg: #1d2021;
+  --surface: #282828;
+  --text: #ebdbb2;
+  --text-muted: #a89984;
+  --accent: #d8a657;
+  --map-land: #3c3836;
+  --map-border: #282828;
+  --map-visited: #d8a657;
+  --map-hover: #504945;
+  --glass-bg: rgb(60 56 54 / 0.5);
+  --glass-hover: rgb(80 73 69 / 0.6);
+  --control-active-bg: #d8a657;
+  --control-active-text: #282828;
+}
+
+[data-theme="dracula"] {
+  --page-bg: #21222c;
+  --surface: #282a36;
+  --text: #f8f8f2;
+  --text-muted: #a4abd0;
+  --accent: #bd93f9;
+  --map-land: #44475a;
+  --map-border: #282a36;
+  --map-visited: #bd93f9;
+  --map-hover: #565a70;
+  --glass-bg: rgb(68 71 90 / 0.5);
+  --glass-hover: rgb(90 94 118 / 0.6);
+  --control-active-bg: #bd93f9;
+  --control-active-text: #21222c;
 }
 
 /* a theme switch cross-fades the whole page, canvas included */
