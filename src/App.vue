@@ -14,12 +14,14 @@
       </header>
       <footer class="stage-bottom">
         <ShareControls :projection="projection" :visited="visited" />
+        <ClearMapButton :count="visited.length" @clear="clearVisited" />
       </footer>
     </div>
   </main>
 </template>
 
 <script setup vapor lang="ts">
+import ClearMapButton from '@/ui/ClearMapButton.vue'
 import CountrySearch from '@/ui/CountrySearch.vue'
 import ShareControls from '@/ui/ShareControls.vue'
 import ThemePicker from '@/ui/ThemePicker.vue'
@@ -27,7 +29,7 @@ import TravelSummary from '@/ui/TravelSummary.vue'
 import WorldMap from '@/ui/WorldMap.vue'
 import { useTravelMap } from '@/useTravelMap'
 
-const { projection, visited, isVisited, toggleVisited } = useTravelMap()
+const { projection, visited, isVisited, toggleVisited, clearVisited } = useTravelMap()
 </script>
 
 <style scoped>
@@ -85,6 +87,7 @@ const { projection, visited, isVisited, toggleVisited } = useTravelMap()
 
 .stage-bottom {
   bottom: var(--overlay-inset);
+  justify-content: flex-start;
   padding-right: 60px;
 }
 
@@ -102,6 +105,7 @@ const { projection, visited, isVisited, toggleVisited } = useTravelMap()
     --zoom-inset-y: 10px;
     --map-start-zoom: 1.9;
     --radius-stage: 24px;
+    --button-padding: 11px 12px;
   }
 
   .stage-summary {

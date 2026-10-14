@@ -3,6 +3,7 @@
   --radius-stage: 28px;
   --radius-control: 999px;
   --radius-menu: 20px;
+  --button-padding: 11px 18px;
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --motion-fast: 160ms;
@@ -263,7 +264,7 @@ button {
   display: inline-flex;
   gap: 10px;
   align-items: center;
-  padding: 11px 18px;
+  padding: var(--button-padding);
   border-radius: var(--radius-control);
   cursor: pointer;
 }

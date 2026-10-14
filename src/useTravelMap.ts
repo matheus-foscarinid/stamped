@@ -8,6 +8,7 @@ interface UseTravelMapResult {
   visited: Readonly<Ref<readonly CountryCode[]>>
   isVisited: (code: CountryCode) => boolean
   toggleVisited: (code: CountryCode) => void
+  clearVisited: () => void
 }
 
 export const useTravelMap = (): UseTravelMapResult => {
@@ -25,5 +26,7 @@ export const useTravelMap = (): UseTravelMapResult => {
     )
   }
 
-  return { projection, visited, isVisited, toggleVisited }
+  const clearVisited = () => setVisited([])
+
+  return { projection, visited, isVisited, toggleVisited, clearVisited }
 }

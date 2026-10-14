@@ -76,7 +76,7 @@ const pickFormat = (format: ExportFormat) => {
 }
 
 .share-button {
-  padding: 11px 18px;
+  padding: var(--button-padding);
   border-radius: var(--radius-control);
   cursor: pointer;
 }
