@@ -129,19 +129,21 @@
 [data-theme="midnight"],
 [data-theme="gruvbox"],
 [data-theme="dracula"] {
-  --page-bg: #111a2e;
-  --surface: #18233b;
-  --text: #e3e8f3;
-  --text-muted: #9aa6c0;
-  --accent: #e0b65a;
-  --map-land: #2a3753;
-  --map-border: #18233b;
-  --map-visited: #e0b65a;
-  --map-hover: #35466a;
-  --glass-bg: rgb(42 55 83 / 0.5);
-  --glass-hover: rgb(56 72 106 / 0.6);
-  --control-active-bg: #e0b65a;
-  --control-active-text: #18233b;
+  --glass-bg: rgb(48 48 54 / 0.52);
+  --glass-hover: rgb(72 72 80 / 0.7);
+  --glass-edge: rgb(255 255 255 / 0.14);
+  --glass-line: rgb(255 255 255 / 0.08);
+  --glass-shadow: 0 1px 1px rgb(0 0 0 / 0.25), 0 12px 32px -8px rgb(0 0 0 / 0.5);
+  --control-hover-bg: rgb(255 255 255 / 0.1);
+  --stamp-lightness: 72%;
+  --stamp-blend: normal;
+  /* graphite, not brown, so the page sits with every dark theme's surface */
+  --passport-paper: #26262b;
+  --passport-paper-line: rgb(0 0 0 / 0.28);
+  --passport-ink: #ebe8e1;
+  --passport-cover-dark: #6a1a2c;
+
+  color-scheme: dark;
 }
 
 [data-theme="dark"] {
@@ -191,19 +193,19 @@
 }
 
 [data-theme="midnight"] {
-  --page-bg: #070d1c;
-  --surface: #0d1830;
-  --text: #eef2fb;
-  --text-muted: #9aa8c7;
-  --accent: #f2c14e;
-  --map-land: #1d2b4a;
-  --map-border: #0d1830;
-  --map-visited: #f2c14e;
-  --map-hover: #2a3c63;
-  --glass-bg: rgb(29 43 74 / 0.5);
-  --glass-hover: rgb(42 60 99 / 0.6);
-  --control-active-bg: #f2c14e;
-  --control-active-text: #0d1830;
+  --page-bg: #111a2e;
+  --surface: #18233b;
+  --text: #e3e8f3;
+  --text-muted: #9aa6c0;
+  --accent: #e0b65a;
+  --map-land: #2a3753;
+  --map-border: #18233b;
+  --map-visited: #e0b65a;
+  --map-hover: #35466a;
+  --glass-bg: rgb(42 55 83 / 0.5);
+  --glass-hover: rgb(56 72 106 / 0.6);
+  --control-active-bg: #e0b65a;
+  --control-active-text: #18233b;
 }
 
 [data-theme="gruvbox"] {
