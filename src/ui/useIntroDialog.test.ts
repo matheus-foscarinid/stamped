@@ -15,12 +15,12 @@ describe('on a first visit', () => {
     expect(mountComposable(useIntroDialog).result.isOpen.value).toBe(true)
   })
 
-  it('remembers the intro once it is closed', () => {
-    const { values } = stubStorage()
+  it('stays closed on the next visit once it is closed', () => {
+    stubStorage()
     const { isOpen, close } = mountComposable(useIntroDialog).result
     close()
     expect(isOpen.value).toBe(false)
-    expect(values.has(INTRO_KEY)).toBe(true)
+    expect(mountComposable(useIntroDialog).result.isOpen.value).toBe(false)
   })
 })
 
