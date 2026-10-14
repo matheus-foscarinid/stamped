@@ -133,3 +133,23 @@ export const stubDocument = () => {
     pressOutside: () => press(outsideNode),
   }
 }
+
+// each resolution query fires once, like a browser does when the window changes screens
+export const stubPixelRatio = (initialRatio: number) => {
+  const queries = new Map<string, EventTarget>()
+  const browserWindow = {
+    devicePixelRatio: initialRatio,
+    matchMedia: (query: string) => {
+      const list = queries.get(query) ?? new EventTarget()
+      queries.set(query, list)
+      return list
+    },
+  }
+  vi.stubGlobal('window', browserWindow)
+  const moveToScreen = (ratio: number) => {
+    const previous = queries.get(`(resolution: ${browserWindow.devicePixelRatio}dppx)`)
+    browserWindow.devicePixelRatio = ratio
+    previous?.dispatchEvent(new Event('change'))
+  }
+  return { moveToScreen }
+}

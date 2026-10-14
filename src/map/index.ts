@@ -3,6 +3,7 @@ import { createCanvasRenderer, drawMapSnapshot, readMapPalette } from './canvas-
 import { createFadeAnimator, type FadeAnimator } from './fades.ts'
 import { attachInteraction } from './interaction.ts'
 import { loadCountryCodes, loadGeometry } from './load.ts'
+import { watchPixelRatio } from './pixel-ratio.ts'
 import type { ProjectionId } from './projections.ts'
 import type { MapRenderer, MapScene } from './renderer.ts'
 import {
@@ -193,6 +194,7 @@ export const createWorldMap = async (
   })
   const resizeObserver = new ResizeObserver(() => refit(controller))
   resizeObserver.observe(canvas)
+  const stopWatchingPixelRatio = watchPixelRatio(() => refit(controller))
   // colors come from css, so a theme switch on the page needs a fresh frame
   const themeObserver = new MutationObserver(controller.scheduleRender)
   themeObserver.observe(document.documentElement, { attributes: true })
@@ -208,6 +210,7 @@ export const createWorldMap = async (
     destroy: () => {
       detachInteraction()
       resizeObserver.disconnect()
+      stopWatchingPixelRatio()
       controller.fades.stop()
       themeObserver.disconnect()
       controller.renderer.destroy()

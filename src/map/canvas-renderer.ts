@@ -136,9 +136,9 @@ const offsetViewport = (viewport: Viewport, { x, y }: ScreenPoint): Viewport => 
 const drawScene = (
   canvas: HTMLCanvasElement,
   context: CanvasRenderingContext2D,
-  scene: MapScene
+  scene: MapScene,
+  pixelRatio: number
 ) => {
-  const pixelRatio = window.devicePixelRatio || 1
   context.setTransform(1, 0, 0, 1, 0, 0)
   context.clearRect(0, 0, canvas.width, canvas.height)
   paintScene(
@@ -184,14 +184,16 @@ const pickCountry = (
 export const createCanvasRenderer = (canvas: HTMLCanvasElement): MapRenderer => {
   const context = canvas.getContext('2d')
   if (!context) throw new Error('canvas 2d context unavailable')
+  // drawing uses the density the canvas was sized for, never a newer one it hasn't caught up with
+  let pixelRatio = 1
   return {
     resize: () => {
-      const pixelRatio = window.devicePixelRatio || 1
+      pixelRatio = window.devicePixelRatio || 1
       canvas.width = Math.round(canvas.clientWidth * pixelRatio)
       canvas.height = Math.round(canvas.clientHeight * pixelRatio)
       return { width: canvas.clientWidth, height: canvas.clientHeight }
     },
-    render: scene => drawScene(canvas, context, scene),
+    render: scene => drawScene(canvas, context, scene, pixelRatio),
     pick: (geometry, gridPoint) => pickCountry(context, geometry, gridPoint),
     destroy: () => undefined,
   }
