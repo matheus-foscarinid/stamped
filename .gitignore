@@ -6,3 +6,5 @@ public/maps
 .DS_Store
 *.log
 .playwright-mcp
+.claude/
+.mcp.json
