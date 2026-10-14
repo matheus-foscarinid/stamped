@@ -31,6 +31,8 @@
   "theme.forest": "Forest",
   "theme.midnight": "Midnight",
   "language.label": "Language",
+  "github.label": "Stamped on GitHub",
+  "github.star": "Give it a ⭐",
   "share.copyLink": "Copy link",
   "share.saveImage": "Save image",
   "share.linkCopied": "Link copied",

@@ -14,6 +14,7 @@
           <LanguagePicker />
           <ThemePicker />
         </div>
+        <GitHubLink class="stage-github" />
       </header>
       <footer class="stage-bottom">
         <ShareControls :projection="projection" :visited="visited" />
@@ -26,6 +27,7 @@
 <script setup vapor lang="ts">
 import ClearMapButton from '@/ui/ClearMapButton.vue'
 import CountrySearch from '@/ui/CountrySearch.vue'
+import GitHubLink from '@/ui/GitHubLink.vue'
 import LanguagePicker from '@/ui/LanguagePicker.vue'
 import ShareControls from '@/ui/ShareControls.vue'
 import ThemePicker from '@/ui/ThemePicker.vue'
@@ -121,9 +123,14 @@ const { projection, visited, isVisited, toggleVisited, clearVisited } = useTrave
     flex: 1;
   }
 
+  /* the github button shares the search row, so the top row keeps room for the pickers */
   .stage-search {
-    flex: 1 1 100%;
+    flex: 1 1 calc(100% - var(--control-height) - 10px);
     order: 1;
+  }
+
+  .stage-github {
+    order: 2;
   }
 
 }
