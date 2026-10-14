@@ -1,4 +1,4 @@
-import { COUNTRY_CODES, type CountryCode } from '@/countries'
+import { type CountryCode, formatWorldShare } from '@/countries'
 import { drawWorldSnapshot, type ProjectionId } from '@/map'
 import { readCssTokens } from '@/styles/css-tokens'
 import { type CardLayout, EXPORT_FORMATS, type ExportFormat, layoutCard } from './card-layout.ts'
@@ -23,12 +23,6 @@ interface CardHeadline {
 export interface CardContent {
   projection: ProjectionId
   visited: readonly CountryCode[]
-}
-
-const formatWorldShare = (visitedCount: number): string => {
-  const percent = Math.round((visitedCount / COUNTRY_CODES.length) * 100)
-  if (percent === 0 && visitedCount > 0) return '<1%'
-  return `${percent}%`
 }
 
 export const describeVisits = (visitedCount: number): CardHeadline => {
