@@ -16,6 +16,14 @@ describe('fitViewport', () => {
     expect(fitted.offsetX).toBeCloseTo(20)
     expect(fitted.offsetY).toBeCloseTo(10)
   })
+
+  it('keeps the padding clear on the tighter side and centers the map', () => {
+    const padded = fitViewport(WIDE_MAP, { ...SCREEN, padding: { x: 0, y: 100 } })
+    const mapHeight = WIDE_MAP.height * padded.scale
+    expect(padded.offsetY).toBeGreaterThanOrEqual(100)
+    expect(padded.offsetY + mapHeight).toBeLessThanOrEqual(SCREEN.height - 100)
+    expect(padded.offsetX).toBeCloseTo((SCREEN.width - WIDE_MAP.width * padded.scale) / 2)
+  })
 })
 
 describe('zoomViewport', () => {

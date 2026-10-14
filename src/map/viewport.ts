@@ -10,6 +10,8 @@ export interface Viewport {
 export interface ScreenSize {
   width: number
   height: number
+  // room kept clear around the fitted map, per side, so overlays don't cover it
+  padding?: ScreenPoint
 }
 
 export interface ScreenPoint {
@@ -22,11 +24,14 @@ export interface ScreenRect extends ScreenSize, ScreenPoint {}
 const PADDING_RATIO = 0.02
 const MAX_ZOOM = 6
 
+const NO_PADDING: ScreenPoint = { x: 0, y: 0 }
+
 export const fitViewport = (geometry: MapGeometry, size: ScreenSize): Viewport => {
   const usable = 1 - PADDING_RATIO * 2
+  const { x, y } = size.padding ?? NO_PADDING
   const scale = Math.min(
-    (size.width * usable) / geometry.width,
-    (size.height * usable) / geometry.height
+    ((size.width - x * 2) * usable) / geometry.width,
+    ((size.height - y * 2) * usable) / geometry.height
   )
   return {
     scale,

@@ -1,3 +1,4 @@
+import { readCssTokens } from '@/styles/css-tokens'
 import { createCanvasRenderer, drawMapSnapshot, readMapPalette } from './canvas-renderer.ts'
 import { attachInteraction } from './interaction.ts'
 import { loadCountryCodes, loadGeometry } from './load.ts'
@@ -35,12 +36,26 @@ export interface WorldMap {
 }
 
 interface MapController {
+  canvas: HTMLCanvasElement
   scene: MapScene
   size: ScreenSize
   renderer: MapRenderer
   options: WorldMapOptions
   scheduleRender: () => void
 }
+
+const PADDING_TOKENS = { x: '--map-padding-x', y: '--map-padding-y' }
+
+// overlays float over the map, so css says how much room to keep clear around it
+const readMapPadding = (element: Element): ScreenPoint => {
+  const { x, y } = readCssTokens(element, PADDING_TOKENS)
+  return { x: Number.parseFloat(x) || 0, y: Number.parseFloat(y) || 0 }
+}
+
+const measureFrame = (canvas: HTMLCanvasElement, renderer: MapRenderer): ScreenSize => ({
+  ...renderer.resize(),
+  padding: readMapPadding(canvas),
+})
 
 const createRenderScheduler = (render: () => void): (() => void) => {
   let isScheduled = false
@@ -97,7 +112,7 @@ const panBy = (controller: MapController, delta: ScreenPoint) => {
 }
 
 const refit = (controller: MapController) => {
-  controller.size = controller.renderer.resize()
+  controller.size = measureFrame(controller.canvas, controller.renderer)
   controller.scene.viewport = fitViewport(controller.scene.geometry, controller.size)
   controller.renderer.render(controller.scene)
 }
@@ -111,7 +126,7 @@ const createController = async (
     loadGeometry(options.projection),
     loadCountryCodes(),
   ])
-  const size = renderer.resize()
+  const size = measureFrame(canvas, renderer)
   const scene: MapScene = {
     geometry,
     codes,
@@ -120,7 +135,7 @@ const createController = async (
     viewport: fitViewport(geometry, size),
   }
   const scheduleRender = createRenderScheduler(() => renderer.render(scene))
-  return { scene, size, renderer, options, scheduleRender }
+  return { canvas, scene, size, renderer, options, scheduleRender }
 }
 
 const createProjectionSetter = (controller: MapController) => {
