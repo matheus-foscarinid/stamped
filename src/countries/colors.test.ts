@@ -14,6 +14,12 @@ describe('getCountryHue', () => {
     for (const hue of HUES) expect(hue >= 0 && hue < 360 && Number.isInteger(hue)).toBe(true)
   })
 
+  it('keeps neighbours that share a letter apart', () => {
+    const [france, germany] = [getCountryHue('fr'), getCountryHue('de')]
+    const distance = Math.min(Math.abs(france - germany), 360 - Math.abs(france - germany))
+    expect(distance).toBeGreaterThan(60)
+  })
+
   it('spreads countries around the wheel, so neighbours rarely match', () => {
     expect(Math.max(...countBy(HUES, hue => hue))).toBeLessThanOrEqual(4)
     const sliceCounts = countBy(HUES, hue => Math.floor(hue / 30))
