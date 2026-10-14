@@ -1,6 +1,7 @@
 import { COUNTRY_CODES, type CountryCode } from './catalog.ts'
 
 export { COUNTRY_CODES, type CountryCode } from './catalog.ts'
+export { getCountryHue, hashCountryCode } from './colors.ts'
 export { groupByContinent } from './continents.ts'
 export { isDisputed } from './disputed.ts'
 export { getFlagEmoji } from './flags.ts'

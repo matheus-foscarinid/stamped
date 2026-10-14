@@ -1,24 +1,19 @@
-import type { CountryCode } from '@/countries'
+import { type CountryCode, getCountryHue, hashCountryCode } from '@/countries'
 
-export const STAMP_SHAPES = ['round', 'square', 'perforated'] as const
-const INK_COUNT = 5
+export const STAMP_SHAPES = ['round', 'hexagon', 'perforated', 'oval'] as const
 const MAX_TILT_DEG = 8
 
 export interface StampStyle {
   shape: (typeof STAMP_SHAPES)[number]
-  ink: number
+  hue: number
   tiltDeg: number
 }
 
-// small string hash, so a country gets the same stamp on every device
-const hashCode = (code: string): number =>
-  [...code].reduce((hash, letter) => Math.imul(hash ^ letter.charCodeAt(0), 0x9e3779b1) >>> 0, 7)
-
 export const getStampStyle = (code: CountryCode): StampStyle => {
-  const hash = hashCode(code)
+  const hash = hashCountryCode(code)
   return {
-    shape: STAMP_SHAPES[hash % STAMP_SHAPES.length] ?? 'round',
-    ink: (hash >>> 4) % INK_COUNT,
+    shape: STAMP_SHAPES[(hash >>> 4) % STAMP_SHAPES.length] ?? 'round',
+    hue: getCountryHue(code),
     tiltDeg: ((hash >>> 8) % (MAX_TILT_DEG * 2 + 1)) - MAX_TILT_DEG,
   }
 }

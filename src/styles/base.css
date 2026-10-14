@@ -16,6 +16,7 @@
   --glass-edge: rgb(255 255 255 / 0.95);
   --glass-line: rgb(0 0 0 / 0.07);
   --glass-shadow: 0 1px 1px rgb(0 0 0 / 0.04), 0 10px 30px -8px rgb(0 0 0 / 0.14);
+  --stamp-lightness: 38%;
 
   color-scheme: light;
 }
@@ -121,6 +122,7 @@
   --glass-line: rgb(255 255 255 / 0.08);
   --glass-shadow: 0 1px 1px rgb(0 0 0 / 0.25), 0 12px 32px -8px rgb(0 0 0 / 0.5);
   --control-hover-bg: rgb(255 255 255 / 0.1);
+  --stamp-lightness: 72%;
 
   color-scheme: dark;
 }

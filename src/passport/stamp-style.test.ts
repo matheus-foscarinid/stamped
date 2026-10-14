@@ -13,8 +13,7 @@ describe('getStampStyle', () => {
     for (const { tiltDeg } of ALL_STYLES) expect(Math.abs(tiltDeg)).toBeLessThanOrEqual(8)
   })
 
-  it('uses every shape and ink across the countries', () => {
+  it('uses every shape across the countries', () => {
     expect(new Set(ALL_STYLES.map(style => style.shape))).toEqual(new Set(STAMP_SHAPES))
-    expect(new Set(ALL_STYLES.map(style => style.ink)).size).toBe(5)
   })
 })

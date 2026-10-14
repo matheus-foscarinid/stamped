@@ -17,8 +17,7 @@
           :key="stamp.code"
           class="stamp"
           :data-shape="stamp.shape"
-          :data-ink="stamp.ink"
-          :style="{ '--stamp-tilt': `${stamp.tiltDeg}deg` }"
+          :style="{ '--stamp-tilt': `${stamp.tiltDeg}deg`, '--stamp-hue': stamp.hue }"
         >
           <span class="stamp-flag" aria-hidden="true">{{ stamp.flag }}</span>
           <span class="stamp-code" aria-hidden="true">{{ stamp.code }}</span>
@@ -101,9 +100,8 @@ const pages = computed(() =>
   text-align: center;
 }
 
-/* inks lean towards the text colour, so they stay readable in light and dark themes */
 .stamp {
-  --stamp-ink: var(--text);
+  --stamp-ink: hsl(var(--stamp-hue, 0) 60% var(--stamp-lightness));
 
   display: grid;
   place-content: center;
@@ -128,28 +126,13 @@ const pages = computed(() =>
   }
 }
 
-.stamp[data-ink="0"] {
-  --stamp-ink: color-mix(in srgb, #2b4c9b 70%, var(--text));
-}
-
-.stamp[data-ink="1"] {
-  --stamp-ink: color-mix(in srgb, #a3263a 70%, var(--text));
-}
-
-.stamp[data-ink="2"] {
-  --stamp-ink: color-mix(in srgb, #2f7a4f 70%, var(--text));
-}
-
-.stamp[data-ink="3"] {
-  --stamp-ink: color-mix(in srgb, #6a3d9a 70%, var(--text));
-}
-
 .stamp[data-shape="round"] {
   border-radius: 50%;
 }
 
-.stamp[data-shape="square"] {
-  border-radius: 14px;
+.stamp[data-shape="hexagon"],
+.stamp[data-shape="oval"] {
+  border-radius: 40%;
 }
 
 .stamp[data-shape="perforated"] {
