@@ -24,16 +24,16 @@ No account, no server, no tracking.
 
 - [ ] Wishlist countries
 - [ ] Check for missing countries
-- [ ] Disputed territories
-- [ ] Passport view
+- [x] Disputed territories
+- [x] Passport view
 - [ ] States, regions and cities
-- [ ] i18n
+- [x] i18n
 - [ ] Accounts
 - [ ] 3D globe view
 
 ## Fast by design
 
-One HTML page of about 39 KB gzipped, plus a binary map. The map is a single canvas, the UI is Vue Vapor, and no geo code ships to the browser.
+One HTML page of about 44 KB gzipped, plus a binary map. The map is a single canvas, the UI is Vue Vapor, and no geo code ships to the browser.
 
 ## Run it
 
