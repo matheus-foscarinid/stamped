@@ -8,10 +8,7 @@
         @toggle="toggleVisited"
       />
       <header class="stage-top">
-        <h1 class="brand control-surface">
-          Stamped
-          <span class="brand-count">{{ visited.length }} of {{ COUNTRY_CODES.length }}</span>
-        </h1>
+        <TravelSummary class="stage-summary" :visited="visited" />
         <CountrySearch class="stage-search" :is-visited="isVisited" @toggle="toggleVisited" />
         <ThemePicker />
       </header>
@@ -23,10 +20,10 @@
 </template>
 
 <script setup vapor lang="ts">
-import { COUNTRY_CODES } from '@/countries'
 import CountrySearch from '@/ui/CountrySearch.vue'
 import ShareControls from '@/ui/ShareControls.vue'
 import ThemePicker from '@/ui/ThemePicker.vue'
+import TravelSummary from '@/ui/TravelSummary.vue'
 import WorldMap from '@/ui/WorldMap.vue'
 import { useTravelMap } from '@/useTravelMap'
 
@@ -91,24 +88,6 @@ const { projection, visited, isVisited, toggleVisited } = useTravelMap()
   padding-right: 60px;
 }
 
-.brand {
-  display: inline-flex;
-  gap: 10px;
-  align-items: baseline;
-  margin: 0;
-  padding: 11px 18px;
-  border-radius: var(--radius-control);
-  font-size: 15px;
-  font-weight: 650;
-  letter-spacing: -0.02em;
-}
-
-.brand-count {
-  color: var(--text-muted);
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-}
-
 @media (max-width: 600px) {
   .app {
     padding: 16px 8px;
@@ -125,9 +104,8 @@ const { projection, visited, isVisited, toggleVisited } = useTravelMap()
     --radius-stage: 24px;
   }
 
-  .brand {
+  .stage-summary {
     flex: 1;
-    justify-content: space-between;
   }
 
   .stage-search {
