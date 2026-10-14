@@ -239,6 +239,78 @@ button {
   backdrop-filter: blur(var(--glass-blur)) saturate(180%);
 }
 
+.menu-button {
+  position: relative;
+}
+
+.menu-trigger {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  padding: 11px 18px;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+}
+
+.menu-trigger:hover {
+  background: var(--glass-hover);
+}
+
+.menu-trigger::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  border-right: 1.6px solid currentColor;
+  border-bottom: 1.6px solid currentColor;
+  rotate: 45deg;
+  transition:
+    rotate var(--motion-base) var(--ease-out),
+    margin var(--motion-base) var(--ease-out);
+}
+
+.menu-trigger[aria-expanded="true"]::after {
+  margin-top: 3px;
+  rotate: 225deg;
+}
+
+.menu-panel {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  min-width: 220px;
+  padding: 6px;
+  border-radius: var(--radius-menu);
+  transition:
+    opacity var(--motion-fast) var(--ease-out),
+    transform var(--motion-base) var(--ease-out);
+}
+
+.menu-panel[data-placement="below"] {
+  top: calc(100% + 8px);
+  transform-origin: top;
+}
+
+.menu-panel[data-placement="above"] {
+  bottom: calc(100% + 8px);
+  transform-origin: bottom;
+}
+
+.menu-panel[data-align="start"] {
+  left: 0;
+}
+
+.menu-panel[data-align="end"] {
+  right: 0;
+}
+
+@starting-style {
+  .menu-panel {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
 .menu-item {
   display: flex;
   gap: 16px;
