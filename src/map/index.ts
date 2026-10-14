@@ -13,12 +13,7 @@ import {
   zoomViewport,
 } from './viewport.ts'
 
-export {
-  DEFAULT_PROJECTION,
-  PROJECTION_IDS,
-  PROJECTION_LABELS,
-  type ProjectionId,
-} from './projections.ts'
+export { DEFAULT_PROJECTION, type ProjectionId } from './projections.ts'
 export type { ScreenRect } from './viewport.ts'
 
 export interface WorldMapOptions {

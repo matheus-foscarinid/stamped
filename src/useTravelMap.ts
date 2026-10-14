@@ -1,17 +1,17 @@
-import { type Ref, ref } from 'vue'
+import type { Ref } from 'vue'
 import type { CountryCode } from '@/countries'
 import { DEFAULT_PROJECTION, type ProjectionId } from '@/map'
 import { useVisitedLink } from '@/useVisitedLink'
 
 interface UseTravelMapResult {
-  projection: Ref<ProjectionId>
+  projection: ProjectionId
   visited: Ref<readonly CountryCode[]>
   isVisited: (code: CountryCode) => boolean
   toggleVisited: (code: CountryCode) => void
 }
 
 export const useTravelMap = (): UseTravelMapResult => {
-  const projection = ref<ProjectionId>(DEFAULT_PROJECTION)
+  const projection = DEFAULT_PROJECTION
   // replaced, never mutated, so the map sees every change
   const visited = useVisitedLink()
 

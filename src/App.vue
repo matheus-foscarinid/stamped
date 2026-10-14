@@ -9,7 +9,6 @@
       <WorldMap :projection="projection" :visited="visited" @toggle="toggleVisited" />
     </div>
     <footer class="mono-footer">
-      <ProjectionToggle v-model="projection" />
       <ShareControls :projection="projection" :visited="visited" />
     </footer>
   </main>
@@ -18,7 +17,6 @@
 <script setup vapor lang="ts">
 import { COUNTRY_CODES } from '@/countries'
 import CountrySearch from '@/ui/CountrySearch.vue'
-import ProjectionToggle from '@/ui/ProjectionToggle.vue'
 import ShareControls from '@/ui/ShareControls.vue'
 import WorldMap from '@/ui/WorldMap.vue'
 import { useTravelMap } from '@/useTravelMap'
@@ -63,10 +61,7 @@ const { projection, visited, isVisited, toggleVisited } = useTravelMap()
 
 .mono-footer {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px 24px;
-  align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   min-width: 0;
 }
 
