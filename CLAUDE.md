@@ -26,8 +26,8 @@ The top priority is weight and speed. Every dependency, byte and runtime step ha
 ```
 build/           source GeoJSON -> project -> round -> delta-encode -> public/maps/
 src/map/         facade over decoder, renderer, hit-testing and viewport
-src/countries/   catalog.ts (iso codes + aliases, add a country = add a code), search, names, flags
-src/share/       link codec (#v=br,in), export card layout and drawing, file saving
+src/countries/   catalog.ts (iso codes + aliases, add a country = add a code), search, names, flags, the visited and wishlist lists
+src/share/       link codec (#v=br,in&w=is for the wishlist), export card layout and drawing, file saving
 src/ui/          Vapor components and their hooks, including the passport book (cover, pages, nav)
 src/passport/    stamp look per country, the stamp generator (buildStampSvg, one svg for the page and exports) and the passport image. Colours come from getCountryHue in src/countries/
 src/brand/       the logo drawing, shared by the header, the favicon and docs/logo*.svg
@@ -35,7 +35,7 @@ src/styles/      shared tokens, theme palettes on [data-theme] and the css token
 src/theme/       theme catalog, saved choice and the auto (system) theme
 src/i18n/        UI text. English ships in the page, the other languages load from public/locales/ on demand
 src/test/        browser stubs, since tests run in node
-src/use*.ts      page state. useVisitedCountries keeps the visited countries in the link and saves your edits
+src/use*.ts      page state. useCountryLists keeps the visited and wishlist countries in the link and saves your edits
 src/main.ts      mounts the app
 ```
 

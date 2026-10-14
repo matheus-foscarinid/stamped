@@ -7,12 +7,19 @@
         :data-hidden="isPassportOpen"
         :projection="projection"
         :visited="visited"
-        @toggle="toggleVisited"
+        :wishlist="wishlist"
+        @toggle="toggleCountry"
       />
       <PassportBook v-if="isPassportOpen" class="stage-map" :projection="projection" :visited="visited" />
       <header class="stage-top">
         <TravelSummary class="stage-summary" :visited="visited" />
-        <CountrySearch class="stage-search" :is-visited="isVisited" @toggle="toggleVisited" />
+        <CountrySearch
+          class="stage-search"
+          :get-mark="getMark"
+          :is-wishlist-mode="isWishlistMode"
+          @toggle="toggleCountry"
+          @toggle-mode="toggleWishlistMode"
+        />
         <button
           type="button"
           class="view-toggle stage-view-toggle icon-label-button control-surface press-feedback"
@@ -38,7 +45,7 @@
       </header>
       <footer class="stage-bottom">
         <ShareControls :projection="projection" :visited="visited" />
-        <ClearMapButton :count="visited.length" @clear="clearVisited" />
+        <ClearMapButton :count="markedCount" @clear="clearMap" />
       </footer>
     </div>
   </main>
@@ -60,9 +67,13 @@ import { useTravelMap } from '@/useTravelMap'
 const {
   projection,
   visited,
-  isVisited,
-  toggleVisited,
-  clearVisited,
+  wishlist,
+  markedCount,
+  getMark,
+  toggleCountry,
+  clearMap,
+  isWishlistMode,
+  toggleWishlistMode,
   isPassportOpen,
   togglePassport,
 } = useTravelMap()

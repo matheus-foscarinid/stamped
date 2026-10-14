@@ -1,32 +1,45 @@
 import { describe, expect, it } from 'vitest'
-import { readVisitedFromHash, writeVisitedToHash } from './link.ts'
+import { readListsFromHash, writeListsToHash } from './link.ts'
 
-describe('readVisitedFromHash', () => {
+describe('readListsFromHash', () => {
   it('keeps tiny countries and skips codes outside the iso list', () => {
-    expect(readVisitedFromHash('#v=va,zz')).toEqual(['va'])
+    expect(readListsFromHash('#v=va,zz&w=sm,qq')).toEqual({ visited: ['va'], wishlist: ['sm'] })
   })
 
   it('tolerates uppercase, spaces, repeats and junk from hand-edited links', () => {
-    expect(readVisitedFromHash('#v=BR, br ,,zz,jp')).toEqual(['br', 'jp'])
+    expect(readListsFromHash('#v=BR, br ,,zz,jp').visited).toEqual(['br', 'jp'])
   })
 
-  it('finds v among other params', () => {
-    expect(readVisitedFromHash('#ref=x&v=br,jp&utm=1')).toEqual(['br', 'jp'])
+  it('finds both lists among other params', () => {
+    expect(readListsFromHash('#ref=x&w=is&v=br,jp&utm=1')).toEqual({
+      visited: ['br', 'jp'],
+      wishlist: ['is'],
+    })
   })
 
-  it.each(['', '#', '#v=', '#other=1'])('opens an empty map for %j', hash => {
-    expect(readVisitedFromHash(hash)).toEqual([])
+  it('keeps a country listed on both as visited only', () => {
+    expect(readListsFromHash('#v=br&w=br,is')).toEqual({ visited: ['br'], wishlist: ['is'] })
+  })
+
+  it.each(['', '#', '#v=', '#w=', '#other=1'])('opens an empty map for %j', hash => {
+    expect(readListsFromHash(hash)).toEqual({ visited: [], wishlist: [] })
   })
 })
 
-describe('writeVisitedToHash', () => {
+describe('writeListsToHash', () => {
   it('writes readable commas and round trips', () => {
-    const hash = writeVisitedToHash(['br', 'in'])
-    expect(hash).toBe('#v=br,in')
-    expect(readVisitedFromHash(hash)).toEqual(['br', 'in'])
+    const lists = { visited: ['br', 'in'], wishlist: ['is', 'nz'] } as const
+    const hash = writeListsToHash(lists)
+    expect(hash).toBe('#v=br,in&w=is,nz')
+    expect(readListsFromHash(hash)).toEqual(lists)
   })
 
-  it('clears the hash when nothing is visited', () => {
-    expect(writeVisitedToHash([])).toBe('')
+  it('leaves out an empty list', () => {
+    expect(writeListsToHash({ visited: [], wishlist: ['is'] })).toBe('#w=is')
+    expect(writeListsToHash({ visited: ['br'], wishlist: [] })).toBe('#v=br')
+  })
+
+  it('clears the hash when both lists are empty', () => {
+    expect(writeListsToHash({ visited: [], wishlist: [] })).toBe('')
   })
 })

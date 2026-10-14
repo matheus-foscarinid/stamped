@@ -40,6 +40,7 @@ import { useWorldMap } from './useWorldMap'
 const props = defineProps<{
   projection: ProjectionId
   visited: readonly string[]
+  wishlist: readonly string[]
 }>()
 
 const emit = defineEmits<{
@@ -51,7 +52,7 @@ const canvas = useTemplateRef<HTMLCanvasElement>('canvas')
 const { hasLoadError, hoveredCode, zoomIn, zoomOut, resetZoom } = useWorldMap({
   canvas,
   projection: () => props.projection,
-  visited: () => props.visited,
+  marks: () => ({ visited: props.visited, wishlist: props.wishlist }),
   onToggle: code => emit('toggle', code),
 })
 </script>

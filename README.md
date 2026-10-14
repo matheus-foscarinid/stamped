@@ -25,7 +25,7 @@ No account, no server, no tracking.
 
 ## Roadmap
 
-- [ ] Wishlist countries
+- [x] Wishlist countries
 - [ ] Check for missing countries
 - [x] Disputed territories
 - [x] Passport view

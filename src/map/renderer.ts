@@ -1,12 +1,17 @@
 import type { MapGeometry } from './format.ts'
 import type { ScreenPoint, ScreenSize, Viewport } from './viewport.ts'
 
+export type MarkState = 'visited' | 'wishlist' | 'unmarked'
+
 export interface MapScene {
   geometry: MapGeometry
   codes: (string | null)[]
-  visited: ReadonlySet<string>
+  // unmarked countries are left out
+  marks: ReadonlyMap<string, MarkState>
   // countries still easing into their color, from 0 to 1. settled ones are left out
   fading: ReadonlyMap<string, number>
+  // what a fading country looked like before, drawn under the new color
+  fadingFrom: ReadonlyMap<string, MarkState>
   hoveredIndex: number | null
   viewport: Viewport
 }

@@ -1,9 +1,11 @@
 import { readCssTokens } from '@/styles/css-tokens'
 import type { MapGeometry } from './format.ts'
-import type { MapRenderer, MapScene } from './renderer.ts'
+import type { MapRenderer, MapScene, MarkState } from './renderer.ts'
 import { fitViewport, type ScreenPoint, type ScreenRect, type Viewport } from './viewport.ts'
 
 const BORDER_WIDTH_PX = 0.6
+// stripes scale with the border, so exports drawn with thicker borders get wider stripes too
+const HATCH = { spacing: 10, width: 2.6 }
 
 interface Bounds {
   minX: number
@@ -67,28 +69,83 @@ const PALETTE_TOKENS = {
 export const readMapPalette = (element: Element): MapPalette =>
   readCssTokens(element, PALETTE_TOKENS)
 
-const pickFill = (palette: MapPalette, isVisited: boolean, isHovered: boolean): string => {
-  if (isVisited) return palette.visited
+const pickBaseFill = (palette: MapPalette, mark: MarkState, isHovered: boolean): string => {
+  if (mark === 'visited') return palette.visited
   if (isHovered) return palette.hover
   return palette.land
 }
 
+interface MarkFill {
+  path: Path2D
+  mark: MarkState
+  isHovered: boolean
+  inks: Inks
+}
+
+const fillMark = (context: CanvasRenderingContext2D, { path, mark, isHovered, inks }: MarkFill) => {
+  context.fillStyle = pickBaseFill(inks.palette, mark, isHovered)
+  context.fill(path, 'evenodd')
+  if (mark !== 'wishlist' || !inks.hatch) return
+  context.fillStyle = inks.hatch
+  context.fill(path, 'evenodd')
+}
+
 const fillCountry = (
   context: CanvasRenderingContext2D,
-  { path, scene, index, palette }: CountryFill
+  { path, scene, index, inks }: CountryFill
 ) => {
   const code = scene.codes[index]
-  const isVisited = code ? scene.visited.has(code) : false
   const isHovered = index === scene.hoveredIndex
+  const mark = (code && scene.marks.get(code)) || 'unmarked'
   const fade = code ? scene.fading.get(code) : undefined
-  if (fade !== undefined) {
-    context.fillStyle = pickFill(palette, !isVisited, isHovered)
-    context.fill(path, 'evenodd')
+  if (code && fade !== undefined) {
+    const previous = scene.fadingFrom.get(code) ?? 'unmarked'
+    fillMark(context, { path, mark: previous, isHovered, inks })
     context.globalAlpha = fade
   }
-  context.fillStyle = pickFill(palette, isVisited, isHovered)
-  context.fill(path, 'evenodd')
+  fillMark(context, { path, mark, isHovered, inks })
   context.globalAlpha = 1
+}
+
+// one tile of diagonal stripes, with the corner pieces so tiles join seamlessly
+const drawHatchTile = (color: string, borderWidth: number): HTMLCanvasElement => {
+  const tile = document.createElement('canvas')
+  const size = Math.max(2, Math.round(HATCH.spacing * borderWidth))
+  tile.width = size
+  tile.height = size
+  const context = tile.getContext('2d')
+  if (!context) return tile
+  context.strokeStyle = color
+  context.lineWidth = HATCH.width * borderWidth
+  context.beginPath()
+  for (const shift of [-size, 0, size]) {
+    context.moveTo(shift, size)
+    context.lineTo(shift + size, 0)
+  }
+  context.stroke()
+  return tile
+}
+
+let hatchCache: { key: string; pattern: CanvasPattern | null } | null = null
+
+const getHatch = (
+  context: CanvasRenderingContext2D,
+  color: string,
+  borderWidth: number
+): CanvasPattern | null => {
+  const key = `${color} ${borderWidth}`
+  if (hatchCache?.key !== key) {
+    hatchCache = {
+      key,
+      pattern: context.createPattern(drawHatchTile(color, borderWidth), 'repeat'),
+    }
+  }
+  return hatchCache.pattern
+}
+
+interface Inks {
+  palette: MapPalette
+  hatch: CanvasPattern | null
 }
 
 interface PaintStyle {
@@ -100,7 +157,7 @@ interface CountryFill {
   path: Path2D
   scene: MapScene
   index: number
-  palette: MapPalette
+  inks: Inks
 }
 
 // the viewport must already be in target canvas pixels
@@ -113,9 +170,13 @@ const paintScene = (
   context.setTransform(scale, 0, 0, scale, offsetX, offsetY)
   context.lineWidth = borderWidth / scale
   context.lineJoin = 'round'
+  const hatch = getHatch(context, palette.visited, borderWidth)
+  // the map transform would scale the stripes with the zoom, this keeps them a fixed width
+  hatch?.setTransform(new DOMMatrix().scale(1 / scale))
+  const inks = { palette, hatch }
   const paths = getCountryPaths(scene.geometry)
   paths.forEach(({ path }, index) => {
-    fillCountry(context, { path, scene, index, palette })
+    fillCountry(context, { path, scene, index, inks })
   })
   context.strokeStyle = palette.border
   for (const { path } of paths) context.stroke(path)
@@ -148,7 +209,7 @@ const drawScene = (
   )
 }
 
-type MapSnapshot = Omit<MapScene, 'hoveredIndex' | 'viewport' | 'fading'> &
+type MapSnapshot = Omit<MapScene, 'hoveredIndex' | 'viewport' | 'fading' | 'fadingFrom'> &
   PaintStyle & {
     // in target canvas pixels
     rect: ScreenRect
@@ -160,7 +221,14 @@ export const drawMapSnapshot = (
 ): void => {
   const viewport = offsetViewport(fitViewport(snapshot.geometry, rect), rect)
   context.save()
-  paintScene(context, { ...snapshot, fading: new Map(), hoveredIndex: null, viewport }, snapshot)
+  const scene = {
+    ...snapshot,
+    fading: new Map(),
+    fadingFrom: new Map(),
+    hoveredIndex: null,
+    viewport,
+  }
+  paintScene(context, scene, snapshot)
   context.restore()
 }
 

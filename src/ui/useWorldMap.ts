@@ -1,13 +1,13 @@
 import { onBeforeUnmount, onMounted, type Ref, ref, type ShallowRef, watch } from 'vue'
 import { type CountryCode, isCountryCode } from '@/countries'
-import { createWorldMap, type ProjectionId, type WorldMap } from '@/map'
+import { type CountryMarks, createWorldMap, type ProjectionId, type WorldMap } from '@/map'
 
 const ZOOM_STEP = 1.6
 
 interface UseWorldMapInput {
   canvas: Readonly<ShallowRef<HTMLCanvasElement | null>>
   projection: () => ProjectionId
-  visited: () => readonly string[]
+  marks: () => CountryMarks
   onToggle: (code: CountryCode) => void
 }
 
@@ -39,7 +39,7 @@ export const useWorldMap = (input: UseWorldMapInput): UseWorldMapResult => {
     })
     // the component may have gone away while the map file was loading
     if (isUnmounted) return created.destroy()
-    created.setVisited(input.visited())
+    created.setMarks(input.marks())
     map = created
   }
 
@@ -47,7 +47,7 @@ export const useWorldMap = (input: UseWorldMapInput): UseWorldMapResult => {
     if (input.canvas.value) mountMap(input.canvas.value).catch(reportError)
   })
   watch(input.projection, next => map?.setProjection(next).catch(reportError))
-  watch(input.visited, next => map?.setVisited(next))
+  watch(input.marks, next => map?.setMarks(next))
   onBeforeUnmount(() => {
     isUnmounted = true
     map?.destroy()

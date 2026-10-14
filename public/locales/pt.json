@@ -18,6 +18,9 @@
     "other": "{count} países encontrados"
   },
   "search.visited": "Visitado",
+  "search.wishlist": "Desejo",
+  "search.wishlistMode": "Modo lista de desejos",
+  "search.wishlistLabel": "Adicionar à lista",
   "country.disputed": "Disputado",
   "theme.label": "Tema",
   "theme.autoHint": "Segue o sistema",

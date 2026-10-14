@@ -17,6 +17,9 @@
     "other": "{count} matching countries"
   },
   "search.visited": "Visited",
+  "search.wishlist": "Wishlist",
+  "search.wishlistMode": "Wishlist mode",
+  "search.wishlistLabel": "Add to wishlist",
   "country.disputed": "Disputed",
   "theme.label": "Theme",
   "theme.autoHint": "Matches system",

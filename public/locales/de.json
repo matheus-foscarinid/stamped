@@ -17,6 +17,9 @@
     "other": "{count} passende Länder"
   },
   "search.visited": "Besucht",
+  "search.wishlist": "Wunsch",
+  "search.wishlistMode": "Wunschlisten-Modus",
+  "search.wishlistLabel": "Zur Wunschliste",
   "country.disputed": "Umstritten",
   "theme.label": "Design",
   "theme.autoHint": "Folgt dem System",

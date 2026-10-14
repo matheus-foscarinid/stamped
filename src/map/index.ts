@@ -5,7 +5,7 @@ import { attachInteraction } from './interaction.ts'
 import { loadCountryCodes, loadGeometry } from './load.ts'
 import { watchPixelRatio } from './pixel-ratio.ts'
 import type { ProjectionId } from './projections.ts'
-import type { MapRenderer, MapScene } from './renderer.ts'
+import type { MapRenderer, MapScene, MarkState } from './renderer.ts'
 import {
   homeViewport,
   panViewport,
@@ -30,9 +30,14 @@ export interface WorldMapOptions {
   onCountryHover?: (code: string | null) => void
 }
 
+export interface CountryMarks {
+  visited: Iterable<string>
+  wishlist: Iterable<string>
+}
+
 export interface WorldMap {
   setProjection: (projection: ProjectionId) => Promise<void>
-  setVisited: (codes: Iterable<string>) => void
+  setMarks: (marks: CountryMarks) => void
   zoomBy: (factor: number) => void
   resetZoom: () => void
   destroy: () => void
@@ -145,8 +150,9 @@ const createController = async (
   const scene: MapScene = {
     geometry,
     codes,
-    visited: new Set(),
+    marks: new Map(),
     fading: new Map(),
+    fadingFrom: new Map(),
     hoveredIndex: null,
     viewport: homeViewport(geometry, size, startZoom),
   }
@@ -158,13 +164,24 @@ const createController = async (
   return { canvas, scene, size, renderer, options, fades, scheduleRender }
 }
 
-const setVisited = (controller: MapController, codes: Iterable<string>) => {
-  const previous = controller.scene.visited
-  const next = new Set(codes)
-  const added = [...next].filter(code => !previous.has(code))
-  const removed = [...previous].filter(code => !next.has(code))
-  controller.scene.visited = next
-  controller.fades.start([...added, ...removed])
+// the visit wins when a code is on both lists
+const toMarkStates = ({ visited, wishlist }: CountryMarks): Map<string, MarkState> => {
+  const states = new Map<string, MarkState>()
+  for (const code of wishlist) states.set(code, 'wishlist')
+  for (const code of visited) states.set(code, 'visited')
+  return states
+}
+
+const setMarks = (controller: MapController, marks: CountryMarks) => {
+  const { scene } = controller
+  const next = toMarkStates(marks)
+  const codes = new Set([...scene.marks.keys(), ...next.keys()])
+  const changed = [...codes].filter(code => scene.marks.get(code) !== next.get(code))
+  const fadingFrom = new Map(scene.fadingFrom)
+  for (const code of changed) fadingFrom.set(code, scene.marks.get(code) ?? 'unmarked')
+  scene.fadingFrom = fadingFrom
+  scene.marks = next
+  controller.fades.start(changed)
   controller.scheduleRender()
 }
 
@@ -202,7 +219,7 @@ export const createWorldMap = async (
 
   return {
     setProjection: createProjectionSetter(controller),
-    setVisited: codes => setVisited(controller, codes),
+    setMarks: marks => setMarks(controller, marks),
     zoomBy: factor => {
       const { width, height } = controller.size
       zoomAround(controller, factor, { x: width / 2, y: height / 2 })
@@ -238,7 +255,7 @@ export const drawWorldSnapshot = async (
   drawMapSnapshot(context, {
     geometry,
     codes,
-    visited: new Set(options.visited),
+    marks: toMarkStates({ visited: options.visited, wishlist: [] }),
     palette: readMapPalette(document.documentElement),
     rect: options.rect,
     borderWidth: options.borderWidth,
