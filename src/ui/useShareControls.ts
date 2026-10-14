@@ -59,7 +59,7 @@ export const useShareControls = (input: UseShareControlsInput): UseShareControls
         projection: input.projection(),
         visited: input.visited(),
       })
-      const outcome = await saveFile(blob, `travel-map-${format}.png`)
+      const outcome = await saveFile(blob, `stamped-${format}.png`)
       if (outcome === 'saved') show('Image saved')
     } catch {
       show('Could not create the image. Try again')

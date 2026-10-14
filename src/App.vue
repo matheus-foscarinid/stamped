@@ -9,7 +9,7 @@
       />
       <header class="stage-top">
         <h1 class="brand control-surface">
-          Where I've been
+          Stamped
           <span class="brand-count">{{ visited.length }} of {{ COUNTRY_CODES.length }}</span>
         </h1>
         <CountrySearch :is-visited="isVisited" @toggle="toggleVisited" />

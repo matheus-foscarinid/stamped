@@ -24,4 +24,11 @@ describe('layoutCard', () => {
     expect(title.baseline - title.size).toBeGreaterThanOrEqual(STORY_BAR_HEIGHT)
     expect(map.y + map.height).toBeLessThanOrEqual(height - STORY_BAR_HEIGHT)
   })
+
+  it.each(EXPORT_FORMAT_IDS)('keeps the %s wordmark below the map and inside the frame', format => {
+    const { height, safeInset } = EXPORT_FORMATS[format]
+    const { padding, map, wordmark } = layoutCard(format)
+    expect(wordmark.baseline - wordmark.size).toBeGreaterThan(map.y + map.height)
+    expect(wordmark.baseline).toBeLessThanOrEqual(height - (safeInset ?? padding))
+  })
 })

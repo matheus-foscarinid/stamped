@@ -48,7 +48,7 @@ describe('after saving an image', () => {
     const { status, isSaving, saveImage } = mountShareControls()
     await saveImage('story')
     expect(renderCard).toHaveBeenCalledWith('story', { projection: 'mercator', visited: ['br'] })
-    expect(saveFile).toHaveBeenCalledWith(IMAGE, 'travel-map-story.png')
+    expect(saveFile).toHaveBeenCalledWith(IMAGE, 'stamped-story.png')
     expect(status.value).toBe('Image saved')
     expect(isSaving.value).toBe(false)
   })

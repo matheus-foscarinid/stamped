@@ -3,7 +3,7 @@ import { rejectWith, stubDevice } from '@/test/browser-stubs'
 import { saveFile } from './save-file.ts'
 
 const IMAGE = new Blob(['png'], { type: 'image/png' })
-const FILE_NAME = 'travel-map-post.png'
+const FILE_NAME = 'stamped-post.png'
 
 beforeEach(() => {
   vi.useFakeTimers()

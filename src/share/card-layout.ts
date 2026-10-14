@@ -43,6 +43,7 @@ export interface CardLayout {
   padding: number
   title: TextLine
   subtitle: TextLine
+  wordmark: TextLine
   map: ScreenRect
 }
 
@@ -56,7 +57,9 @@ export const layoutCard = (format: ExportFormat): CardLayout => {
   const title = { size: titleSize, baseline: inset + titleSize }
   const subtitleGap = Math.round(subtitleSize * SUBTITLE_LINE_HEIGHT)
   const subtitle = { size: subtitleSize, baseline: title.baseline + subtitleGap }
+  const wordmark = { size: subtitleSize, baseline: height - inset }
   const mapTop = subtitle.baseline + padding
-  const map = { x: padding, y: mapTop, width: width - padding * 2, height: height - inset - mapTop }
-  return { padding, title, subtitle, map }
+  const mapBottom = wordmark.baseline - wordmark.size - padding / 2
+  const map = { x: padding, y: mapTop, width: width - padding * 2, height: mapBottom - mapTop }
+  return { padding, title, subtitle, wordmark, map }
 }

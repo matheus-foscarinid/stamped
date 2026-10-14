@@ -1,4 +1,4 @@
-# Travel Tracker
+# Stamped
 
 Open-source map of the countries you've visited, shareable as a link. All code, data and assets are original or used under a compatible license.
 

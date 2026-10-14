@@ -4,6 +4,7 @@ import { readCssTokens } from '@/styles/css-tokens'
 import { type CardLayout, EXPORT_FORMATS, type ExportFormat, layoutCard } from './card-layout.ts'
 
 const EXPORT_BORDER_WIDTH_PX = 1.2
+const APP_NAME = 'Stamped'
 
 const THEME_TOKENS = {
   background: '--surface',
@@ -40,7 +41,7 @@ export const describeVisits = (visitedCount: number): CardHeadline => {
 
 const drawHeadline = (
   context: CanvasRenderingContext2D,
-  { padding, title, subtitle }: CardLayout,
+  { padding, title, subtitle, wordmark }: CardLayout,
   theme: CardTheme,
   headline: CardHeadline
 ) => {
@@ -50,6 +51,8 @@ const drawHeadline = (
   context.fillStyle = theme.muted
   context.font = `400 ${subtitle.size}px ${theme.font}`
   context.fillText(headline.subtitle, padding, subtitle.baseline)
+  context.font = `650 ${wordmark.size}px ${theme.font}`
+  context.fillText(APP_NAME, padding, wordmark.baseline)
 }
 
 const createCanvas = (format: ExportFormat): CanvasRenderingContext2D => {
