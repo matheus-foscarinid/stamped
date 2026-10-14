@@ -3,9 +3,10 @@ import { createCanvasRenderer, drawMapSnapshot, readMapPalette } from './canvas-
 import { createFadeAnimator, type FadeAnimator } from './fades.ts'
 import { attachInteraction } from './interaction.ts'
 import { loadCountryCodes, loadGeometry } from './load.ts'
+import { type CountryMarks, changeMarks, toMarkStates } from './marks.ts'
 import { watchPixelRatio } from './pixel-ratio.ts'
 import type { ProjectionId } from './projections.ts'
-import type { MapRenderer, MapScene, MarkState } from './renderer.ts'
+import type { MapRenderer, MapScene } from './renderer.ts'
 import {
   homeViewport,
   panViewport,
@@ -16,6 +17,7 @@ import {
   zoomViewport,
 } from './viewport.ts'
 
+export type { CountryMarks } from './marks.ts'
 export { watchPixelRatio } from './pixel-ratio.ts'
 export { DEFAULT_PROJECTION, MAP_ASPECT, type ProjectionId } from './projections.ts'
 export type { ScreenRect } from './viewport.ts'
@@ -28,11 +30,6 @@ export interface WorldMapOptions {
   isSelectable?: (code: string) => boolean
   onCountryClick?: (code: string) => void
   onCountryHover?: (code: string | null) => void
-}
-
-export interface CountryMarks {
-  visited: Iterable<string>
-  wishlist: Iterable<string>
 }
 
 export interface WorldMap {
@@ -164,24 +161,13 @@ const createController = async (
   return { canvas, scene, size, renderer, options, fades, scheduleRender }
 }
 
-// the visit wins when a code is on both lists
-const toMarkStates = ({ visited, wishlist }: CountryMarks): Map<string, MarkState> => {
-  const states = new Map<string, MarkState>()
-  for (const code of wishlist) states.set(code, 'wishlist')
-  for (const code of visited) states.set(code, 'visited')
-  return states
-}
-
-const setMarks = (controller: MapController, marks: CountryMarks) => {
+const setMarks = (controller: MapController, next: CountryMarks) => {
   const { scene } = controller
-  const next = toMarkStates(marks)
-  const codes = new Set([...scene.marks.keys(), ...next.keys()])
-  const changed = [...codes].filter(code => scene.marks.get(code) !== next.get(code))
-  const fadingFrom = new Map(scene.fadingFrom)
-  for (const code of changed) fadingFrom.set(code, scene.marks.get(code) ?? 'unmarked')
-  scene.fadingFrom = fadingFrom
-  scene.marks = next
-  controller.fades.start(changed)
+  const settledFrom = [...scene.fadingFrom].filter(([code]) => scene.fading.has(code))
+  const change = changeMarks({ previous: scene.marks, next, fading: new Map(settledFrom) })
+  scene.marks = change.marks
+  scene.fadingFrom = change.fadingFrom
+  controller.fades.start(change.changed)
   controller.scheduleRender()
 }
 

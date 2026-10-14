@@ -10,7 +10,7 @@ export interface MapScene {
   marks: ReadonlyMap<string, MarkState>
   // countries still easing into their color, from 0 to 1. settled ones are left out
   fading: ReadonlyMap<string, number>
-  // what a fading country looked like before, drawn under the new color
+  // the old look shows under the fade
   fadingFrom: ReadonlyMap<string, MarkState>
   hoveredIndex: number | null
   viewport: Viewport
