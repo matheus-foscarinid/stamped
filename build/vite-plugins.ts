@@ -33,7 +33,7 @@ const inlineOutput = (
 
 // the whole app is a few kb, so one html response beats a round trip per asset
 export const inlineEntryAssets = (): Plugin => ({
-  name: 'travel-tracker:inline-entry-assets',
+  name: 'stamped:inline-entry-assets',
   apply: 'build',
   enforce: 'post',
   generateBundle: (_options, bundle) => {
@@ -52,7 +52,7 @@ export const inlineEntryAssets = (): Plugin => ({
 
 // starts the map download while the html is still parsing, instead of after the js runs
 export const preloadDefaultMap = (base: string): Plugin => ({
-  name: 'travel-tracker:preload-default-map',
+  name: 'stamped:preload-default-map',
   transformIndexHtml: () =>
     [getMapFileName(DEFAULT_PROJECTION), 'index.json'].map(file => ({
       tag: 'link',
@@ -65,7 +65,7 @@ export const preloadDefaultMap = (base: string): Plugin => ({
 const STARTING_FAVICON_COLORS = { frame: '#5c5c63', globe: '#000000' }
 
 export const injectFavicon = (): Plugin => ({
-  name: 'travel-tracker:inject-favicon',
+  name: 'stamped:inject-favicon',
   transformIndexHtml: () => [
     {
       tag: 'link',
