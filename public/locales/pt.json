@@ -44,6 +44,9 @@
   "format.post": "Post",
   "format.story": "Story",
   "format.wide": "Horizontal",
+  "view.passport": "Passaporte",
+  "view.map": "Mapa",
+  "passport.empty": "Nenhum carimbo ainda. Toque em um país no mapa ou busque um para ganhar o primeiro.",
   "clear.button": "Limpar",
   "clear.title": "Limpar seu mapa?",
   "clear.text": {

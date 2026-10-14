@@ -43,6 +43,9 @@
   "format.post": "Post",
   "format.story": "Storia",
   "format.wide": "Orizzontale",
+  "view.passport": "Passaporto",
+  "view.map": "Mappa",
+  "passport.empty": "Nessun timbro ancora. Tocca un paese sulla mappa o cercane uno per ottenere il primo.",
   "clear.button": "Cancella",
   "clear.title": "Cancellare la mappa?",
   "clear.text": {

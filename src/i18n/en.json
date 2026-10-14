@@ -43,6 +43,9 @@
   "format.post": "Post",
   "format.story": "Story",
   "format.wide": "Wide",
+  "view.passport": "Passport",
+  "view.map": "Map",
+  "passport.empty": "No stamps yet. Tap a country on the map or search for one to get your first.",
   "clear.button": "Clear",
   "clear.title": "Clear your map?",
   "clear.text": {

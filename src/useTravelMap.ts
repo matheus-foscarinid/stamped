@@ -1,4 +1,4 @@
-import type { Ref } from 'vue'
+import { type Ref, ref } from 'vue'
 import type { CountryCode } from '@/countries'
 import { DEFAULT_PROJECTION, type ProjectionId } from '@/map'
 import { useVisitedCountries } from '@/useVisitedCountries'
@@ -9,6 +9,8 @@ interface UseTravelMapResult {
   isVisited: (code: CountryCode) => boolean
   toggleVisited: (code: CountryCode) => void
   clearVisited: () => void
+  isPassportOpen: Ref<boolean>
+  togglePassport: () => void
 }
 
 export const useTravelMap = (): UseTravelMapResult => {
@@ -28,5 +30,18 @@ export const useTravelMap = (): UseTravelMapResult => {
 
   const clearVisited = () => setVisited([])
 
-  return { projection, visited, isVisited, toggleVisited, clearVisited }
+  const isPassportOpen = ref(false)
+  const togglePassport = () => {
+    isPassportOpen.value = !isPassportOpen.value
+  }
+
+  return {
+    projection,
+    visited,
+    isVisited,
+    toggleVisited,
+    clearVisited,
+    isPassportOpen,
+    togglePassport,
+  }
 }

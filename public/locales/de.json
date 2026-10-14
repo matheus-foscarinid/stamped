@@ -43,6 +43,9 @@
   "format.post": "Post",
   "format.story": "Story",
   "format.wide": "Breit",
+  "view.passport": "Reisepass",
+  "view.map": "Karte",
+  "passport.empty": "Noch keine Stempel. Tippe auf ein Land auf der Karte oder suche eins für deinen ersten.",
   "clear.button": "Leeren",
   "clear.title": "Karte leeren?",
   "clear.text": {

@@ -43,6 +43,9 @@
   "format.post": "Post",
   "format.story": "Historia",
   "format.wide": "Horizontal",
+  "view.passport": "Pasaporte",
+  "view.map": "Mapa",
+  "passport.empty": "Aún no hay sellos. Toca un país en el mapa o búscalo para conseguir el primero.",
   "clear.button": "Borrar",
   "clear.title": "¿Borrar tu mapa?",
   "clear.text": {
