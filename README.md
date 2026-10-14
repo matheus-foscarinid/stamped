@@ -31,7 +31,7 @@ No account, no server, no tracking.
 - [x] Passport view
 - [x] Save the passport as an image
 - [ ] Different passport covers
-- [ ] Intro dialog on first open
+- [x] Intro dialog on first open
 - [ ] States, regions and cities
 - [x] i18n
 - [ ] Accounts

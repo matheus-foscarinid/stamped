@@ -48,6 +48,7 @@
         <ClearMapButton :count="markedCount" @clear="clearMap" />
       </footer>
     </div>
+    <IntroDialog />
   </main>
 </template>
 
@@ -56,6 +57,7 @@ import { useI18n } from '@/i18n/useI18n'
 import ClearMapButton from '@/ui/ClearMapButton.vue'
 import CountrySearch from '@/ui/CountrySearch.vue'
 import GitHubLink from '@/ui/GitHubLink.vue'
+import IntroDialog from '@/ui/IntroDialog.vue'
 import LanguagePicker from '@/ui/LanguagePicker.vue'
 import PassportBook from '@/ui/PassportBook.vue'
 import ShareControls from '@/ui/ShareControls.vue'
