@@ -308,3 +308,22 @@ export const stubFirstPaintPage = ({
   vi.stubGlobal('matchMedia', () => ({ matches: prefersDark }))
   return stubSavedPage(saved)
 }
+
+// a document that hears keys, and a text field a key can be typed into
+export const stubKeyboard = () => {
+  class StubElement extends EventTarget {
+    tagName = 'DIV'
+    isContentEditable = false
+  }
+  vi.stubGlobal('HTMLElement', StubElement)
+  const document = new EventTarget()
+  vi.stubGlobal('document', document)
+  const textField = Object.assign(new StubElement(), { tagName: 'INPUT' })
+  const press = (key: string, { target = document, ctrlKey = false } = {}) => {
+    const event = Object.assign(createKeyEvent(key), { ctrlKey, metaKey: false, altKey: false })
+    Object.defineProperty(event, 'target', { value: target })
+    document.dispatchEvent(event)
+    return event
+  }
+  return { press, textField }
+}

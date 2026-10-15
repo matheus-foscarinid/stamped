@@ -3,6 +3,8 @@
     <label class="visually-hidden" for="country-search-input">{{ searchLabel }}</label>
     <input
       id="country-search-input"
+      ref="searchInput"
+      aria-keyshortcuts="/"
       :value="query"
       class="country-search-input control-surface"
       type="search"
@@ -65,11 +67,12 @@
 </template>
 
 <script setup vapor lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, useTemplateRef } from 'vue'
 import { type CountryCode, type CountryMark, isDisputed } from '@/countries'
 import { useI18n } from '@/i18n/useI18n'
 import CountryPicker from './CountryPicker.vue'
 import { useCountrySearch } from './useCountrySearch'
+import { useSlashToSearch } from './useSlashToSearch'
 import WishlistModeToggle from './WishlistModeToggle.vue'
 
 const props = defineProps<{
@@ -90,6 +93,7 @@ const SEARCH_LABELS = { visited: 'search.label', wishlist: 'search.wishlistLabel
 const searchLabel = computed(() => t(SEARCH_LABELS[props.markMode]))
 
 const isPickerOpen = ref(false)
+useSlashToSearch(useTemplateRef<HTMLInputElement>('searchInput'))
 
 const { query, matches, pick, updateQuery, pickOnEnter } = useCountrySearch({
   getMark: code => props.getMark(code),
