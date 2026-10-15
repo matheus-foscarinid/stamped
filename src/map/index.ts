@@ -21,6 +21,8 @@ import { createZoomAnimator } from './zoom-animator.ts'
 
 // a miss this close to a tiny country still picks it, since its shape is too small to tap
 const TINY_COUNTRY_REACH_PX = 8
+// long enough to read the name a finger just lifted from
+const PEEK_LINGER_MS = 1400
 
 export type { CountryMarks } from './marks.ts'
 export { watchPixelRatio } from './pixel-ratio.ts'
@@ -122,6 +124,22 @@ const updateHover = (
   controller.scheduleRender()
 }
 
+// a lifted finger leaves its country named for a moment, a mouse moving on clears it at once
+const createPeek = (controller: MapController, canvas: HTMLCanvasElement) => {
+  let lingerTimer: ReturnType<typeof setTimeout> | undefined
+  const stopLingering = () => clearTimeout(lingerTimer)
+  const peek = (point: ScreenPoint | null) => {
+    stopLingering()
+    if (point) return updateHover(controller, canvas, point)
+    lingerTimer = setTimeout(() => updateHover(controller, canvas, null), PEEK_LINGER_MS)
+  }
+  const hover = (point: ScreenPoint | null) => {
+    stopLingering()
+    updateHover(controller, canvas, point)
+  }
+  return { peek, hover, stopLingering }
+}
+
 const handleTap = (controller: MapController, point: ScreenPoint) => {
   const index = findSelectableIndex(controller, point)
   const code = index === null ? null : controller.scene.codes[index]
@@ -205,6 +223,7 @@ export const createWorldMap = async (
   options: WorldMapOptions
 ): Promise<WorldMap> => {
   const controller = await createController(canvas, options)
+  const pointing = createPeek(controller, canvas)
   const zoomGlide = createZoomAnimator((factor, anchor) => zoomAround(controller, factor, anchor))
   // a touch, a reset or a new projection cancels the glide
   const takeOver =
@@ -218,7 +237,8 @@ export const createWorldMap = async (
     onEasedZoom: zoomGlide.zoomBy,
     onPan: takeOver(delta => panBy(controller, delta)),
     onTap: point => handleTap(controller, point),
-    onHover: point => updateHover(controller, canvas, point),
+    onHover: pointing.hover,
+    onPeek: pointing.peek,
   })
   const resizeObserver = new ResizeObserver(() => refit(controller))
   resizeObserver.observe(canvas)
@@ -237,6 +257,7 @@ export const createWorldMap = async (
     resetZoom: takeOver(() => refit(controller)),
     destroy: takeOver(() => {
       detachInteraction()
+      pointing.stopLingering()
       resizeObserver.disconnect()
       stopWatchingPixelRatio()
       controller.fades.stop()

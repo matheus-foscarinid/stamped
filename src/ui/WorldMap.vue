@@ -11,6 +11,9 @@
       <span>{{ getFlagEmoji(hoveredCode) }}</span>
       {{ getCountryName(hoveredCode, language) }}
       <span v-if="isDisputed(hoveredCode)" class="world-map-disputed">{{ t('country.disputed') }}</span>
+      <span v-if="hoveredMark" class="world-map-mark" :data-mark="hoveredMark">
+        {{ t(MARK_LABELS[hoveredMark]) }}
+      </span>
     </p>
     <div class="world-map-zoom control-surface">
       <button type="button" class="zoom-button press-feedback" :aria-label="t('map.zoomIn')" @click="zoomIn">
@@ -32,21 +35,23 @@
 </template>
 
 <script setup vapor lang="ts">
-import { useTemplateRef } from 'vue'
-import { type CountryCode, getCountryName, getFlagEmoji, isDisputed } from '@/countries'
+import { computed, useTemplateRef } from 'vue'
+import { type CountryCode, getCountryMark, getCountryName, getFlagEmoji, isDisputed } from '@/countries'
 import { useI18n } from '@/i18n/useI18n'
 import type { ProjectionId } from '@/map'
 import { useWorldMap } from './useWorldMap'
 
 const props = defineProps<{
   projection: ProjectionId
-  visited: readonly string[]
-  wishlist: readonly string[]
+  visited: readonly CountryCode[]
+  wishlist: readonly CountryCode[]
 }>()
 
 const emit = defineEmits<{
   toggle: [code: CountryCode]
 }>()
+
+const MARK_LABELS = { visited: 'search.visited', wishlist: 'search.wishlist' } as const
 
 const { language, t } = useI18n()
 const canvas = useTemplateRef<HTMLCanvasElement>('canvas')
@@ -55,6 +60,11 @@ const { isReady, hasLoadError, hoveredCode, zoomIn, zoomOut, resetZoom } = useWo
   projection: () => props.projection,
   marks: () => ({ visited: props.visited, wishlist: props.wishlist }),
   onToggle: code => emit('toggle', code),
+})
+
+const hoveredMark = computed(() => {
+  const code = hoveredCode.value
+  return code && getCountryMark({ visited: props.visited, wishlist: props.wishlist }, code)
 })
 </script>
 
@@ -71,6 +81,8 @@ const { isReady, hasLoadError, hoveredCode, zoomIn, zoomOut, resetZoom } = useWo
   width: 100%;
   height: 100%;
   touch-action: none;
+  -webkit-touch-callout: none;
+  user-select: none;
   opacity: 0;
   scale: 0.96;
   transition:
@@ -107,6 +119,22 @@ const { isReady, hasLoadError, hoveredCode, zoomIn, zoomOut, resetZoom } = useWo
     opacity: 0;
     translate: -50% -4px;
   }
+}
+
+.world-map-mark {
+  align-self: center;
+  padding: 1px 8px;
+  border-radius: var(--radius-control);
+  background: var(--control-active-bg);
+  color: var(--control-active-text);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.world-map-mark[data-mark="wishlist"] {
+  background: var(--map-wishlist-soft);
+  box-shadow: inset 0 0 0 1.5px var(--map-wishlist);
+  color: var(--text);
 }
 
 .world-map-disputed {

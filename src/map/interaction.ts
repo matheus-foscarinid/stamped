@@ -6,10 +6,15 @@ export interface InteractionHandlers {
   onPan: (delta: ScreenPoint) => void
   onTap: (point: ScreenPoint) => void
   onHover: (point: ScreenPoint | null) => void
+  // touch has no hover, so a finger shows what's under it. null once it lifts
+  onPeek: (point: ScreenPoint | null) => void
 }
 
 // a press that moved less than this still counts as a tap, not a drag
 const TAP_TOLERANCE_PX = 5
+// a finger held this long without moving reads names instead of dragging the map
+const PEEK_DELAY_MS = 300
+const PEEK_BUZZ_MS = 8
 const WHEEL_ZOOM_SPEED = 0.002
 // a trackpad pinch arrives as small wheel steps with ctrl held, so it needs a faster rate
 const TRACKPAD_PINCH_SPEED = 0.01
@@ -21,6 +26,24 @@ const PX_PER_DELTA_MODE: Record<number, number> = { 0: 1, 1: 16, 2: 800 }
 interface GestureState {
   pointers: Map<number, ScreenPoint>
   travel: number
+  isPeeking: boolean
+  peekTimer: ReturnType<typeof setTimeout> | undefined
+}
+
+const cancelPeekTimer = (state: GestureState) => {
+  clearTimeout(state.peekTimer)
+  state.peekTimer = undefined
+}
+
+const startPeekTimer = (state: GestureState, handlers: InteractionHandlers) => {
+  cancelPeekTimer(state)
+  state.peekTimer = setTimeout(() => {
+    const [point] = [...state.pointers.values()]
+    if (state.pointers.size !== 1 || state.travel >= TAP_TOLERANCE_PX || !point) return
+    state.isPeeking = true
+    navigator.vibrate?.(PEEK_BUZZ_MS)
+    handlers.onPeek(point)
+  }, PEEK_DELAY_MS)
 }
 
 const distanceBetween = (a: ScreenPoint, b: ScreenPoint): number => Math.hypot(a.x - b.x, a.y - b.y)
@@ -71,7 +94,8 @@ const createPointerMove =
     const point = toLocal(event)
     const previous = state.pointers.get(event.pointerId)
     if (!previous) return handlers.onHover(point)
-    if (state.pointers.size > 1) handlePinch(state, event.pointerId, point, handlers)
+    if (state.isPeeking) handlers.onPeek(point)
+    else if (state.pointers.size > 1) handlePinch(state, event.pointerId, point, handlers)
     else handleDrag(state, previous, point, handlers)
     state.pointers.set(event.pointerId, point)
   }
@@ -88,6 +112,49 @@ const handleWheel = (
   else handlers.onEasedZoom(Math.exp(-delta * WHEEL_ZOOM_SPEED), toLocal(event))
 }
 
+const isFinger = (event: PointerEvent) => event.pointerType !== 'mouse'
+
+const createPointerDown =
+  (
+    canvas: HTMLCanvasElement,
+    state: GestureState,
+    toLocal: (event: PointerEvent) => ScreenPoint,
+    handlers: InteractionHandlers
+  ) =>
+  (event: PointerEvent) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return
+    canvas.setPointerCapture(event.pointerId)
+    state.pointers.set(event.pointerId, toLocal(event))
+    state.travel = state.pointers.size > 1 ? Number.POSITIVE_INFINITY : 0
+    if (isFinger(event) && state.pointers.size === 1) return startPeekTimer(state, handlers)
+    cancelPeekTimer(state)
+    // a second finger means a pinch, so the names step aside
+    if (state.isPeeking) handlers.onPeek(null)
+    state.isPeeking = false
+  }
+
+// a quick tap peeks too, so the finger learns which country it just stamped
+const createPointerUp =
+  (
+    state: GestureState,
+    toLocal: (event: PointerEvent) => ScreenPoint,
+    handlers: InteractionHandlers
+  ) =>
+  (event: PointerEvent) => {
+    const point = toLocal(event)
+    const isTap = state.pointers.size === 1 && state.travel < TAP_TOLERANCE_PX
+    cancelPeekTimer(state)
+    const wasPeeking = state.isPeeking
+    state.isPeeking = false
+    state.pointers.delete(event.pointerId)
+    if (wasPeeking) return handlers.onPeek(null)
+    if (!isTap) return
+    handlers.onTap(point)
+    if (!isFinger(event)) return
+    handlers.onPeek(point)
+    handlers.onPeek(null)
+  }
+
 const createLocalPoint =
   (canvas: HTMLCanvasElement) =>
   (event: PointerEvent | WheelEvent): ScreenPoint => {
@@ -99,7 +166,12 @@ export const attachInteraction = (
   canvas: HTMLCanvasElement,
   handlers: InteractionHandlers
 ): (() => void) => {
-  const state: GestureState = { pointers: new Map(), travel: 0 }
+  const state: GestureState = {
+    pointers: new Map(),
+    travel: 0,
+    isPeeking: false,
+    peekTimer: undefined,
+  }
   const toLocal = createLocalPoint(canvas)
   const controller = new AbortController()
   const { signal } = controller
@@ -108,27 +180,17 @@ export const attachInteraction = (
     passive: false,
     signal,
   })
-  canvas.addEventListener(
-    'pointerdown',
-    event => {
-      if (event.pointerType === 'mouse' && event.button !== 0) return
-      canvas.setPointerCapture(event.pointerId)
-      state.pointers.set(event.pointerId, toLocal(event))
-      state.travel = state.pointers.size > 1 ? Number.POSITIVE_INFINITY : 0
-    },
-    { signal }
-  )
+  canvas.addEventListener('pointerdown', createPointerDown(canvas, state, toLocal, handlers), {
+    signal,
+  })
   canvas.addEventListener('pointermove', createPointerMove(state, toLocal, handlers), { signal })
-  canvas.addEventListener(
-    'pointerup',
-    event => {
-      const isTap = state.pointers.size === 1 && state.travel < TAP_TOLERANCE_PX
-      if (isTap) handlers.onTap(toLocal(event))
-      state.pointers.delete(event.pointerId)
-    },
-    { signal }
-  )
-  const forgetPointer = (event: PointerEvent) => state.pointers.delete(event.pointerId)
+  canvas.addEventListener('pointerup', createPointerUp(state, toLocal, handlers), { signal })
+  const forgetPointer = (event: PointerEvent) => {
+    cancelPeekTimer(state)
+    if (state.isPeeking) handlers.onPeek(null)
+    state.isPeeking = false
+    state.pointers.delete(event.pointerId)
+  }
   canvas.addEventListener('pointercancel', forgetPointer, { signal })
   // a release the page never sees, like one under a context menu, would leave the map dragging
   canvas.addEventListener('lostpointercapture', forgetPointer, { signal })
@@ -139,5 +201,8 @@ export const attachInteraction = (
     },
     { signal }
   )
-  return () => controller.abort()
+  return () => {
+    cancelPeekTimer(state)
+    controller.abort()
+  }
 }

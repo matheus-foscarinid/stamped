@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, type Mock, vi } from 'vitest'
 import { createPointerEvent, createWheelEvent, stubCanvas } from '@/test/browser-stubs'
 import { attachInteraction, type InteractionHandlers } from './interaction.ts'
 
@@ -25,6 +25,7 @@ beforeEach(() => {
     onPan: vi.fn<InteractionHandlers['onPan']>(),
     onTap: vi.fn<InteractionHandlers['onTap']>(),
     onHover: vi.fn<InteractionHandlers['onHover']>(),
+    onPeek: vi.fn<InteractionHandlers['onPeek']>(),
   }
   detach = attachInteraction(canvas as unknown as HTMLCanvasElement, handlers)
 })
@@ -52,6 +53,61 @@ describe('when a country is clicked', () => {
     canvas.dispatchEvent(createPointerEvent('pointermove', { x: 10, y: 10 + distance }))
     canvas.dispatchEvent(createPointerEvent('pointerup', { x: 10, y: 10 + distance }))
     expect(handlers.onTap).toHaveBeenCalledTimes(taps)
+  })
+})
+
+describe('when a finger rests on the map', () => {
+  const HOLD_MS = 300
+  const touchAt = (type: string, x: number, y = 10) =>
+    canvas.dispatchEvent(createPointerEvent(type, { ...FIRST_FINGER, x, y }))
+
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('names the country under a quick tap as well as stamping it', () => {
+    touchAt('pointerdown', 10)
+    touchAt('pointerup', 10)
+    expect(handlers.onTap).toHaveBeenCalledOnce()
+    expect(handlers.onPeek.mock.calls).toEqual([[{ x: 10, y: 10 }], [null]])
+  })
+
+  it('reads the countries a held finger slides over, without panning or stamping', () => {
+    touchAt('pointerdown', 10)
+    vi.advanceTimersByTime(HOLD_MS)
+    touchAt('pointermove', 60)
+    touchAt('pointerup', 60)
+    expect(handlers.onPeek.mock.calls).toEqual([[{ x: 10, y: 10 }], [{ x: 60, y: 10 }], [null]])
+    expect(handlers.onPan).not.toHaveBeenCalled()
+    expect(handlers.onTap).not.toHaveBeenCalled()
+  })
+
+  it('drags the map when the finger moves before the hold', () => {
+    touchAt('pointerdown', 10)
+    touchAt('pointermove', 60)
+    vi.advanceTimersByTime(HOLD_MS)
+    expect(handlers.onPeek).not.toHaveBeenCalled()
+    expect(handlers.onPan).toHaveBeenCalled()
+  })
+
+  it('stops reading names once a second finger starts a pinch', () => {
+    touchAt('pointerdown', 10)
+    vi.advanceTimersByTime(HOLD_MS)
+    canvas.dispatchEvent(createPointerEvent('pointerdown', { ...SECOND_FINGER, x: 90, y: 10 }))
+    touchAt('pointermove', 0)
+    expect(handlers.onPeek).toHaveBeenLastCalledWith(null)
+    expect(handlers.onZoom).toHaveBeenCalled()
+  })
+
+  it('never peeks for a mouse held still', () => {
+    canvas.dispatchEvent(createPointerEvent('pointerdown'))
+    vi.advanceTimersByTime(HOLD_MS)
+    canvas.dispatchEvent(createPointerEvent('pointerup'))
+    expect(handlers.onPeek).not.toHaveBeenCalled()
   })
 })
 
