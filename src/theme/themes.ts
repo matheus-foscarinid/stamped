@@ -1,4 +1,5 @@
 import { buildLogoDataUrl } from '@/brand/logo'
+import { readStorage, writeStorage } from '@/storage'
 import { readCssTokens } from '@/styles/css-tokens'
 
 export const THEME_CHOICES = [
@@ -29,27 +30,20 @@ export const DARK_SCHEME_QUERY = '(prefers-color-scheme: dark)'
 const isThemeChoice = (value: unknown): value is ThemeChoice =>
   THEME_CHOICES.some(choice => choice === value)
 
+export const isThemeName = (value: unknown): value is ThemeName =>
+  value !== 'auto' && isThemeChoice(value)
+
 export const resolveTheme = (choice: ThemeChoice, prefersDark: boolean): ThemeName => {
   if (choice !== 'auto') return choice
   return prefersDark ? 'dark' : 'light'
 }
 
 export const readStoredTheme = (): ThemeChoice => {
-  try {
-    const stored = localStorage.getItem(THEME_STORAGE_KEY)
-    return isThemeChoice(stored) ? stored : 'auto'
-  } catch {
-    return 'auto'
-  }
+  const stored = readStorage(THEME_STORAGE_KEY)
+  return isThemeChoice(stored) ? stored : 'auto'
 }
 
-export const storeTheme = (choice: ThemeChoice): void => {
-  try {
-    localStorage.setItem(THEME_STORAGE_KEY, choice)
-  } catch {
-    // blocked storage keeps the theme for this visit only
-  }
-}
+export const storeTheme = (choice: ThemeChoice): void => writeStorage(THEME_STORAGE_KEY, choice)
 
 // keep in step with the .logo-* colours in TravelSummary.vue
 const BROWSER_CHROME_TOKENS = {

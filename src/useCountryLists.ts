@@ -1,6 +1,12 @@
 import { onScopeDispose, type Ref, shallowRef, watch } from 'vue'
 import { type CountryCode, type CountryLists, keepVisitWins } from '@/countries'
-import { readCountryList, readListsFromHash, writeListsToHash } from '@/share/link'
+import {
+  readCountryList,
+  readListsFromHash,
+  updateAddressBarHash,
+  writeListsToHash,
+} from '@/share/link'
+import { readStorage, writeStorage } from '@/storage'
 
 const STORAGE_KEYS: Record<keyof CountryLists, string> = {
   visited: 'stamped-visited',
@@ -12,21 +18,12 @@ interface UseCountryListsResult {
   setLists: (lists: CountryLists) => void
 }
 
-const readSavedList = (key: string): CountryCode[] => {
-  try {
-    return readCountryList(localStorage.getItem(key) ?? '')
-  } catch {
-    return []
-  }
-}
+const readSavedList = (key: string): CountryCode[] => readCountryList(readStorage(key) ?? '')
 
+// if storage is blocked the link is the only copy
 const saveLists = (lists: CountryLists) => {
-  try {
-    localStorage.setItem(STORAGE_KEYS.visited, lists.visited.join(','))
-    localStorage.setItem(STORAGE_KEYS.wishlist, lists.wishlist.join(','))
-  } catch {
-    // the link is the only copy then
-  }
+  writeStorage(STORAGE_KEYS.visited, lists.visited.join(','))
+  writeStorage(STORAGE_KEYS.wishlist, lists.wishlist.join(','))
 }
 
 const hasCountries = (lists: CountryLists) => lists.visited.length + lists.wishlist.length > 0
@@ -45,11 +42,8 @@ const readStartingLists = (): CountryLists => {
   return hasCountries(linked) ? linked : readSavedLists()
 }
 
-const writeListsToAddressBar = (lists: CountryLists) => {
-  const { pathname, search } = window.location
-  // replace, not push, so toggles don't flood the back button
-  history.replaceState(null, '', `${pathname}${search}${writeListsToHash(lists)}`)
-}
+const writeListsToAddressBar = (lists: CountryLists) =>
+  updateAddressBarHash(hash => writeListsToHash(hash, lists))
 
 // only edits are saved, so viewing a friend's link never overwrites your own map
 export const useCountryLists = (): UseCountryListsResult => {

@@ -72,6 +72,14 @@ describe('after the lists are edited', () => {
     expect(replaceState).toHaveBeenCalledWith(null, '', `/${QUERY}#v=br,jp,pt&w=is`)
   })
 
+  it('keeps the theme in the link', async () => {
+    const { location } = stubAddressBar({ hash: `${SHARED_LINK}&t=dracula` })
+    stubStorage()
+    mountComposable(useCountryLists).result.setLists(EDITED_LISTS)
+    await nextTick()
+    expect(location.hash).toBe('#v=br,jp,pt&w=is&t=dracula')
+  })
+
   it('saves both lists', () => {
     stubAddressBar({ hash: SHARED_LINK })
     const { values } = stubStorage(SAVED_MAP)

@@ -6,14 +6,26 @@
     <meta name="description" content="Stamp the countries you've been to on a world map, then share it as a link or an image." />
     <meta name="theme-color" content="#f7f7f9" />
     <script>
-      // mirrors src/theme/themes.ts, so the first paint already wears the saved theme
-      try {
-        let theme = localStorage.getItem('stamped-theme') || 'auto'
-        if (theme === 'auto') {
-          theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      // mirrors src/theme/themes.ts and src/passport/covers.ts, so the first paint wears both picks
+      ;(() => {
+        const THEMES = ['light', 'dark', 'lilac', 'ink', 'rose', 'ocean', 'sunset', 'dusk', 'forest', 'midnight', 'gruvbox', 'dracula']
+        const COVERS = ['burgundy', 'navy', 'green', 'teal', 'black']
+        const readSaved = key => {
+          try {
+            return localStorage.getItem(key)
+          } catch {
+            return null
+          }
         }
-        document.documentElement.dataset.theme = theme
-      } catch {}
+        const root = document.documentElement
+        const linked = new URLSearchParams(location.hash.slice(1)).get('t')
+        const saved = readSaved('stamped-theme')
+        const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches
+        const picked = [linked, saved].find(theme => THEMES.includes(theme))
+        root.dataset.theme = picked || (prefersDark ? 'dark' : 'light')
+        const cover = readSaved('stamped-cover')
+        if (COVERS.includes(cover)) root.dataset.cover = cover
+      })()
     </script>
     <title>Stamped</title>
   </head>

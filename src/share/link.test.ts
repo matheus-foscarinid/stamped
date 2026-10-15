@@ -7,7 +7,7 @@ describe('readListsFromHash', () => {
   })
 
   it('tolerates uppercase, spaces, repeats and junk from hand-edited links', () => {
-    expect(readListsFromHash('#v=BR, br ,,zz,jp').visited).toEqual(['br', 'jp'])
+    expect(readListsFromHash('#v=BR, jp ,,zz,it,IT').visited).toEqual(['br', 'jp', 'it'])
   })
 
   it('finds both lists among other params', () => {
@@ -29,17 +29,22 @@ describe('readListsFromHash', () => {
 describe('writeListsToHash', () => {
   it('writes readable commas and round trips', () => {
     const lists = { visited: ['br', 'in'], wishlist: ['is', 'nz'] } as const
-    const hash = writeListsToHash(lists)
+    const hash = writeListsToHash('', lists)
     expect(hash).toBe('#v=br,in&w=is,nz')
     expect(readListsFromHash(hash)).toEqual(lists)
   })
 
   it('leaves out an empty list', () => {
-    expect(writeListsToHash({ visited: [], wishlist: ['is'] })).toBe('#w=is')
-    expect(writeListsToHash({ visited: ['br'], wishlist: [] })).toBe('#v=br')
+    expect(writeListsToHash('', { visited: [], wishlist: ['is'] })).toBe('#w=is')
+    expect(writeListsToHash('', { visited: ['br'], wishlist: [] })).toBe('#v=br')
   })
 
   it('clears the hash when both lists are empty', () => {
-    expect(writeListsToHash({ visited: [], wishlist: [] })).toBe('')
+    expect(writeListsToHash('', { visited: [], wishlist: [] })).toBe('')
+  })
+
+  it('keeps the theme and other params already in the link', () => {
+    const lists = { visited: ['br'], wishlist: [] } as const
+    expect(writeListsToHash('#v=jp&w=is&t=dracula', lists)).toBe('#v=br&t=dracula')
   })
 })
