@@ -167,8 +167,8 @@ const { query, matches, pick, updateQuery, pickOnEnter } = useCountrySearch({
 }
 
 .country-mark[data-mark="wishlist"] {
-  background: transparent;
-  box-shadow: inset 0 0 0 1.5px var(--control-active-bg);
+  background: var(--map-wishlist-soft);
+  box-shadow: inset 0 0 0 1.5px var(--map-wishlist);
   color: var(--text);
 }
 </style>

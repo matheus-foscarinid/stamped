@@ -21,9 +21,6 @@
   --stamp-blend: multiply;
   --stamp-opacity: 0.88;
 
-  --passport-cover: #7a1f30;
-  --passport-foil: #d9b26a;
-  /* the binding and the open book's edge, darker on light pages */
   --passport-cover-depth: 62%;
   --passport-cover-dark: color-mix(
     in srgb,
@@ -47,6 +44,7 @@
   --map-land: #d6d6dd;
   --map-border: #ececf0;
   --map-visited: #000000;
+  --map-wishlist: #e0a03a;
   --map-hover: #b9b9c3;
   --control-hover-bg: rgb(0 0 0 / 0.06);
   --control-active-bg: #000000;
@@ -62,6 +60,7 @@
   --map-land: #f7f3fb;
   --map-border: #dccdeb;
   --map-visited: #7b4fa8;
+  --map-wishlist: #d9a03f;
   --map-hover: #e3d5f1;
   --control-hover-bg: rgb(51 40 74 / 0.07);
   --control-active-bg: #4a3770;
@@ -77,6 +76,7 @@
   --map-land: #d8dde6;
   --map-border: #eceef2;
   --map-visited: #2b4a8b;
+  --map-wishlist: #d9822b;
   --map-hover: #c2cad8;
   --control-hover-bg: rgb(29 42 68 / 0.07);
   --control-active-bg: #2b4a8b;
@@ -92,6 +92,7 @@
   --map-land: #fff7fa;
   --map-border: #efcadb;
   --map-visited: #d6409f;
+  --map-wishlist: #3c9d9b;
   --map-hover: #f8dbe8;
   --control-hover-bg: rgb(61 31 46 / 0.07);
   --control-active-bg: #9e2a6b;
@@ -107,6 +108,7 @@
   --map-land: #ffffff;
   --map-border: #b5d6e6;
   --map-visited: #0a7ea4;
+  --map-wishlist: #f08a4b;
   --map-hover: #d8ecf5;
   --control-hover-bg: rgb(15 47 61 / 0.07);
   --control-active-bg: #0f2f3d;
@@ -122,13 +124,20 @@
   --map-land: #fff8f3;
   --map-border: #f5c9b0;
   --map-visited: #c2185b;
+  --map-wishlist: #e89a2c;
   --map-hover: #ffe0cf;
   --control-hover-bg: rgb(59 29 42 / 0.07);
   --control-active-bg: #3b1d2a;
   --control-active-text: #ffffff;
 }
 
-/* registered as a colour, so the passport export reads a resolved colour, not color-mix() */
+/* on every themed element, so the mix uses that theme's own wishlist colour */
+:root,
+[data-theme] {
+  --map-wishlist-soft: color-mix(in srgb, var(--map-wishlist) 22%, transparent);
+}
+
+/* registered as a colour so the export reads a resolved value */
 @property --passport-cover-dark {
   syntax: "<color>";
   inherits: true;
@@ -136,6 +145,7 @@
 }
 
 /* every cover sets both, so a swatch never inherits the colours of the cover in use */
+:root,
 [data-cover="burgundy"] {
   --passport-cover: #7a1f30;
   --passport-foil: #d9b26a;
@@ -193,6 +203,7 @@
   --map-land: #3a3a41;
   --map-border: #1f1f23;
   --map-visited: #e2e2e7;
+  --map-wishlist: #f0b44c;
   --map-hover: #52525b;
   --control-active-bg: #e2e2e7;
   --control-active-text: #161618;
@@ -207,6 +218,7 @@
   --map-land: #3a3158;
   --map-border: #231d3a;
   --map-visited: #c4aad5;
+  --map-wishlist: #f0c27a;
   --map-hover: #4b4172;
   --glass-bg: rgb(58 49 88 / 0.5);
   --glass-hover: rgb(80 68 120 / 0.6);
@@ -223,6 +235,7 @@
   --map-land: #24402f;
   --map-border: #12251a;
   --map-visited: #a6e36b;
+  --map-wishlist: #7cc4e8;
   --map-hover: #2f5340;
   --glass-bg: rgb(36 64 47 / 0.5);
   --glass-hover: rgb(50 86 64 / 0.6);
@@ -239,6 +252,7 @@
   --map-land: #2a3753;
   --map-border: #18233b;
   --map-visited: #e0b65a;
+  --map-wishlist: #7aa2f7;
   --map-hover: #35466a;
   --glass-bg: rgb(42 55 83 / 0.5);
   --glass-hover: rgb(56 72 106 / 0.6);
@@ -255,6 +269,7 @@
   --map-land: #3c3836;
   --map-border: #282828;
   --map-visited: #d8a657;
+  --map-wishlist: #7daea3;
   --map-hover: #504945;
   --glass-bg: rgb(60 56 54 / 0.5);
   --glass-hover: rgb(80 73 69 / 0.6);
@@ -271,6 +286,7 @@
   --map-land: #44475a;
   --map-border: #282a36;
   --map-visited: #bd93f9;
+  --map-wishlist: #ff79c6;
   --map-hover: #565a70;
   --glass-bg: rgb(68 71 90 / 0.5);
   --glass-hover: rgb(90 94 118 / 0.6);

@@ -45,8 +45,8 @@ const { t } = useI18n()
 }
 
 .wishlist-mode[aria-pressed="true"] {
-  background: var(--control-active-bg);
-  color: var(--control-active-text);
+  background: var(--map-wishlist-soft);
+  color: var(--map-wishlist);
 }
 
 .wishlist-mode svg {
