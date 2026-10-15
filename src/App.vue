@@ -87,7 +87,9 @@ const { t } = useI18n()
 <style scoped>
 .app {
   height: 100dvh;
-  padding: 28px 12px;
+  /* a home screen app runs under the notch and the home bar */
+  padding: max(28px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+    max(28px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
 }
 
 .stage {
@@ -159,7 +161,8 @@ const { t } = useI18n()
 
 @media (max-width: 600px) {
   .app {
-    padding: 16px 8px;
+    padding: max(16px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right))
+      max(16px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
   }
 
   .stage {

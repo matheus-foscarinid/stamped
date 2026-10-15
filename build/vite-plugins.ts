@@ -1,5 +1,5 @@
 import type { Plugin, Rolldown } from 'vite'
-import { buildLogoDataUrl } from '../src/brand/logo.ts'
+import { APP_NAME, buildAppIconSvg, buildLogoDataUrl } from '../src/brand/logo.ts'
 import { DEFAULT_PROJECTION, getMapFileName } from '../src/map/projections.ts'
 
 // a closing tag inside inlined code would end the script element early
@@ -81,6 +81,65 @@ export const injectFavicon = (): Plugin => ({
         type: 'image/svg+xml',
         href: buildLogoDataUrl(STARTING_FAVICON_COLORS),
       },
+      injectTo: 'head' as const,
+    },
+  ],
+})
+
+const APP_ICON_FILE = 'app-icon.svg'
+const MANIFEST_FILE = 'manifest.webmanifest'
+// the light theme's page colour, the same one index.html starts with
+const APP_BACKGROUND = '#f7f7f9'
+
+const buildManifest = (base: string): string =>
+  JSON.stringify({
+    name: APP_NAME,
+    short_name: APP_NAME,
+    description: 'Stamp the countries you have been to on a world map.',
+    start_url: base,
+    scope: base,
+    display: 'standalone',
+    background_color: APP_BACKGROUND,
+    theme_color: APP_BACKGROUND,
+    icons: [
+      {
+        src: `${base}${APP_ICON_FILE}`,
+        sizes: 'any',
+        type: 'image/svg+xml',
+        purpose: 'any maskable',
+      },
+    ],
+  })
+
+const buildAppFiles = (base: string): Record<string, { type: string; source: string }> => ({
+  [APP_ICON_FILE]: {
+    type: 'image/svg+xml',
+    source: buildAppIconSvg({ ...STARTING_FAVICON_COLORS, tile: APP_BACKGROUND }),
+  },
+  [MANIFEST_FILE]: { type: 'application/manifest+json', source: buildManifest(base) },
+})
+
+// lets phones add the map to the home screen and open it without the browser bars
+export const emitAppManifest = (base: string): Plugin => ({
+  name: 'stamped:emit-app-manifest',
+  configureServer: server => {
+    const files = buildAppFiles(base)
+    server.middlewares.use((request, response, next) => {
+      const file = files[request.url?.slice(base.length) ?? '']
+      if (!file) return next()
+      response.setHeader('Content-Type', file.type)
+      response.end(file.source)
+    })
+  },
+  generateBundle() {
+    for (const [fileName, { source }] of Object.entries(buildAppFiles(base))) {
+      this.emitFile({ type: 'asset', fileName, source })
+    }
+  },
+  transformIndexHtml: () => [
+    {
+      tag: 'link',
+      attrs: { rel: 'manifest', href: `${base}${MANIFEST_FILE}` },
       injectTo: 'head' as const,
     },
   ],

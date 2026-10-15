@@ -19,8 +19,17 @@ interface LogoColors {
   globe: string
 }
 
-export const buildLogoSvg = ({ frame, globe }: LogoColors): string =>
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${LOGO_VIEWBOX}"><title>Stamped</title><g transform="${LOGO_TILT}"><path fill="${frame}" fill-rule="evenodd" d="${STAMP_PATH}"/><path fill="${globe}" d="${STAMPED_CELL_PATH}"/><path fill="none" stroke="${globe}" stroke-width="${GLOBE_LINE_WIDTH}" stroke-linecap="round" d="${GLOBE_LINES_PATH}"/></g></svg>`
+const buildLogoShapes = ({ frame, globe }: LogoColors): string =>
+  `<path fill="${frame}" fill-rule="evenodd" d="${STAMP_PATH}"/><path fill="${globe}" d="${STAMPED_CELL_PATH}"/><path fill="none" stroke="${globe}" stroke-width="${GLOBE_LINE_WIDTH}" stroke-linecap="round" d="${GLOBE_LINES_PATH}"/>`
+
+export const buildLogoSvg = (colors: LogoColors): string =>
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${LOGO_VIEWBOX}"><title>Stamped</title><g transform="${LOGO_TILT}">${buildLogoShapes(colors)}</g></svg>`
+
+// home screens crop icons to their own shape, so the stamp sits inside the safe middle 80%
+const APP_ICON_INSET = 'translate(38 38) scale(0.703)'
+
+export const buildAppIconSvg = (colors: LogoColors & { tile: string }): string =>
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${LOGO_VIEWBOX}"><rect width="256" height="256" fill="${colors.tile}"/><g transform="${APP_ICON_INSET} ${LOGO_TILT}">${buildLogoShapes(colors)}</g></svg>`
 
 // escapes only what breaks a data url, so the icon stays about half the size of full encoding
 const encodeForDataUrl = (svg: string): string =>

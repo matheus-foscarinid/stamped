@@ -317,6 +317,8 @@
 body {
   margin: 0;
   min-height: 100dvh;
+  /* a stray drag past the edge would otherwise pull to refresh and lose the zoom */
+  overscroll-behavior: none;
   background:
     radial-gradient(
       60% 50% at 15% 0%,
