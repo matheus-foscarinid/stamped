@@ -1,4 +1,5 @@
 import { readCssTokens } from '@/styles/css-tokens'
+import { getCountryBounds, pickWithinReach } from './bounds.ts'
 import { createCanvasRenderer, drawMapSnapshot, readMapPalette } from './canvas-renderer.ts'
 import { createFadeAnimator, type FadeAnimator } from './fades.ts'
 import { attachInteraction } from './interaction.ts'
@@ -16,6 +17,10 @@ import {
   toGridPoint,
   zoomViewport,
 } from './viewport.ts'
+import { createZoomAnimator } from './zoom-animator.ts'
+
+// a miss this close to a tiny country still picks it, since its shape is too small to tap
+const TINY_COUNTRY_REACH_PX = 8
 
 export type { CountryMarks } from './marks.ts'
 export { watchPixelRatio } from './pixel-ratio.ts'
@@ -85,13 +90,21 @@ const createRenderScheduler = (render: () => void): (() => void) => {
   }
 }
 
-const findSelectableIndex = (controller: MapController, point: ScreenPoint): number | null => {
-  const { scene, renderer, options } = controller
-  const index = renderer.pick(scene.geometry, toGridPoint(scene.viewport, point))
-  if (index === null) return null
+const isSelectableIndex = ({ scene, options }: MapController, index: number): boolean => {
   const code = scene.codes[index]
   const isSelectable = options.isSelectable ?? (() => true)
-  return code && isSelectable(code) ? index : null
+  return Boolean(code && isSelectable(code))
+}
+
+const findSelectableIndex = (controller: MapController, point: ScreenPoint): number | null => {
+  const { scene, renderer } = controller
+  const gridPoint = toGridPoint(scene.viewport, point)
+  return pickWithinReach(getCountryBounds(scene.geometry), {
+    hit: renderer.pick(scene.geometry, gridPoint),
+    point: gridPoint,
+    reach: TINY_COUNTRY_REACH_PX / scene.viewport.scale,
+    isCandidate: index => isSelectableIndex(controller, index),
+  })
 }
 
 const updateHover = (
@@ -115,10 +128,12 @@ const handleTap = (controller: MapController, point: ScreenPoint) => {
   if (code) controller.options.onCountryClick?.(code)
 }
 
-const zoomAround = (controller: MapController, factor: number, anchor: ScreenPoint) => {
+const zoomAround = (controller: MapController, factor: number, anchor: ScreenPoint): number => {
   const { scene, size } = controller
+  const previousScale = scene.viewport.scale
   scene.viewport = zoomViewport(scene.viewport, { geometry: scene.geometry, size, factor, anchor })
   controller.scheduleRender()
+  return scene.viewport.scale / previousScale
 }
 
 const panBy = (controller: MapController, delta: ScreenPoint) => {
@@ -190,9 +205,18 @@ export const createWorldMap = async (
   options: WorldMapOptions
 ): Promise<WorldMap> => {
   const controller = await createController(canvas, options)
+  const zoomGlide = createZoomAnimator((factor, anchor) => zoomAround(controller, factor, anchor))
+  // a touch, a reset or a new projection cancels the glide
+  const takeOver =
+    <Args extends unknown[], Result>(action: (...args: Args) => Result) =>
+    (...args: Args): Result => {
+      zoomGlide.stop()
+      return action(...args)
+    }
   const detachInteraction = attachInteraction(canvas, {
-    onZoom: (factor, anchor) => zoomAround(controller, factor, anchor),
-    onPan: delta => panBy(controller, delta),
+    onZoom: takeOver((factor, anchor) => zoomAround(controller, factor, anchor)),
+    onEasedZoom: zoomGlide.zoomBy,
+    onPan: takeOver(delta => panBy(controller, delta)),
     onTap: point => handleTap(controller, point),
     onHover: point => updateHover(controller, canvas, point),
   })
@@ -204,21 +228,21 @@ export const createWorldMap = async (
   themeObserver.observe(document.documentElement, { attributes: true })
 
   return {
-    setProjection: createProjectionSetter(controller),
+    setProjection: takeOver(createProjectionSetter(controller)),
     setMarks: marks => setMarks(controller, marks),
     zoomBy: factor => {
       const { width, height } = controller.size
-      zoomAround(controller, factor, { x: width / 2, y: height / 2 })
+      zoomGlide.zoomBy(factor, { x: width / 2, y: height / 2 })
     },
-    resetZoom: () => refit(controller),
-    destroy: () => {
+    resetZoom: takeOver(() => refit(controller)),
+    destroy: takeOver(() => {
       detachInteraction()
       resizeObserver.disconnect()
       stopWatchingPixelRatio()
       controller.fades.stop()
       themeObserver.disconnect()
       controller.renderer.destroy()
-    },
+    }),
   }
 }
 

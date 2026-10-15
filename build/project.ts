@@ -1,10 +1,16 @@
-import { type GeoProjection, geoStream } from 'd3-geo'
+import { type GeoProjection, geoCentroid, geoStream } from 'd3-geo'
 import type { Feature, Geometry } from 'geojson'
 import type { CountryShape, MapGeometry } from '../src/map/format.ts'
+import { simplifyLine } from './simplify.ts'
 import type { CountryProperties } from './source.ts'
 
-const GRID_WIDTH = 4096
+const GRID_WIDTH = 8192
 const MIN_RING_POINTS = 3
+// in grid units, about a third of a screen pixel at full width
+const SIMPLIFY_TOLERANCE = 2
+// small islands simplify less so malta keeps its shape
+const SMALL_RING_SHARE = 0.05
+const DOT = { radius: 2, corners: 4 }
 
 type CountryFeature = Feature<Geometry, CountryProperties>
 
@@ -29,22 +35,64 @@ const collectProjectedRings = (feature: CountryFeature, projection: GeoProjectio
 const isSamePoint = (points: number[], x: number, y: number): boolean =>
   points.at(-2) === x && points.at(-1) === y
 
-const roundRing = (ring: number[]): Int16Array | null => {
+const measureExtent = (points: number[]): number => {
+  const box = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity }
+  for (let index = 0; index < points.length; index += 2) {
+    const [x = 0, y = 0] = [points[index], points[index + 1]]
+    box.minX = Math.min(box.minX, x)
+    box.maxX = Math.max(box.maxX, x)
+    box.minY = Math.min(box.minY, y)
+    box.maxY = Math.max(box.maxY, y)
+  }
+  return Math.max(box.maxX - box.minX, box.maxY - box.minY)
+}
+
+const readTolerance = (points: number[]): number =>
+  Math.min(SIMPLIFY_TOLERANCE, measureExtent(points) * SMALL_RING_SHARE)
+
+const snapToGrid = (ring: number[]): number[] => {
   const points: number[] = []
   for (let index = 0; index < ring.length; index += 2) {
     const x = Math.round(ring[index] ?? 0)
     const y = Math.round(ring[index + 1] ?? 0)
     if (!isSamePoint(points, x, y)) points.push(x, y)
   }
-  if (isSamePoint(points, points[0] ?? Number.NaN, points[1] ?? Number.NaN)) points.splice(-2)
-  return points.length / 2 >= MIN_RING_POINTS ? Int16Array.from(points) : null
+  return points
 }
 
-const projectCountry = (feature: CountryFeature, projection: GeoProjection): CountryShape => ({
-  rings: collectProjectedRings(feature, projection)
+// rings close implicitly, so a repeated first point is dropped
+const dropClosingPoint = (points: number[]): number[] =>
+  isSamePoint(points, points[0] ?? Number.NaN, points[1] ?? Number.NaN)
+    ? points.slice(0, -2)
+    : points
+
+const roundRing = (ring: number[]): Int16Array | null => {
+  const points = snapToGrid(ring)
+  const simplified = dropClosingPoint(simplifyLine(points, readTolerance(points)))
+  return simplified.length / 2 >= MIN_RING_POINTS ? Int16Array.from(simplified) : null
+}
+
+const traceDot = ([x, y]: [number, number]): Int16Array => {
+  const points: number[] = []
+  for (let corner = 0; corner < DOT.corners; corner++) {
+    const angle = (corner / DOT.corners) * Math.PI * 2
+    points.push(
+      Math.round(x + DOT.radius * Math.cos(angle)),
+      Math.round(y + DOT.radius * Math.sin(angle))
+    )
+  }
+  return Int16Array.from(points)
+}
+
+// too small for the grid, so a dot keeps it clickable
+const projectCountry = (feature: CountryFeature, projection: GeoProjection): CountryShape => {
+  const rings = collectProjectedRings(feature, projection)
     .map(roundRing)
-    .filter(ring => ring !== null),
-})
+    .filter(ring => ring !== null)
+  const center = projection(geoCentroid(feature))
+  if (rings.length > 0 || !center) return { rings }
+  return { rings: [traceDot(center)] }
+}
 
 const measureHeight = (countries: CountryShape[]): number => {
   let maxY = 0

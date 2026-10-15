@@ -1,4 +1,6 @@
 import { vi } from 'vitest'
+import type { MapRenderer } from '@/map/renderer'
+import type { ScreenSize } from '@/map/viewport'
 
 interface DeviceStubOptions {
   isTouch?: boolean
@@ -105,6 +107,30 @@ export const createPointerEvent = (
   { pointerId = 1, pointerType = 'mouse', button = 0, x = 0, y = 0 }: PointerStubEvent = {}
 ) => Object.assign(new Event(type), { pointerId, pointerType, button, clientX: x, clientY: y })
 
+interface WheelStubEvent {
+  deltaY: number
+  deltaMode?: number
+  ctrlKey?: boolean
+  x?: number
+  y?: number
+}
+
+// node has no WheelEvent either
+export const createWheelEvent = ({
+  deltaY,
+  deltaMode = 0,
+  ctrlKey = false,
+  x = 0,
+  y = 0,
+}: WheelStubEvent) =>
+  Object.assign(new Event('wheel', { cancelable: true }), {
+    deltaY,
+    deltaMode,
+    ctrlKey,
+    clientX: x,
+    clientY: y,
+  })
+
 export const stubCanvas = () =>
   Object.assign(new EventTarget(), {
     setPointerCapture: vi.fn(),
@@ -201,4 +227,84 @@ export const stubThemeSwitch = ({
   vi.stubGlobal('window', { matchMedia: () => ({ matches: prefersReducedMotion }) })
   vi.stubGlobal('getComputedStyle', () => ({ getPropertyValue: () => '' }))
   return { root, startViewTransition }
+}
+
+interface ThemePageStubOptions {
+  hash?: string
+  savedTheme?: string
+  prefersDark?: boolean
+}
+
+export const stubThemePage = ({
+  hash = '',
+  savedTheme,
+  prefersDark = true,
+}: ThemePageStubOptions = {}) => {
+  const { root } = stubThemeSwitch({ prefersReducedMotion: true })
+  const addressBar = stubAddressBar({ hash })
+  stubStorage(savedTheme ? { 'stamped-theme': savedTheme } : {})
+  const darkScheme = Object.assign(new EventTarget(), { matches: prefersDark })
+  const matchMedia = (query: string) => (query.includes('dark') ? darkScheme : { matches: true })
+  Object.assign(window, { matchMedia })
+  const switchSystemScheme = (isDark: boolean) => {
+    darkScheme.matches = isDark
+    darkScheme.dispatchEvent(new Event('change'))
+  }
+  return { ...addressBar, root, switchSystemScheme }
+}
+
+class StubObserver {
+  observe = vi.fn()
+  disconnect = vi.fn()
+}
+
+// enough page for createWorldMap. frames only run when the test advances the clock
+export const stubMapPage = () => {
+  const frames = stubAnimationFrames()
+  vi.stubGlobal('window', {
+    devicePixelRatio: 1,
+    matchMedia: () => Object.assign(new EventTarget(), { matches: false }),
+  })
+  vi.stubGlobal('getComputedStyle', () => ({ getPropertyValue: () => '' }))
+  vi.stubGlobal('ResizeObserver', StubObserver)
+  vi.stubGlobal('MutationObserver', StubObserver)
+  vi.stubGlobal('document', { documentElement: {} })
+  return frames
+}
+
+// keeps the zoom of every frame drawn, read when it was drawn
+export const createScaleRecorder = (size: ScreenSize) => {
+  const drawnScales: number[] = []
+  const renderer: MapRenderer = {
+    resize: () => size,
+    render: scene => drawnScales.push(scene.viewport.scale),
+    pick: () => null,
+    destroy: () => undefined,
+  }
+  return { renderer, drawnScales }
+}
+
+// a root element to paint and whatever the visitor saved before
+export const stubSavedPage = (saved: Record<string, string> = {}) => {
+  const root = { dataset: {} as Record<string, string> }
+  const { values } = stubStorage(saved)
+  vi.stubGlobal('document', { documentElement: root })
+  return { root, saved: values }
+}
+
+interface FirstPaintStubOptions {
+  hash?: string
+  saved?: Record<string, string>
+  prefersDark?: boolean
+}
+
+// the bare globals the inline script in index.html reads before the app loads
+export const stubFirstPaintPage = ({
+  hash = '',
+  saved = {},
+  prefersDark = false,
+}: FirstPaintStubOptions = {}) => {
+  vi.stubGlobal('location', { hash })
+  vi.stubGlobal('matchMedia', () => ({ matches: prefersDark }))
+  return stubSavedPage(saved)
 }

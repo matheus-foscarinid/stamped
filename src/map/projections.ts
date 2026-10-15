@@ -2,7 +2,7 @@ export const PROJECTION_IDS = ['equal-earth', 'natural-earth', 'robinson', 'merc
 
 export type ProjectionId = (typeof PROJECTION_IDS)[number]
 
-const MAP_RESOLUTION = '110m'
+const MAP_RESOLUTION = '50m'
 
 export const getMapFileName = (projection: ProjectionId): string =>
   `${projection}-${MAP_RESOLUTION}.bin`

@@ -16,10 +16,10 @@ interface MapSource {
   path: string
 }
 
-export const COUNTRIES_110M: MapSource = {
-  url: 'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_110m_admin_0_countries.geojson',
-  sha256: '6866c877d39cba9c357620878839b336d569f8c662d3cfab4cb1dbe2d39c977f',
-  path: new URL('../data/source/ne_110m_admin_0_countries.geojson', import.meta.url).pathname,
+export const COUNTRIES_50M: MapSource = {
+  url: 'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_50m_admin_0_countries.geojson',
+  sha256: '3e458fc036ad0a66411f2c1e6cac49c5d7bfb81cb1123bc513b22511a2b7fdeb',
+  path: new URL('../data/source/ne_50m_admin_0_countries.geojson', import.meta.url).pathname,
 }
 
 const hashOf = (content: Buffer): string => createHash('sha256').update(content).digest('hex')

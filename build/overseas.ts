@@ -3,17 +3,35 @@ import type { CountryProperties } from './source.ts'
 
 type CountryFeature = Feature<Geometry, CountryProperties>
 
+// in degrees. a side left out runs to the edge of the world
+interface Box {
+  west?: number
+  east?: number
+  south?: number
+  north?: number
+}
+
 interface OverseasPart {
   country: string
   territory: string
-  isInside: (center: Position) => boolean
+  box: Box
 }
 
 // natural earth folds these into their country, but they have their own iso code
 const OVERSEAS_PARTS: OverseasPart[] = [
-  { country: 'FR', territory: 'GF', isInside: ([lon = 0, lat = 0]) => lon < -40 && lat < 15 },
-  { country: 'NO', territory: 'SJ', isInside: ([, lat = 0]) => lat > 74 },
+  { country: 'FR', territory: 'GP', box: { east: -60, south: 15.7, north: 20 } },
+  { country: 'FR', territory: 'MQ', box: { east: -60, south: 14, north: 15.7 } },
+  { country: 'FR', territory: 'GF', box: { east: -40, north: 10 } },
+  { country: 'FR', territory: 'RE', box: { west: 50, north: -15 } },
+  { country: 'FR', territory: 'YT', box: { west: 40, east: 50, south: -15, north: -10 } },
+  { country: 'NL', territory: 'BQ', box: { east: -60 } },
+  { country: 'NO', territory: 'SJ', box: { south: 74 } },
 ]
+
+const isInsideBox = (
+  [lon = 0, lat = 0]: Position,
+  { west = -180, east = 180, south = -90, north = 90 }: Box
+): boolean => lon >= west && lon <= east && lat >= south && lat <= north
 
 const getRingCenter = (ring: Position[]): Position => {
   let lonSum = 0
@@ -42,8 +60,9 @@ const splitFeature = (feature: CountryFeature): CountryFeature[] => {
   const parts = OVERSEAS_PARTS.filter(({ country }) => country === feature.properties.ISO_A2_EH)
   if (parts.length === 0 || feature.geometry.type !== 'MultiPolygon') return [feature]
   let remaining = feature.geometry.coordinates
-  const territories = parts.map(({ territory, isInside }) => {
-    const isPart = (polygon: Polygon['coordinates']) => isInside(getRingCenter(polygon[0] ?? []))
+  const territories = parts.map(({ territory, box }) => {
+    const isPart = (polygon: Polygon['coordinates']) =>
+      isInsideBox(getRingCenter(polygon[0] ?? []), box)
     const polygons = remaining.filter(isPart)
     remaining = remaining.filter(polygon => !isPart(polygon))
     return withPolygons(feature, polygons, territory)

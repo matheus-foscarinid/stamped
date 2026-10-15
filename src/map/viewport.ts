@@ -22,7 +22,8 @@ export interface ScreenPoint {
 export interface ScreenRect extends ScreenSize, ScreenPoint {}
 
 const PADDING_RATIO = 0.02
-const MAX_ZOOM = 6
+// deep enough for malta to fill a good part of the screen
+const MAX_ZOOM = 32
 
 const NO_PADDING: ScreenPoint = { x: 0, y: 0 }
 
@@ -40,19 +41,32 @@ export const fitViewport = (geometry: MapGeometry, size: ScreenSize): Viewport =
   }
 }
 
-// keeps the map from drifting off screen. a side smaller than the screen stays centered
-const clampAxis = (offset: number, mapLength: number, screenLength: number): number => {
-  if (mapLength <= screenLength) return (screenLength - mapLength) / 2
-  return Math.min(0, Math.max(screenLength - mapLength, offset))
+interface AxisSpan {
+  mapLength: number
+  screenLength: number
+  edgeRoom: number
 }
+
+// an edge never pulls in past the whole-world view
+const clampAxis = (offset: number, { mapLength, screenLength, edgeRoom }: AxisSpan): number =>
+  Math.min(edgeRoom, Math.max(screenLength - mapLength - edgeRoom, offset))
 
 const clampViewport = (view: Viewport, geometry: MapGeometry, size: ScreenSize): Viewport => {
   const fitted = fitViewport(geometry, size)
-  const scale = Math.min(Math.max(view.scale, fitted.scale), fitted.scale * MAX_ZOOM)
+  if (view.scale <= fitted.scale) return fitted
+  const scale = Math.min(view.scale, fitted.scale * MAX_ZOOM)
   return {
     scale,
-    offsetX: clampAxis(view.offsetX, geometry.width * scale, size.width),
-    offsetY: clampAxis(view.offsetY, geometry.height * scale, size.height),
+    offsetX: clampAxis(view.offsetX, {
+      mapLength: geometry.width * scale,
+      screenLength: size.width,
+      edgeRoom: fitted.offsetX,
+    }),
+    offsetY: clampAxis(view.offsetY, {
+      mapLength: geometry.height * scale,
+      screenLength: size.height,
+      edgeRoom: fitted.offsetY,
+    }),
   }
 }
 

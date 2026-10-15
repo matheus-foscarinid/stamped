@@ -1,68 +1,48 @@
 import { readCssTokens } from '@/styles/css-tokens'
+import { getCountryBounds, isInsideBounds } from './bounds.ts'
 import type { MapGeometry } from './format.ts'
 import type { MapRenderer, MapScene, MarkState } from './renderer.ts'
 import { fitViewport, type ScreenPoint, type ScreenRect, type Viewport } from './viewport.ts'
 
 const BORDER_WIDTH_PX = 0.6
-// dot size follows the border width, so thicker export borders get bigger dots
-const DOTS = { spacing: 12, radius: 2 }
-const MIN_TILE_PX = 2
-
-interface Bounds {
-  minX: number
-  minY: number
-  maxX: number
-  maxY: number
-}
-
-interface CountryPath {
-  path: Path2D
-  bounds: Bounds
-}
 
 export interface MapPalette {
   land: string
   border: string
   visited: string
+  wishlist: string
   hover: string
 }
 
-const pathCache = new WeakMap<MapGeometry, CountryPath[]>()
+const pathCache = new WeakMap<MapGeometry, Path2D[]>()
 
-const traceRing = (path: Path2D, bounds: Bounds, ring: Int16Array): void => {
+const traceRing = (path: Path2D, ring: Int16Array): void => {
   for (let index = 0; index < ring.length; index += 2) {
     const x = ring[index] ?? 0
     const y = ring[index + 1] ?? 0
     if (index === 0) path.moveTo(x, y)
     else path.lineTo(x, y)
-    bounds.minX = Math.min(bounds.minX, x)
-    bounds.minY = Math.min(bounds.minY, y)
-    bounds.maxX = Math.max(bounds.maxX, x)
-    bounds.maxY = Math.max(bounds.maxY, y)
   }
   path.closePath()
 }
 
-const getCountryPaths = (geometry: MapGeometry): CountryPath[] => {
+const getCountryPaths = (geometry: MapGeometry): Path2D[] => {
   const cached = pathCache.get(geometry)
   if (cached) return cached
   const paths = geometry.countries.map(({ rings }) => {
     const path = new Path2D()
-    const bounds = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity }
-    for (const ring of rings) traceRing(path, bounds, ring)
-    return { path, bounds }
+    for (const ring of rings) traceRing(path, ring)
+    return path
   })
   pathCache.set(geometry, paths)
   return paths
 }
 
-const isInsideBounds = ({ minX, minY, maxX, maxY }: Bounds, { x, y }: ScreenPoint): boolean =>
-  x >= minX && x <= maxX && y >= minY && y <= maxY
-
 const PALETTE_TOKENS = {
   land: '--map-land',
   border: '--map-border',
   visited: '--map-visited',
+  wishlist: '--map-wishlist',
   hover: '--map-hover',
 }
 
@@ -72,6 +52,7 @@ export const readMapPalette = (element: Element): MapPalette =>
 
 const pickBaseFill = (palette: MapPalette, mark: MarkState, isHovered: boolean): string => {
   if (mark === 'visited') return palette.visited
+  if (mark === 'wishlist') return palette.wishlist
   if (isHovered) return palette.hover
   return palette.land
 }
@@ -80,20 +61,20 @@ interface MarkFill {
   path: Path2D
   mark: MarkState
   isHovered: boolean
-  inks: Inks
+  palette: MapPalette
 }
 
-const fillMark = (context: CanvasRenderingContext2D, { path, mark, isHovered, inks }: MarkFill) => {
-  context.fillStyle = pickBaseFill(inks.palette, mark, isHovered)
-  context.fill(path, 'evenodd')
-  if (mark !== 'wishlist' || !inks.wishTexture) return
-  context.fillStyle = inks.wishTexture
+const fillMark = (
+  context: CanvasRenderingContext2D,
+  { path, mark, isHovered, palette }: MarkFill
+) => {
+  context.fillStyle = pickBaseFill(palette, mark, isHovered)
   context.fill(path, 'evenodd')
 }
 
 const fillCountry = (
   context: CanvasRenderingContext2D,
-  { path, scene, index, inks }: CountryFill
+  { path, scene, index, palette }: CountryFill
 ) => {
   const code = scene.codes[index]
   const isHovered = index === scene.hoveredIndex
@@ -101,50 +82,11 @@ const fillCountry = (
   const fade = code ? scene.fading.get(code) : undefined
   if (code && fade !== undefined) {
     const previous = scene.fadingFrom.get(code) ?? 'unmarked'
-    fillMark(context, { path, mark: previous, isHovered, inks })
+    fillMark(context, { path, mark: previous, isHovered, palette })
     context.globalAlpha = fade
   }
-  fillMark(context, { path, mark, isHovered, inks })
+  fillMark(context, { path, mark, isHovered, palette })
   context.globalAlpha = 1
-}
-
-// two staggered dots per tile, so the grid reads as a texture and not as rows
-const drawDotTile = (color: string, borderWidth: number): HTMLCanvasElement => {
-  const tile = document.createElement('canvas')
-  const size = Math.max(MIN_TILE_PX, Math.round(DOTS.spacing * borderWidth))
-  tile.width = size
-  tile.height = size
-  const context = tile.getContext('2d')
-  if (!context) return tile
-  context.fillStyle = color
-  context.beginPath()
-  for (const center of [size / 4, (size * 3) / 4]) {
-    context.moveTo(center + DOTS.radius * borderWidth, center)
-    context.arc(center, center, DOTS.radius * borderWidth, 0, Math.PI * 2)
-  }
-  context.fill()
-  return tile
-}
-
-// exports and the live map draw one at a time, so one cached pattern covers both
-let textureCache: { key: string; pattern: CanvasPattern | null } | null = null
-
-const getWishTexture = (
-  context: CanvasRenderingContext2D,
-  color: string,
-  borderWidth: number
-): CanvasPattern | null => {
-  const key = `${color} ${borderWidth}`
-  if (textureCache?.key !== key) {
-    const tile = drawDotTile(color, borderWidth)
-    textureCache = { key, pattern: context.createPattern(tile, 'repeat') }
-  }
-  return textureCache.pattern
-}
-
-interface Inks {
-  palette: MapPalette
-  wishTexture: CanvasPattern | null
 }
 
 interface PaintStyle {
@@ -156,7 +98,7 @@ interface CountryFill {
   path: Path2D
   scene: MapScene
   index: number
-  inks: Inks
+  palette: MapPalette
 }
 
 // the viewport must already be in target canvas pixels
@@ -169,16 +111,12 @@ const paintScene = (
   context.setTransform(scale, 0, 0, scale, offsetX, offsetY)
   context.lineWidth = borderWidth / scale
   context.lineJoin = 'round'
-  const wishTexture = getWishTexture(context, palette.visited, borderWidth)
-  // undo the zoom so the dots keep their size
-  wishTexture?.setTransform(new DOMMatrix().scale(1 / scale))
-  const inks = { palette, wishTexture }
   const paths = getCountryPaths(scene.geometry)
-  paths.forEach(({ path }, index) => {
-    fillCountry(context, { path, scene, index, inks })
+  paths.forEach((path, index) => {
+    fillCountry(context, { path, scene, index, palette })
   })
   context.strokeStyle = palette.border
-  for (const { path } of paths) context.stroke(path)
+  for (const path of paths) context.stroke(path)
 }
 
 const scaleViewport = ({ scale, offsetX, offsetY }: Viewport, factor: number): Viewport => ({
@@ -236,14 +174,18 @@ const pickCountry = (
   geometry: MapGeometry,
   gridPoint: ScreenPoint
 ): number | null => {
+  const bounds = getCountryBounds(geometry)
   context.save()
   context.setTransform(1, 0, 0, 1, 0, 0)
-  const paths = getCountryPaths(geometry)
-  const index = paths.findIndex(
-    ({ path, bounds }) =>
-      isInsideBounds(bounds, gridPoint) &&
+  const isUnderPoint = (path: Path2D, index: number) => {
+    const box = bounds[index]
+    return (
+      box !== undefined &&
+      isInsideBounds(box, gridPoint) &&
       context.isPointInPath(path, gridPoint.x, gridPoint.y, 'evenodd')
-  )
+    )
+  }
+  const index = getCountryPaths(geometry).findLastIndex(isUnderPoint)
   context.restore()
   return index === -1 ? null : index
 }
