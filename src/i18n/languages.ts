@@ -1,3 +1,5 @@
+import { readStorage, writeStorage } from '@/storage'
+
 // sorted by their own names, the way the menu lists them
 export const LANGUAGES = ['de', 'en', 'es', 'fr', 'it', 'pt'] as const
 
@@ -17,24 +19,15 @@ export const matchLanguage = (preferred: readonly string[]): Language => {
 }
 
 const readStoredLanguage = (): Language | null => {
-  try {
-    const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY)
-    return isLanguage(stored) ? stored : null
-  } catch {
-    return null
-  }
+  const stored = readStorage(LANGUAGE_STORAGE_KEY)
+  return isLanguage(stored) ? stored : null
 }
 
 export const readStartingLanguage = (): Language =>
   readStoredLanguage() ?? matchLanguage(navigator.languages)
 
-export const storeLanguage = (language: Language): void => {
-  try {
-    localStorage.setItem(LANGUAGE_STORAGE_KEY, language)
-  } catch {
-    // blocked storage keeps the language for this visit only
-  }
-}
+export const storeLanguage = (language: Language): void =>
+  writeStorage(LANGUAGE_STORAGE_KEY, language)
 
 export const getLanguageName = (language: Language): string => {
   const name = new Intl.DisplayNames([language], { type: 'language' }).of(language) ?? language
