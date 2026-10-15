@@ -3,8 +3,8 @@ import { APP_NAME } from '@/brand/logo'
 import { type CountryCode, getCountryHue } from '@/countries'
 import { drawWorldSnapshot, type ProjectionId, type ScreenRect } from '@/map'
 import { createExportCanvas, toPngBlob } from '@/share/canvas-export'
+import { drawJustifiedLine, drawSpacedText, wrapLines } from '@/share/canvas-text'
 import { readCssTokens } from '@/styles/css-tokens'
-import { drawJustifiedLine, drawSpacedText, wrapLines } from './canvas-text.ts'
 import {
   layoutPassportImage,
   PASSPORT_IMAGE,

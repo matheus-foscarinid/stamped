@@ -2,9 +2,9 @@ import { drawLogo } from '@/brand/draw-logo'
 import { APP_NAME } from '@/brand/logo'
 import type { CountryCode } from '@/countries'
 import { drawWorldSnapshot, type ProjectionId, type ScreenRect } from '@/map'
-import { drawSpacedText } from '@/passport/canvas-text'
 import { readCssTokens } from '@/styles/css-tokens'
 import { createExportCanvas, toPngBlob } from './canvas-export.ts'
+import { drawSpacedText } from './canvas-text.ts'
 import { type CardLayout, EXPORT_FORMATS, type ExportFormat, layoutCard } from './card-layout.ts'
 
 const EXPORT_BORDER_WIDTH_PX = 1.2
