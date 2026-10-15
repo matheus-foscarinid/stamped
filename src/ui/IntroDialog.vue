@@ -23,7 +23,7 @@ import AppDialog from './AppDialog.vue'
 import StampedLogo from './StampedLogo.vue'
 import { useIntroDialog } from './useIntroDialog'
 
-const STEPS = ['intro.mark', 'intro.wishlist', 'intro.passport', 'intro.share'] as const
+const STEPS = ['intro.mark', 'intro.explore', 'intro.wishlist', 'intro.passport', 'intro.share'] as const
 
 const { t } = useI18n()
 const { isOpen, close } = useIntroDialog()

@@ -12,6 +12,18 @@
       @input="updateQuery"
       @keydown="pickOnEnter"
     />
+    <button
+      type="button"
+      class="country-search-expand press-feedback"
+      :aria-label="t('picker.open')"
+      :title="t('picker.open')"
+      aria-haspopup="dialog"
+      @click="isPickerOpen = true"
+    >
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M2.5 4h11M2.5 8h11M2.5 12h7" />
+      </svg>
+    </button>
     <WishlistModeToggle
       class="country-search-mode"
       :is-pressed="markMode === 'wishlist'"
@@ -40,13 +52,23 @@
         </button>
       </li>
     </ul>
+    <CountryPicker
+      :is-open="isPickerOpen"
+      :mark-mode="markMode"
+      :get-mark="getMark"
+      :can-toggle="canToggle"
+      @toggle="code => emit('toggle', code)"
+      @toggle-mode="emit('toggleMode')"
+      @close="isPickerOpen = false"
+    />
   </div>
 </template>
 
 <script setup vapor lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { type CountryCode, type CountryMark, isDisputed } from '@/countries'
 import { useI18n } from '@/i18n/useI18n'
+import CountryPicker from './CountryPicker.vue'
 import { useCountrySearch } from './useCountrySearch'
 import WishlistModeToggle from './WishlistModeToggle.vue'
 
@@ -67,6 +89,8 @@ const { t } = useI18n()
 const SEARCH_LABELS = { visited: 'search.label', wishlist: 'search.wishlistLabel' } as const
 const searchLabel = computed(() => t(SEARCH_LABELS[props.markMode]))
 
+const isPickerOpen = ref(false)
+
 const { query, matches, pick, updateQuery, pickOnEnter } = useCountrySearch({
   getMark: code => props.getMark(code),
   canPick: code => props.canToggle(code),
@@ -82,7 +106,7 @@ const { query, matches, pick, updateQuery, pickOnEnter } = useCountrySearch({
 
 .country-search-input {
   width: 100%;
-  padding: 11px 50px 11px 18px;
+  padding: 11px 90px 11px 18px;
   border-radius: var(--radius-control);
   font: inherit;
   outline-offset: 3px;
@@ -100,6 +124,37 @@ const { query, matches, pick, updateQuery, pickOnEnter } = useCountrySearch({
 .country-search-mode {
   position: absolute;
   inset: 5px 5px 5px auto;
+}
+
+.country-search-expand {
+  position: absolute;
+  inset: 5px 45px 5px auto;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    background-color var(--motion-fast) var(--ease-out),
+    color var(--motion-fast) var(--ease-out);
+}
+
+.country-search-expand:hover {
+  background: var(--control-hover-bg);
+  color: var(--text);
+}
+
+.country-search-expand svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
 }
 
 .country-search-results {

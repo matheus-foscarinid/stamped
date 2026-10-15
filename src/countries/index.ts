@@ -15,7 +15,7 @@ export {
   toggleMark,
 } from './lists.ts'
 export { getCountryName } from './names.ts'
-export { getContinent } from './regions.ts'
+export { type Continent, getContinent } from './regions.ts'
 export { type CountryMatch, searchCountries } from './search.ts'
 export { getTravelStats } from './stats.ts'
 
