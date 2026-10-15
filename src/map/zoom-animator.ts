@@ -29,7 +29,9 @@ export const createZoomAnimator = (applyZoom: ApplyZoom): ZoomAnimator => {
   const isGliding = () => frame !== null
 
   const tick = (now: number) => {
-    const share = 1 - Math.exp(-(now - lastTime) / CATCH_UP_MS)
+    // a frame's time can be from just before the glide started, which would zoom the wrong way
+    const elapsed = Math.max(0, now - lastTime)
+    const share = 1 - Math.exp(-elapsed / CATCH_UP_MS)
     lastTime = now
     const step = Math.abs(remaining) < SETTLED_ZOOM ? remaining : remaining * share
     remaining -= step

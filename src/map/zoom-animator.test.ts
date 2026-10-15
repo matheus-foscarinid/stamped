@@ -12,13 +12,13 @@ interface GlideOptions {
   maxZoom?: number
 }
 
-// a map that stops at maxZoom, like the real one at its deepest
+// a map that starts on the whole world and stops at maxZoom, like the real one
 const startGlide = ({ prefersReducedMotion = false, maxZoom = Infinity }: GlideOptions = {}) => {
   const frames = stubAnimationFrames({ prefersReducedMotion })
   let zoom = 1
   const applyZoom = vi.fn((factor: number, _anchor: typeof ANCHOR) => {
     const previous = zoom
-    zoom = Math.min(zoom * factor, maxZoom)
+    zoom = Math.min(Math.max(zoom * factor, 1), maxZoom)
     return zoom / previous
   })
   const animator = createZoomAnimator(applyZoom)
@@ -42,6 +42,16 @@ describe('while a zoom glides', () => {
     expect(totalZoom()).toBeGreaterThan(1)
     expect(totalZoom()).toBeLessThan(2)
     expect(applyZoom.mock.lastCall?.[1]).toEqual(ANCHOR)
+  })
+
+  it('zooms the asked way when the first frame is stamped before the glide started', () => {
+    const { animator, totalZoom, runFor } = startGlide()
+    vi.stubGlobal('performance', { now: () => FRAME_MS * 2 })
+    animator.zoomBy(2, ANCHOR)
+    runFor(FRAME_MS)
+    expect(totalZoom()).toBeGreaterThanOrEqual(1)
+    runFor(SETTLE_MS)
+    expect(totalZoom()).toBeCloseTo(2)
   })
 
   it('lands exactly on the zoom asked for, then stops drawing', () => {
