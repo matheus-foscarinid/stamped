@@ -34,6 +34,7 @@ No account, no server, no tracking.
 - [x] Intro dialog on first open
 - [ ] States, regions and cities
 - [x] i18n
+- [x] Phone-first: hold to read names, a full-screen country list, add to home screen
 - [ ] Accounts
 - [ ] 3D globe view
 

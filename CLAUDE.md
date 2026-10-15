@@ -45,7 +45,9 @@ src/main.ts      mounts the app
 - `build/` runs on plain Node (type stripping), so the `src/map/` files it imports use relative imports with the `.ts` extension and no `@/` alias
 - Disputed land is selectable. Kosovo uses `xk`, Northern Cyprus and Somaliland get private-use codes (`xn`, `xs`) in `build/build-map.ts`, with their names in `src/countries/names.ts`. Abkhazia, South Ossetia and Transnistria (`xa`, `xo`, `xt`) have no shape in the 50m source, so they are search-only. `src/countries/disputed.ts` lists what gets the Disputed tag
 - Natural Earth folds some territories into their country (the French overseas regions into France, Bonaire into the Netherlands, Svalbard into Norway). `build/overseas.ts` splits them out under their own ISO code. Add a row there for any new case
-- Every country is searchable, including ones too small to draw or click
+- Every country is searchable, including ones too small to draw or click. The list button in the search opens `CountryPicker`, a full-screen list (a centred panel on desktop) for marking many countries without closing it
+- Touch has no hover, so a finger held on the map peeks at names instead of panning, and a tap names the country it stamped. `src/map/interaction.ts` owns the gesture, the facade keeps the name up for a moment after the finger lifts
+- `build/vite-plugins.ts` emits the web manifest and the home screen icon, built from `src/brand/logo.ts`
 - Country names come from `Intl.DisplayNames`. Continent names live in the locale files, since Chrome can't name M49 regions. A test fails if a locale file misses a key or a placeholder
 
 ## Rules
