@@ -41,7 +41,6 @@ const { cover, setCover } = usePassportCover()
   cursor: pointer;
 }
 
-/* the swatch carries data-cover, so it wears that cover's own tokens */
 .cover-swatch {
   width: 30px;
   height: 30px;
