@@ -96,5 +96,16 @@
   "map.loadError": "Impossibile caricare la mappa. Ricarica per riprovare.",
   "card.eyebrow": "La mia mappa di viaggio",
   "card.progress": "{count} di {total} paesi",
-  "card.footer": "Crea la tua su {link}"
+  "card.footer": "Crea la tua su {link}",
+  "account.label": "Account",
+  "account.hint": "Accedi per avere mappa, tema e passaporto su tutti i tuoi dispositivi.",
+  "account.signIn": "Accedi con Google",
+  "account.signOut": "Esci",
+  "account.delete": "Elimina account",
+  "account.deleteTitle": "Eliminare il tuo account?",
+  "account.deleteText": "Così elimini l'account e la mappa salvata al suo interno. La mappa in questo browser resta.",
+  "account.deleteCancel": "Annulla",
+  "account.deleteConfirm": "Elimina account",
+  "account.syncFailed": "Impossibile salvare nel tuo account. La mappa resta salvata in questo browser.",
+  "account.signInFailed": "L'accesso non è andato a buon fine. Riprova."
 }

@@ -1,5 +1,6 @@
 import { type Ref, ref } from 'vue'
-import { type CoverId, readStoredCover, storeCover } from '@/passport/covers'
+import { bindAccountPreference, syncPreference } from '@/account/account'
+import { type CoverId, readPickedCover, readStoredCover, storeCover } from '@/passport/covers'
 
 interface UsePassportCoverResult {
   cover: Ref<CoverId>
@@ -11,12 +12,16 @@ const applyCover = (cover: CoverId) => {
   document.documentElement.dataset.cover = cover
 }
 
-export const usePassportCover = (): UsePassportCoverResult => {
-  const cover = ref<CoverId>(readStoredCover())
-  const setCover = (next: CoverId) => {
-    cover.value = next
-    applyCover(next)
-    storeCover(next)
-  }
-  return { cover, setCover }
+// one cover for the page, so the account's pick lands before the passport ever opens
+const cover = ref<CoverId>(readStoredCover())
+
+const setCover = (next: CoverId) => {
+  cover.value = next
+  applyCover(next)
+  storeCover(next)
+  syncPreference('cover', next)
 }
+
+bindAccountPreference('cover', { readStored: readPickedCover, show: setCover })
+
+export const usePassportCover = (): UsePassportCoverResult => ({ cover, setCover })

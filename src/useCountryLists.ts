@@ -1,5 +1,6 @@
 import { onScopeDispose, type Ref, shallowRef, watch } from 'vue'
-import { type CountryCode, type CountryLists, keepVisitWins } from '@/countries'
+import { bindAccountLists, syncCountryLists } from '@/account/account'
+import { type CountryCode, type CountryLists, isSameLists, keepVisitWins } from '@/countries'
 import {
   readCountryList,
   readListsFromHash,
@@ -36,10 +37,17 @@ const readSavedLists = (): CountryLists =>
 
 export const hasSavedMap = (): boolean => hasCountries(readSavedLists())
 
+interface StartingLists {
+  lists: CountryLists
+  isFriendsLink: boolean
+}
+
 // a link always wins, so opening someone's map shows theirs
-const readStartingLists = (): CountryLists => {
+const readStartingLists = (): StartingLists => {
   const linked = readListsFromHash(window.location.hash)
-  return hasCountries(linked) ? linked : readSavedLists()
+  const saved = readSavedLists()
+  if (!hasCountries(linked)) return { lists: saved, isFriendsLink: false }
+  return { lists: linked, isFriendsLink: !isSameLists(linked, saved) }
 }
 
 const writeListsToAddressBar = (lists: CountryLists) =>
@@ -47,7 +55,8 @@ const writeListsToAddressBar = (lists: CountryLists) =>
 
 // only edits are saved, so viewing a friend's link never overwrites your own map
 export const useCountryLists = (): UseCountryListsResult => {
-  const lists = shallowRef<CountryLists>(readStartingLists())
+  const starting = readStartingLists()
+  const lists = shallowRef<CountryLists>(starting.lists)
   // immediate so the link is ready before anyone copies it
   watch(lists, writeListsToAddressBar, { immediate: true })
 
@@ -57,10 +66,23 @@ export const useCountryLists = (): UseCountryListsResult => {
   window.addEventListener('hashchange', followPastedLink)
   onScopeDispose(() => window.removeEventListener('hashchange', followPastedLink))
 
-  const setLists = (next: CountryLists) => {
+  const showLists = (next: CountryLists) => {
     lists.value = next
     saveLists(next)
   }
+
+  const setLists = (next: CountryLists) => {
+    showLists(next)
+    syncCountryLists(next)
+  }
+
+  onScopeDispose(
+    bindAccountLists({
+      read: () => lists.value,
+      show: showLists,
+      isFriendsLink: starting.isFriendsLink,
+    })
+  )
 
   return { lists, setLists }
 }

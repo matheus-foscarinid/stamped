@@ -96,5 +96,16 @@
   "map.loadError": "La carte n'a pas pu se charger. Actualisez pour réessayer.",
   "card.eyebrow": "Ma carte de voyages",
   "card.progress": "{count} sur {total} pays",
-  "card.footer": "Créez la vôtre sur {link}"
+  "card.footer": "Créez la vôtre sur {link}",
+  "account.label": "Compte",
+  "account.hint": "Connectez-vous pour retrouver votre carte, votre thème et votre passeport sur tous vos appareils.",
+  "account.signIn": "Se connecter avec Google",
+  "account.signOut": "Se déconnecter",
+  "account.delete": "Supprimer le compte",
+  "account.deleteTitle": "Supprimer votre compte ?",
+  "account.deleteText": "Cela supprime votre compte et la carte qui y est enregistrée. La carte de ce navigateur reste.",
+  "account.deleteCancel": "Annuler",
+  "account.deleteConfirm": "Supprimer le compte",
+  "account.syncFailed": "Impossible d'enregistrer dans votre compte. Votre carte reste enregistrée dans ce navigateur.",
+  "account.signInFailed": "La connexion n'a pas abouti. Réessayez."
 }

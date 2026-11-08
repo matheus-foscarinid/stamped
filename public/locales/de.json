@@ -96,5 +96,16 @@
   "map.loadError": "Die Karte konnte nicht geladen werden. Lade die Seite neu, um es noch mal zu versuchen.",
   "card.eyebrow": "Meine Reisekarte",
   "card.progress": "{count} von {total} Ländern",
-  "card.footer": "Erstelle deine auf {link}"
+  "card.footer": "Erstelle deine auf {link}",
+  "account.label": "Konto",
+  "account.hint": "Melde dich an, um deine Karte, dein Design und deinen Pass auf allen Geräten zu haben.",
+  "account.signIn": "Mit Google anmelden",
+  "account.signOut": "Abmelden",
+  "account.delete": "Konto löschen",
+  "account.deleteTitle": "Konto löschen?",
+  "account.deleteText": "Damit werden dein Konto und die darin gespeicherte Karte gelöscht. Die Karte in diesem Browser bleibt.",
+  "account.deleteCancel": "Abbrechen",
+  "account.deleteConfirm": "Konto löschen",
+  "account.syncFailed": "Speichern im Konto fehlgeschlagen. Deine Karte ist weiterhin in diesem Browser gespeichert.",
+  "account.signInFailed": "Die Anmeldung wurde nicht abgeschlossen. Versuch es noch einmal."
 }

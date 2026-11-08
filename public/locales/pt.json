@@ -98,5 +98,16 @@
   "map.loadError": "Não foi possível carregar o mapa. Recarregue para tentar de novo.",
   "card.eyebrow": "Meu mapa de viagens",
   "card.progress": "{count} de {total} países",
-  "card.footer": "Faça o seu em {link}"
+  "card.footer": "Faça o seu em {link}",
+  "account.label": "Conta",
+  "account.hint": "Entre para ter seu mapa, tema e passaporte em todos os seus aparelhos.",
+  "account.signIn": "Entrar com o Google",
+  "account.signOut": "Sair",
+  "account.delete": "Excluir conta",
+  "account.deleteTitle": "Excluir sua conta?",
+  "account.deleteText": "Isso exclui sua conta e o mapa salvo nela. O mapa neste navegador continua.",
+  "account.deleteCancel": "Cancelar",
+  "account.deleteConfirm": "Excluir conta",
+  "account.syncFailed": "Não deu para salvar na sua conta. Seu mapa continua salvo neste navegador.",
+  "account.signInFailed": "O login não terminou. Tente de novo."
 }

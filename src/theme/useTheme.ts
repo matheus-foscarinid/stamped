@@ -1,9 +1,11 @@
 import { onScopeDispose, type Ref, ref } from 'vue'
+import { bindAccountPreference, syncPreference } from '@/account/account'
 import { updateAddressBarHash } from '@/share/link'
 import { readThemeFromHash, writeThemeToHash } from './theme-link.ts'
 import {
   applyTheme,
   DARK_SCHEME_QUERY,
+  readPickedTheme,
   readStoredTheme,
   resolveTheme,
   storeTheme,
@@ -20,11 +22,17 @@ interface UseThemeResult {
 const readStartingTheme = (): ThemeChoice =>
   readThemeFromHash(window.location.hash) ?? readStoredTheme()
 
+const hasFriendsTheme = (): boolean => {
+  const linked = readThemeFromHash(window.location.hash)
+  return linked !== null && linked !== readStoredTheme()
+}
+
 const writeThemeToAddressBar = (choice: ThemeChoice) =>
   updateAddressBarHash(hash => writeThemeToHash(hash, choice))
 
 export const useTheme = (): UseThemeResult => {
   const theme = ref<ThemeChoice>(readStartingTheme())
+  const isShowingFriendsTheme = hasFriendsTheme()
   const darkScheme = window.matchMedia(DARK_SCHEME_QUERY)
   const resolveChoice = () => resolveTheme(theme.value, darkScheme.matches)
   const applyChoice = () => switchTheme(resolveChoice())
@@ -38,6 +46,14 @@ export const useTheme = (): UseThemeResult => {
     showTheme(choice)
     storeTheme(choice)
     writeThemeToAddressBar(choice)
+    syncPreference('theme', choice)
+  }
+
+  const showAccountTheme = (choice: ThemeChoice) => {
+    storeTheme(choice)
+    if (isShowingFriendsTheme) return
+    showTheme(choice)
+    writeThemeToAddressBar(choice)
   }
 
   // a pasted link without a theme keeps the current one in the link
@@ -50,7 +66,12 @@ export const useTheme = (): UseThemeResult => {
   // auto follows the system, even while the page is open
   darkScheme.addEventListener('change', applyChoice)
   window.addEventListener('hashchange', followPastedLink)
+  const stopFollowingAccount = bindAccountPreference('theme', {
+    readStored: readPickedTheme,
+    show: showAccountTheme,
+  })
   onScopeDispose(() => {
+    stopFollowingAccount()
     darkScheme.removeEventListener('change', applyChoice)
     window.removeEventListener('hashchange', followPastedLink)
   })

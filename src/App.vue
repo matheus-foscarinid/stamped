@@ -42,6 +42,7 @@
           <LanguagePicker />
           <ThemePicker />
         </div>
+        <AccountButton class="stage-account" />
         <GitHubLink class="stage-github" />
       </header>
       <footer class="stage-bottom">
@@ -55,6 +56,7 @@
 
 <script setup vapor lang="ts">
 import { useI18n } from '@/i18n/useI18n'
+import AccountButton from '@/ui/AccountButton.vue'
 import ClearMapButton from '@/ui/ClearMapButton.vue'
 import CountrySearch from '@/ui/CountrySearch.vue'
 import GitHubLink from '@/ui/GitHubLink.vue'
@@ -181,18 +183,34 @@ const { t } = useI18n()
     flex: 1;
   }
 
-  /* the passport and github buttons share the search row, so the top row keeps room for the pickers */
-  .stage-search {
-    flex: 1 1 calc(100% - 2 * var(--control-height) - 20px);
+  /* the empty break item carries the row gap, so the search row stays put */
+  .stage-top {
+    row-gap: 0;
+  }
+
+  .stage-top::after {
+    content: "";
+    flex-basis: 100%;
+    height: 10px;
     order: 1;
   }
 
-  .stage-view-toggle {
+  /* room for the passport, account and github buttons */
+  .stage-search {
+    flex: 1 1 calc(100% - 3 * var(--control-height) - 30px);
     order: 2;
   }
 
-  .stage-github {
+  .stage-view-toggle {
     order: 3;
+  }
+
+  .stage-account {
+    order: 4;
+  }
+
+  .stage-github {
+    order: 5;
   }
 
 }

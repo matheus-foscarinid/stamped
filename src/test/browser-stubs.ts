@@ -1,4 +1,5 @@
 import { vi } from 'vitest'
+import type { AccountPreferences, AccountResponse } from '@/account/contract'
 import type { MapRenderer } from '@/map/renderer'
 import type { ScreenSize } from '@/map/viewport'
 
@@ -326,4 +327,82 @@ export const stubKeyboard = () => {
     return event
   }
   return { press, textField }
+}
+
+type AccountOverrides = Omit<Partial<AccountResponse>, 'preferences'> & {
+  preferences?: Partial<AccountPreferences>
+}
+
+export const buildAccount = ({
+  preferences,
+  ...overrides
+}: AccountOverrides = {}): AccountResponse => ({
+  user: { email: 'traveller@example.com', name: 'Traveller', avatarUrl: null },
+  preferences: { theme: null, cover: null, language: null, ...preferences },
+  places: { country: { visited: [], wishlist: [] } },
+  hasSavedData: true,
+  ...overrides,
+})
+
+export const stubSignedIn = (account: AccountResponse = buildAccount()) => {
+  Object.assign(document, { cookie: 'stamped_signed_in=1', addEventListener: vi.fn() })
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => Response.json(account))
+  )
+}
+
+interface AccountPageStubOptions {
+  account?: AccountResponse | null
+  isSignedIn?: boolean
+  hash?: string
+  search?: string
+  saved?: Record<string, string>
+}
+
+const stubAccountDocument = (isSignedIn: boolean) => {
+  const cookie = isSignedIn ? 'other=1; stamped_signed_in=1' : 'other=1'
+  const root = { dataset: {} as DOMStringMap }
+  const page = Object.assign(new EventTarget(), {
+    cookie,
+    documentElement: root,
+    visibilityState: 'visible' as DocumentVisibilityState,
+  })
+  vi.stubGlobal('document', page)
+  const switchVisibility = (visibilityState: DocumentVisibilityState) => {
+    page.visibilityState = visibilityState
+    page.dispatchEvent(new Event('visibilitychange'))
+  }
+  return {
+    root,
+    hidePage: () => switchVisibility('hidden'),
+    showPage: () => switchVisibility('visible'),
+    leavePage: () => window.dispatchEvent(new Event('pagehide')),
+  }
+}
+
+export const stubAccountPage = ({
+  account = buildAccount(),
+  isSignedIn = true,
+  hash = '',
+  search = '',
+  saved = {},
+}: AccountPageStubOptions = {}) => {
+  const addressBar = stubAddressBar({ hash, search })
+  const storage = stubStorage(saved)
+  const visibility = stubAccountDocument(isSignedIn)
+  let currentAccount = account
+  const fetchMock = vi.fn<typeof fetch>(async (_url, init) => {
+    if (init?.method) return new Response(null, { status: 204 })
+    return currentAccount ? Response.json(currentAccount) : new Response(null, { status: 401 })
+  })
+  vi.stubGlobal('fetch', fetchMock)
+  const readSent = (url: string) =>
+    fetchMock.mock.calls
+      .filter(([calledUrl, init]) => calledUrl === url && init?.method)
+      .map(([, init]) => JSON.parse(String(init?.body)))
+  const changeAccount = (next: AccountResponse | null) => {
+    currentAccount = next
+  }
+  return { ...addressBar, ...storage, ...visibility, fetch: fetchMock, readSent, changeAccount }
 }

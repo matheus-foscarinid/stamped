@@ -96,5 +96,16 @@
   "map.loadError": "The map couldn't load. Refresh to try again.",
   "card.eyebrow": "My travel map",
   "card.progress": "{count} of {total} countries",
-  "card.footer": "Map yours at {link}"
+  "card.footer": "Map yours at {link}",
+  "account.label": "Account",
+  "account.hint": "Sign in to keep your map, theme and passport on every device.",
+  "account.signIn": "Sign in with Google",
+  "account.signOut": "Sign out",
+  "account.delete": "Delete account",
+  "account.deleteTitle": "Delete your account?",
+  "account.deleteText": "This deletes your account and the map saved in it. The map in this browser stays.",
+  "account.deleteCancel": "Cancel",
+  "account.deleteConfirm": "Delete account",
+  "account.syncFailed": "Couldn't save to your account. Your map is still saved in this browser.",
+  "account.signInFailed": "Sign-in didn't finish. Try again."
 }
