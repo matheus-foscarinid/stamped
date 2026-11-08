@@ -20,6 +20,8 @@ The top priority is weight and speed. Every dependency, byte and runtime step ha
 - `npm run check`: Biome + typecheck + Knip
 - `npm run lint:fix`: Biome with fixes and formatting
 - `npm run build:map`: download the pinned source and regenerate `public/maps/*.bin`
+- `npm run db:migrate`: apply new `server/migrations/*.sql` to the database in `.env.local` (`vercel env pull .env.local` first). Run by hand, never from the build
+- `vercel dev`: the app plus `/api`. Plain `npm run dev` has no api and stays signed out
 
 ## Architecture
 
@@ -35,9 +37,12 @@ src/styles/      shared tokens, theme palettes on [data-theme] and the css token
 src/theme/       theme catalog, saved choice, the auto (system) theme and the &t= link param
 src/i18n/        UI text. English ships in the page, the other languages load from public/locales/ on demand
 src/test/        browser stubs, since tests run in node
+src/account/     the signed-in account: api calls, the save queue (one request in flight), the shared copy each slice syncs against, and contract.ts, the request and response shapes server/ imports too
 src/use*.ts      page state. useCountryLists keeps the visited and wishlist countries in the link and saves your edits
 src/storage.ts   localStorage reads and writes that shrug off blocked storage
-src/main.ts      mounts the app
+src/main.ts      mounts the app, then loads the account
+api/             vercel functions, one file per route. Each one only wires a handler from server/
+server/          google sign-in, sessions, validation, the postgres repository (neon), the sql migrations and pending-migrations.ts that orders them
 ```
 
 - The map module is a facade. Callers use `createWorldMap(canvas, options)` and its methods, never the decoder or renderer directly. The renderer is swappable through an optional override, with canvas as the default. Exported images go through `drawWorldSnapshot`, which always draws with canvas
@@ -47,6 +52,10 @@ src/main.ts      mounts the app
 - Natural Earth folds some territories into their country (the French overseas regions into France, Bonaire into the Netherlands, Svalbard into Norway). `build/overseas.ts` splits them out under their own ISO code. Add a row there for any new case
 - Every country is searchable, including ones too small to draw or click. The list button in the search opens `CountryPicker`, a full-screen list (a centred panel on desktop) for marking many countries without closing it
 - Touch has no hover, so a finger held on the map peeks at names instead of panning, and a tap names the country it stamped. `src/map/interaction.ts` owns the gesture, the facade keeps the name up for a moment after the finger lifts
+- Accounts are Google sign-in on Vercel functions with Neon Postgres. The page loads no Google or database code: sign-in is a redirect, and the session lives in an httpOnly cookie next to a readable `stamped_signed_in` hint, so signed-out visits make no api request. Once an account has a saved map it wins over the browser's copy, and a new account takes the browser's map instead. Each preference wins on its own once saved, and only a pick someone made is uploaded, never a default. An edit made while the account loads wins over the saved copy. The browser keeps its copy on sign out and on delete
+- `places` holds countries, states and cities in one table, keyed by kind and code (iso 3166-1, iso 3166-2, a geonames id). Only countries are accepted until states and cities get their catalogs
+- `server/` and `api/` import `src/` only through files with no imports of their own (the catalogs, `src/account/contract.ts`, `src/i18n/language-codes.ts`, `src/passport/cover-ids.ts` and `src/theme/theme-choices.ts`), with relative `.ts` paths. `api/tsconfig.json` rewrites those to `.js` for the vercel build
+- Mutations need a same-origin `Origin` and a json body, on top of SameSite=Lax cookies
 - `build/vite-plugins.ts` emits the web manifest and the home screen icon, built from `src/brand/logo.ts`
 - Country names come from `Intl.DisplayNames`. Continent names live in the locale files, since Chrome can't name M49 regions. A test fails if a locale file misses a key or a placeholder
 
