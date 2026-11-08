@@ -18,5 +18,5 @@
     "noUnusedParameters": true,
     "rewriteRelativeImportExtensions": true
   },
-  "include": ["vite.config.ts", "build/**/*.ts", "scripts/**/*.ts"]
+  "include": ["vite.config.ts", "build/**/*.ts", "scripts/**/*.ts", "server/**/*.ts", "api/**/*.ts"]
 }

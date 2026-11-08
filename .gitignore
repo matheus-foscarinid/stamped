@@ -9,3 +9,5 @@ public/maps
 .claude/
 .mcp.json
 .vercel
+.env
+.env*.local

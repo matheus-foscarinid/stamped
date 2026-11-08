@@ -125,7 +125,7 @@
   },
   "overrides": [
     {
-      "includes": ["build/**", "scripts/**"],
+      "includes": ["build/**", "scripts/**", "server/**"],
       "linter": {
         "rules": {
           "suspicious": {
@@ -143,6 +143,16 @@
           },
           "nursery": {
             "noExcessiveNestedCallbacks": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["api/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": "off"
           }
         }
       }

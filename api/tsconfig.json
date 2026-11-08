@@ -1,0 +1,8 @@
+{
+  "extends": "../tsconfig.node.json",
+  "compilerOptions": {
+    "sourceMap": false,
+    "inlineSourceMap": false
+  },
+  "include": ["**/*.ts", "../server/**/*.ts"]
+}
