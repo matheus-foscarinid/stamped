@@ -49,8 +49,12 @@
         <ShareControls :projection="projection" :visited="visited" :wishlist="wishlist" />
         <ClearMapButton :count="markedCount" @clear="clearMap" />
       </footer>
+      <FirstRunGuide
+        class="stage-guide"
+        :visited-count="visited.length"
+        :is-passport-open="isPassportOpen"
+      />
     </div>
-    <IntroDialog />
   </main>
 </template>
 
@@ -59,8 +63,8 @@ import { useI18n } from '@/i18n/useI18n'
 import AccountButton from '@/ui/AccountButton.vue'
 import ClearMapButton from '@/ui/ClearMapButton.vue'
 import CountrySearch from '@/ui/CountrySearch.vue'
+import FirstRunGuide from '@/ui/FirstRunGuide.vue'
 import GitHubLink from '@/ui/GitHubLink.vue'
-import IntroDialog from '@/ui/IntroDialog.vue'
 import LanguagePicker from '@/ui/LanguagePicker.vue'
 import PassportBook from '@/ui/PassportBook.vue'
 import ShareControls from '@/ui/ShareControls.vue'
@@ -155,6 +159,12 @@ const { t } = useI18n()
   gap: 10px;
 }
 
+.stage-guide {
+  position: absolute;
+  bottom: calc(var(--overlay-inset) + var(--control-height) + 10px);
+  left: var(--overlay-inset);
+}
+
 .stage-bottom {
   bottom: var(--overlay-inset);
   justify-content: flex-start;
@@ -181,6 +191,11 @@ const { t } = useI18n()
 
   .stage-summary {
     flex: 1;
+  }
+
+  /* leaves the zoom buttons uncovered */
+  .stage-guide {
+    right: calc(var(--overlay-inset) + var(--control-height) + 10px);
   }
 
   /* the empty break item carries the row gap, so the search row stays put */
