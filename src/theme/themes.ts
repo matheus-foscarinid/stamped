@@ -1,34 +1,14 @@
 import { buildLogoDataUrl } from '@/brand/logo'
 import { readStorage, writeStorage } from '@/storage'
 import { readCssTokens } from '@/styles/css-tokens'
+import { isThemeChoice, type ThemeChoice, type ThemeName } from './theme-choices.ts'
 
-export const THEME_CHOICES = [
-  'auto',
-  'light',
-  'dark',
-  'lilac',
-  'ink',
-  'rose',
-  'ocean',
-  'sunset',
-  'dusk',
-  'forest',
-  'midnight',
-  'gruvbox',
-  'dracula',
-] as const
-
-export type ThemeChoice = (typeof THEME_CHOICES)[number]
-
-export type ThemeName = Exclude<ThemeChoice, 'auto'>
+export { THEME_CHOICES, type ThemeChoice, type ThemeName } from './theme-choices.ts'
 
 // index.html reads this key before first paint, so keep the two in step
 const THEME_STORAGE_KEY = 'stamped-theme'
 
 export const DARK_SCHEME_QUERY = '(prefers-color-scheme: dark)'
-
-const isThemeChoice = (value: unknown): value is ThemeChoice =>
-  THEME_CHOICES.some(choice => choice === value)
 
 export const isThemeName = (value: unknown): value is ThemeName =>
   value !== 'auto' && isThemeChoice(value)
@@ -38,10 +18,12 @@ export const resolveTheme = (choice: ThemeChoice, prefersDark: boolean): ThemeNa
   return prefersDark ? 'dark' : 'light'
 }
 
-export const readStoredTheme = (): ThemeChoice => {
+export const readPickedTheme = (): ThemeChoice | null => {
   const stored = readStorage(THEME_STORAGE_KEY)
-  return isThemeChoice(stored) ? stored : 'auto'
+  return isThemeChoice(stored) ? stored : null
 }
+
+export const readStoredTheme = (): ThemeChoice => readPickedTheme() ?? 'auto'
 
 export const storeTheme = (choice: ThemeChoice): void => writeStorage(THEME_STORAGE_KEY, choice)
 

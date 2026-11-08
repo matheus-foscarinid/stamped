@@ -12,9 +12,9 @@
       >
         <span class="summary-brand">
           <StampedLogo class="summary-logo" />
-          Stamped
+          <span class="summary-name">Stamped</span>
         </span>
-        <span class="summary-count">
+        <span ref="countLabel" class="summary-count">
           {{ describeRatio(visited.length, COUNTRY_CODES.length) }}
         </span>
       </button>
@@ -36,7 +36,7 @@
 </template>
 
 <script setup vapor lang="ts">
-import { computed, useTemplateRef } from 'vue'
+import { computed, useTemplateRef, watch } from 'vue'
 import { COUNTRY_CODES, type CountryCode, getTravelStats } from '@/countries'
 import { useI18n } from '@/i18n/useI18n'
 import StampedLogo from './StampedLogo.vue'
@@ -50,6 +50,18 @@ const anchor = useTemplateRef<HTMLElement>('anchor')
 const toggleButton = useTemplateRef<HTMLButtonElement>('toggleButton')
 const { isOpen, toggle } = useDismissibleMenu({ root: anchor, trigger: toggleButton })
 const { language, t } = useI18n()
+const countLabel = useTemplateRef<HTMLElement>('countLabel')
+
+// a new stamp lands with a small thump, so the count feels earned
+const STAMP_KEYFRAMES = [{ scale: 1 }, { scale: 1.28, color: 'var(--map-visited)' }, { scale: 1 }]
+watch(
+  () => props.visited.length,
+  (count, previousCount) => {
+    if (count <= previousCount || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    countLabel.value?.animate(STAMP_KEYFRAMES, { duration: 420, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' })
+  }
+)
+
 const stats = computed(() => getTravelStats(props.visited, language.value))
 
 const describeRatio = (count: number, total: number) => t('summary.count', { count, total })
@@ -136,7 +148,9 @@ const continentNote = computed(() => {
 }
 
 .summary-count {
+  display: inline-block;
   color: var(--text-muted);
+  white-space: nowrap;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
@@ -222,5 +236,17 @@ const continentNote = computed(() => {
   padding: 14px 18px 16px;
   color: var(--text-muted);
   font-size: 13px;
+}
+
+/* the smallest phones keep the logo and the count. the name stays for screen readers */
+@media (max-width: 380px) {
+  .summary-name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
 </style>

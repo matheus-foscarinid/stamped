@@ -9,6 +9,9 @@ export interface CountryLists {
 
 export const EMPTY_LISTS: CountryLists = { visited: [], wishlist: [] }
 
+export const isSameLists = (a: CountryLists, b: CountryLists): boolean =>
+  a.visited.join() === b.visited.join() && a.wishlist.join() === b.wishlist.join()
+
 const without = (codes: readonly CountryCode[], code: CountryCode) =>
   codes.filter(listed => listed !== code)
 

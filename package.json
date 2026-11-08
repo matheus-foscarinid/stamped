@@ -18,9 +18,11 @@
     "check": "npm run lint && npm run typecheck && npm run knip && npm run test",
     "prepare": "husky",
     "build:map": "node build/build-map.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "db:migrate": "node --env-file=.env.local scripts/migrate.ts"
   },
   "dependencies": {
+    "@neondatabase/serverless": "1.2.0",
     "vue": "3.6.0-rc.11"
   },
   "devDependencies": {

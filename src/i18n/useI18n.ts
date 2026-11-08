@@ -1,8 +1,10 @@
 import { type Ref, readonly, ref, shallowRef } from 'vue'
+import { bindAccountPreference, syncPreference } from '@/account/account'
 import {
   BUNDLED_LANGUAGE,
   type Language,
   readStartingLanguage,
+  readStoredLanguage,
   storeLanguage,
 } from './languages.ts'
 import {
@@ -51,7 +53,11 @@ const setLanguage = async (next: Language) => {
   try {
     await showLanguage(next)
     storeLanguage(next)
+    syncPreference('language', next)
   } catch {}
 }
+
+// the page lives as long as the language, so this never unbinds
+bindAccountPreference('language', { readStored: readStoredLanguage, show: setLanguage })
 
 export const useI18n = (): UseI18nResult => ({ language: readonly(language), t, setLanguage })

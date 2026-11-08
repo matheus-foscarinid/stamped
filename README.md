@@ -35,7 +35,7 @@ No account, no server, no tracking.
 - [ ] States, regions and cities
 - [x] i18n
 - [x] Phone-first: hold to read names, a full-screen country list, add to home screen
-- [ ] Accounts
+- [x] Google accounts that keep your map, theme and passport on every device
 - [ ] 3D globe view
 
 ## Fast by design

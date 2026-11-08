@@ -1,18 +1,15 @@
 import { readStorage, writeStorage } from '@/storage'
+import { type CoverId, DEFAULT_COVER, isCoverId } from './cover-ids.ts'
 
-export const COVER_IDS = ['burgundy', 'navy', 'green', 'teal', 'black'] as const
-
-export type CoverId = (typeof COVER_IDS)[number]
-
-export const DEFAULT_COVER: CoverId = 'burgundy'
+export { COVER_IDS, type CoverId, DEFAULT_COVER } from './cover-ids.ts'
 
 const COVER_STORAGE_KEY = 'stamped-cover'
 
-const isCoverId = (value: unknown): value is CoverId => COVER_IDS.some(id => id === value)
-
-export const readStoredCover = (): CoverId => {
+export const readPickedCover = (): CoverId | null => {
   const stored = readStorage(COVER_STORAGE_KEY)
-  return isCoverId(stored) ? stored : DEFAULT_COVER
+  return isCoverId(stored) ? stored : null
 }
+
+export const readStoredCover = (): CoverId => readPickedCover() ?? DEFAULT_COVER
 
 export const storeCover = (cover: CoverId): void => writeStorage(COVER_STORAGE_KEY, cover)

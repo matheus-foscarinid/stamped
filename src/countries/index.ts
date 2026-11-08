@@ -11,6 +11,7 @@ export {
   canToggleMark,
   EMPTY_LISTS,
   getCountryMark,
+  isSameLists,
   keepVisitWins,
   toggleMark,
 } from './lists.ts'

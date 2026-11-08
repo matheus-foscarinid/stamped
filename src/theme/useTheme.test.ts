@@ -1,5 +1,5 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
-import { stubThemePage } from '@/test/browser-stubs'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { buildAccount, stubSignedIn, stubThemePage } from '@/test/browser-stubs'
 import { mountComposable } from '@/test/composables'
 import { useTheme } from './useTheme.ts'
 
@@ -86,5 +86,49 @@ describe('when the system scheme changes', () => {
     mountComposable(useTheme)
     switchSystemScheme(false)
     expect(root.dataset.theme).toBe(SAVED_THEME)
+  })
+})
+
+describe('when the account has a theme', () => {
+  const ACCOUNT_THEME = 'ocean'
+
+  // the account lives in module state, so each test imports a fresh copy
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  const mountSignedInTheme = async (accountTheme: 'ocean' | null = ACCOUNT_THEME) => {
+    vi.resetModules()
+    stubSignedIn(buildAccount({ preferences: { theme: accountTheme } }))
+    const { useTheme: useFreshTheme } = await import('./useTheme.ts')
+    const { loadAccount } = await import('@/account/account')
+    const { result } = mountComposable(useFreshTheme)
+    await loadAccount()
+    return result
+  }
+
+  it('shows it and puts it in the link', async () => {
+    const { location } = stubThemePage({ hash: '#v=br', savedTheme: SAVED_THEME })
+    const { theme } = await mountSignedInTheme()
+    expect(theme.value).toBe(ACCOUNT_THEME)
+    expect(location.hash).toBe('#v=br&t=ocean')
+  })
+
+  it("keeps a friend's theme on screen and saves the account's for the next visit", async () => {
+    const { location } = stubThemePage({ hash: FRIEND_LINK, savedTheme: SAVED_THEME })
+    const { theme } = await mountSignedInTheme()
+    expect(theme.value).toBe('dracula')
+    expect(location.hash).toBe(FRIEND_LINK)
+    expect(localStorage.getItem('stamped-theme')).toBe(ACCOUNT_THEME)
+  })
+  it('sends no theme when none was picked here', async () => {
+    stubThemePage({ hash: '#v=br' })
+    await mountSignedInTheme(null)
+    await vi.runAllTimersAsync()
+    expect(fetch).toHaveBeenCalledOnce()
   })
 })

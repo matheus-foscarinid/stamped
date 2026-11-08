@@ -1,16 +1,9 @@
 import { readStorage, writeStorage } from '@/storage'
+import { BUNDLED_LANGUAGE, isLanguage, type Language } from './language-codes.ts'
 
-// sorted by their own names, the way the menu lists them
-export const LANGUAGES = ['de', 'en', 'es', 'fr', 'it', 'pt'] as const
-
-export type Language = (typeof LANGUAGES)[number]
-
-export const BUNDLED_LANGUAGE: Language = 'en'
+export { BUNDLED_LANGUAGE, LANGUAGES, type Language } from './language-codes.ts'
 
 const LANGUAGE_STORAGE_KEY = 'stamped-language'
-
-const isLanguage = (value: unknown): value is Language =>
-  LANGUAGES.some(language => language === value)
 
 // "pt-BR" and "pt" both pick portuguese
 export const matchLanguage = (preferred: readonly string[]): Language => {
@@ -18,7 +11,7 @@ export const matchLanguage = (preferred: readonly string[]): Language => {
   return bases.find(isLanguage) ?? BUNDLED_LANGUAGE
 }
 
-const readStoredLanguage = (): Language | null => {
+export const readStoredLanguage = (): Language | null => {
   const stored = readStorage(LANGUAGE_STORAGE_KEY)
   return isLanguage(stored) ? stored : null
 }

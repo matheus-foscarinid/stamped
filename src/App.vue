@@ -42,23 +42,29 @@
           <LanguagePicker />
           <ThemePicker />
         </div>
+        <AccountButton class="stage-account" />
         <GitHubLink class="stage-github" />
       </header>
       <footer class="stage-bottom">
         <ShareControls :projection="projection" :visited="visited" :wishlist="wishlist" />
         <ClearMapButton :count="markedCount" @clear="clearMap" />
       </footer>
+      <FirstRunGuide
+        class="stage-guide"
+        :visited-count="visited.length"
+        :is-passport-open="isPassportOpen"
+      />
     </div>
-    <IntroDialog />
   </main>
 </template>
 
 <script setup vapor lang="ts">
 import { useI18n } from '@/i18n/useI18n'
+import AccountButton from '@/ui/AccountButton.vue'
 import ClearMapButton from '@/ui/ClearMapButton.vue'
 import CountrySearch from '@/ui/CountrySearch.vue'
+import FirstRunGuide from '@/ui/FirstRunGuide.vue'
 import GitHubLink from '@/ui/GitHubLink.vue'
-import IntroDialog from '@/ui/IntroDialog.vue'
 import LanguagePicker from '@/ui/LanguagePicker.vue'
 import PassportBook from '@/ui/PassportBook.vue'
 import ShareControls from '@/ui/ShareControls.vue'
@@ -153,6 +159,12 @@ const { t } = useI18n()
   gap: 10px;
 }
 
+.stage-guide {
+  position: absolute;
+  bottom: calc(var(--overlay-inset) + var(--control-height) + 10px);
+  left: var(--overlay-inset);
+}
+
 .stage-bottom {
   bottom: var(--overlay-inset);
   justify-content: flex-start;
@@ -181,18 +193,39 @@ const { t } = useI18n()
     flex: 1;
   }
 
-  /* the passport and github buttons share the search row, so the top row keeps room for the pickers */
-  .stage-search {
-    flex: 1 1 calc(100% - 2 * var(--control-height) - 20px);
+  /* leaves the zoom buttons uncovered */
+  .stage-guide {
+    right: calc(var(--overlay-inset) + var(--control-height) + 10px);
+  }
+
+  /* the empty break item carries the row gap, so the search row stays put */
+  .stage-top {
+    row-gap: 0;
+  }
+
+  .stage-top::after {
+    content: "";
+    flex-basis: 100%;
+    height: 10px;
     order: 1;
   }
 
-  .stage-view-toggle {
+  /* room for the passport, account and github buttons */
+  .stage-search {
+    flex: 1 1 calc(100% - 3 * var(--control-height) - 30px);
     order: 2;
   }
 
-  .stage-github {
+  .stage-view-toggle {
     order: 3;
+  }
+
+  .stage-account {
+    order: 4;
+  }
+
+  .stage-github {
+    order: 5;
   }
 
 }
